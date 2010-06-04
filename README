@@ -6,5 +6,5 @@ Based on concepts from, many sources, esp:
   PLEASE NOTE that I'm NOT COPYING Claus Höfele's stuff, which was written in C++/Curl.
 
 I'm writing this in C++/Qt, so basically my stuff. 
-Besides, some of things like ClientLogin and CLientID stuff are old enough.
+Besides, some of things like ClientLogin and CLientID stuff are old.
 I'll try to write the lib, using YouTube's OAuth rest apis etc. 
