@@ -1,1 +1,10 @@
 Author: Rohit Yadav
+
+Based on concepts from, many sources, esp:
+  Youtube Demo 1.1 by Claus Höfele <claus@claushoefele.com> 
+  Based on an article at gamasutra here: http://www.gamasutra.com/view/feature/3855/share_your_experience_youtube_.php
+  PLEASE NOTE that I'm NOT COPYING Claus Höfele's stuff, which was written in C++/Curl.
+
+I'm writing this in C++/Qt, so basically my stuff. 
+Besides, some of things like ClientLogin and CLientID stuff are old enough.
+I'll try to write the lib, using YouTube's OAuth rest apis etc. 
