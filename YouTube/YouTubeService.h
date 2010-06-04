@@ -1,9 +1,9 @@
 /*****************************************************************************
  * YouTubeService.h:
  *****************************************************************************
- * Copyright (C) 2008-2010 VideoLAN
+ * Copyright (C) 2010 VideoLAN
  *
- * Authors: Hugo Beauzee-Luyssen <hugo@vlmc.org>
+ * Authors: Rohit Yadav <rohityadav89@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

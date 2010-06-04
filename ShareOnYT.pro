@@ -4,7 +4,7 @@
 QT += network \
     svg \
     xml
-TARGET = ShareOnYT
+TARGET = YTApp
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \

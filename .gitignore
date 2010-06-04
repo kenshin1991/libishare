@@ -1,0 +1,13 @@
+YTApp
+/build
+/bin
+Makefile*
+
+.DS_Store
+*.pro.user
+moc_*.cpp
+moc_*.cxx*
+ui_*.h
+*~
+*.o
+*.so*
