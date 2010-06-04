@@ -14,6 +14,7 @@ SOURCES += main.cpp \
 HEADERS += mainwindow.h \
     YouTube/YouTubeUpload.h \
     #YouTube/YouTubeService.h \
+    YouTube/YouTubeServiceStates.h \
     YouTube/YouTubeAuthentication.h
 FORMS += mainwindow.ui
 
