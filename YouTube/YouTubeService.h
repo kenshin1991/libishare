@@ -37,54 +37,20 @@ class YouTubeService : public QObject
          *  \param  developerKey identifies the YouTube developer that is submitting an
          *          API request.
          */
-        YouTubeService(const QString& developerKey);
+        YouTubeService( const QString& developerKey );
 
-        /** Destructor. */
+        /** Destructor. **/
         ~YouTubeService();
 
-        static void initGlobal();
-        static void destroyGlobal();
-
-        void setProxy(const std::string& proxy, const std::string& user = std::string(),
-        const std::string& password = std::string());
-
-/*
-        inline YouTubeServiceState authenticate(
-        const YouTubeAuthenticationData& authenticationData);
-
-        inline bool isAuthenticated() const;
-
-        inline YouTubeServiceState search(const YouTubeSearchQuery& searchQuery,
-        YouTubeSearchResult& searchResults);
-
-        inline YouTubeServiceState upload(const YouTubeUploadData& uploadData,
-        YouTubeVideoEntry& videoEntry);
-
-        template<class RequestOperator, class ResponseOperator>
-        YouTubeServiceState service(
-        RequestOperator requestOperator, const typename RequestOperator::Input& input,
-        ResponseOperator responseOperator, typename ResponseOperator::Output& output);
-*/
-        int getStatus() const;
+        bool isAuthenticated() const;
+        int  getStatus() const;
 
     private:
 
-        static size_t writeData(void* buffer, size_t elementSize, size_t numElements,
-        void* userData);
-
-        static void debugDump(const char* text, FILE* stream, unsigned char* ptr,
-        size_t size, void* userData);
-        //static int debugTrace(CURL* handle, curl_infotype type, char* data,
-        //size_t size, void* userData);
-
-        private:
-
-        //CURL* m_CurlHandle;             ///< Context for sending data via curl.
-
-        QString m_developerKey;         ///< Developer ID.
-        QString m_authenticationToken;  ///< Token used to identify an authenticated session.
-        QString m_writeBuffer;          ///< Contains the results received from the web server after a request.
-        int     m_statusCode;           ///< Status code of last request.
+        QString     m_developerKey;
+        QString     m_authenticationToken;
+        QString     m_writeBuffer;
+        int         m_statusCode;
 };
 
 #endif // YOUTUBESERVICE_H

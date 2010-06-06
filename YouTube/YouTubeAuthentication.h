@@ -19,3 +19,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
+
+#ifndef YOUTUBEAUTHENTICATION_H
+#define YOUTUBEAUTHENTICATION_H
+
+#include "YouTubeServiceStates.h"
+
+#include <QObject>
+#include <QString>
+
+
+class YouTubeAuthentication : public QObject
+{
+    public:
+        YoutubeAuthentication( QString& username, QString& password );
+
+    protected:
+        /** Youtube Credentials **/
+        QString        username;
+        QString        password;
+        /** Youtube auth token */
+        QString        YouTubeAuthenticationToken;
+};
+#endif // YOUTUBEAUTHENTICATION_H

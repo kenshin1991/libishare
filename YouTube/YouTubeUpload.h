@@ -19,3 +19,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
+
+#ifndef YOUTUBEUPLOAD_H
+#define YOUTUBEUPLOAD_H
+
+#include <QObject>
+#include <QString>
+
+#define UPLOAD_URL "http://uploads.gdata.youtube.com/feeds/api/users/default/uploads"
+
+class YoutubeUpload : public QObject
+{
+    public:
+        YoutubeUpload();
+
+    private:
+        QString      fileName;
+        QString      mimeType;
+        QString      title;
+        QString      category;
+        QString      description;
+        QString      tags;
+        bool         isPrivate;
+};
+
+#endif // YOUTUBEUPLOAD_H
