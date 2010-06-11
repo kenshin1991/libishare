@@ -33,7 +33,7 @@ void MainWindow::on_pushButton_clicked()
 {
     //Work out stuff here to Upload video n stuff
     QNetworkAccessManager *networkManager =new QNetworkAccessManager();
-    QUrl url(SERVER);
+    QUrl url(ui->url->text());
 
     QNetworkRequest request(url);
     QNetworkReply *r = networkManager->get(request);
@@ -48,6 +48,10 @@ void MainWindow::on_pushButton_clicked()
     //sslSocket->setSslConfiguration(config);
     //r->setSslConfiguration(config);
     connect(r, SIGNAL(finished()),this,SLOT(downloadFinished()));
+
+    connect(r, SIGNAL(downloadProgress(qint64,qint64)),
+            SLOT(slotSetProgress(qint64,qint64)));
+
 }
 
 void MainWindow::downloadFinished()
@@ -55,4 +59,12 @@ void MainWindow::downloadFinished()
     QNetworkReply *reply =((QNetworkReply *)sender());
     QByteArray data = reply->readAll();
     ui->plainTextEdit->appendPlainText(data);
+    ui->progressBar->setValue(0);
+}
+
+void MainWindow::slotSetProgress(qint64 received, qint64 total)
+{
+    if (total > 0 && received > 0) {
+        ui->progressBar->setValue((int) total / received * 100);
+    }
 }

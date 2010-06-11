@@ -22,6 +22,7 @@ private:
 private slots:
     void on_pushButton_clicked();
     void downloadFinished();
+    void slotSetProgress(qint64 received, qint64 total);
 };
 
 #endif // MAINWINDOW_H
