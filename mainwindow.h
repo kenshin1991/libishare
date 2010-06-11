@@ -21,6 +21,7 @@ private:
 
 private slots:
     void on_pushButton_clicked();
+    void downloadFinished();
 };
 
 #endif // MAINWINDOW_H
