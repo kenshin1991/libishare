@@ -29,15 +29,39 @@
 #include <QStringList>
 #include <QUrl>
 
+#include <QDebug>
 
-YouTubeAuthentication::YouTubeAuthentication( QString& username, QString& password ) :
+YouTubeAuthentication::YouTubeAuthentication()
+{
+    setPostData();
+}
+
+YouTubeAuthentication::YouTubeAuthentication( const QString& username, const QString& password ) :
         m_username( username ), m_password( password )
 {
     setPostData();
 }
 
+YouTubeAuthentication::~YouTubeAuthentication()
+{
+    m_username = "";
+    m_password = "";
+
+    m_youTubeAuthString = "";
+}
+
 void
-YouTubeAuthentication::setCredentials( QString& username, QString& password )
+YouTubeAuthentication::authInit()
+{
+    m_authentication = false;
+
+    m_youTubeAuthString.clear();
+    m_youTubeError.clear();
+    m_youTubeUser.clear();
+}
+
+void
+YouTubeAuthentication::setCredentials( const QString& username, const QString& password )
 {
     m_username = username;
     m_password = password;
@@ -54,7 +78,9 @@ YouTubeAuthentication::setPostData()
 
 void
 YouTubeAuthentication::authenticate()
-{    
+{
+    authInit();
+
     QUrl url(CLIENT_LOGIN_URL);
 
     QNetworkRequest request;
@@ -67,6 +93,12 @@ YouTubeAuthentication::authenticate()
     connect(reply, SIGNAL(finished()),this,SLOT(authenticationFinished()));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
             SLOT(onError(QNetworkReply::NetworkError)));
+}
+
+void
+YouTubeAuthentication::onError(QNetworkReply::NetworkError e)
+{
+    m_error = e;
 }
 
 void
@@ -88,8 +120,27 @@ YouTubeAuthentication::authenticationFinished()
             m_youTubeUser = tokenList.at(1);
 
         if(tokenList.at(0) == "Error")
+        {
             m_youTubeError = tokenList.at(1);
+            emit error(m_youTubeError);
+        }
     }
+
+    if( !m_youTubeAuthString.isEmpty() &&
+        !m_youTubeUser.isEmpty() &&
+        m_youTubeError.isEmpty() )
+    {
+        m_authentication = true;
+        emit finished();
+    }
+
+    reply->deleteLater();
+}
+
+bool
+YouTubeAuthentication::isAuthenticated()
+{
+    return m_authentication;
 }
 
 QString
@@ -112,15 +163,8 @@ YouTubeAuthentication::getYouTubeError()
     return m_youTubeError;
 }
 
-
-void
-YouTubeAuthentication::onError(QNetworkReply::NetworkError e)
-{
-    m_error = e;
-}
-
 QNetworkReply::NetworkError
-YouTubeAuthentication::networkrror()
+YouTubeAuthentication::getNetworkError()
 {
     return m_error;
 }

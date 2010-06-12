@@ -1,11 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QtNetwork>
-#include <QByteArray>
-
-#define SERVER "https://www.google.com/youtube/accounts/ClientLogin"
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -33,7 +28,28 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_pushButton_clicked()
 {
-    data.clear();
+    y.setCredentials(ui->username->text(), ui->password->text());
+    y.authenticate();
+
+    connect(&y, SIGNAL(finished()), this, SLOT(finished()));
+    connect(&y, SIGNAL(error(QString)), this, SLOT(error(QString)) );
+}
+
+void MainWindow::finished()
+{
+    Q_ASSERT_X( y.isAuthenticated() == true, "YT_AUTH...",
+                    "err" );
+    ui->plainTextEdit->appendPlainText(y.getYouTubeAuthString());
+
+    ui->plainTextEdit->appendPlainText(y.getYouTubeUser());
+
+}
+
+void MainWindow::error(QString)
+{
+    ui->status->setText("U-ERR=" + y.getYouTubeError() + ", NET= " + y.getNetworkError());
+}
+/*    data.clear();
     data.append(QString("Email=" + ui->username->text() + "&Passwd="+ ui->password->text()+ "&service=youtube&source=Test"));
 
     //Work out stuff here to Upload video n stuff
@@ -76,3 +92,4 @@ void MainWindow::slotSetProgress(qint64 received, qint64 total)
         ui->progressBar->setValue((int) total / received * 100);
     }
 }
+*/

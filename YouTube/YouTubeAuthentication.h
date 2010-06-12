@@ -37,31 +37,41 @@ class YouTubeAuthentication : public QObject
     Q_OBJECT
 
     public:
-        YouTubeAuthentication( QString& username, QString& password );
-        void setCredentials( QString& username, QString& password );
-        bool isAuthenticated();
+        YouTubeAuthentication();
+        YouTubeAuthentication( const QString& username, const QString& password );
         void authenticate();
-        QNetworkReply::NetworkError error();
+        bool isAuthenticated();
 
-        QString getYouTubeError();
+        ~YouTubeAuthentication();
+
+        void setCredentials( const QString& username, const QString& password );
+
         QString getYouTubeAuthString();
         QString getYouTubeUser();
+        QString getYouTubeError();
+        QNetworkReply::NetworkError getNetworkError();
 
     private:
+        void authInit();
         void setPostData();
-        /** Youtube Credentials **/
+        /* Youtube Credentials */
         QString        m_username;
         QString        m_password;
+        /* HTTP/S POST HEADER */
         QByteArray     m_postData;
 
         QNetworkReply::NetworkError m_error;
 
     protected:
-        /** Youtube auth token */
+        /* Youtube tokens */
         QString        m_youTubeAuthString;
         QString        m_youTubeUser;
         QString        m_youTubeError;
-        bool           m_authenticated;
+        bool           m_authentication;
+
+    signals:
+        void finished();
+        void error(QString message);
 
     private slots:
         void authenticationFinished();

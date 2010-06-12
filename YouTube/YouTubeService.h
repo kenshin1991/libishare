@@ -42,15 +42,9 @@ class YouTubeService : public QObject
         /** Destructor. **/
         ~YouTubeService();
 
-        bool isAuthenticated() const;
-        int  getStatus() const;
-
     private:
 
         QString     m_developerKey;
-        QString     m_authenticationToken;
-        QString     m_writeBuffer;
-        int         m_statusCode;
 };
 
 #endif // YOUTUBESERVICE_H
