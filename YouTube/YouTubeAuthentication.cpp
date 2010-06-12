@@ -72,7 +72,9 @@ void
 YouTubeAuthentication::setPostData()
 {
     m_postData.clear();
-    m_postData.append( QString("Email=%1&Passwd=%2&service=youtube&source=VLMC")
+    m_postData.append( QString("accountType=HOSTED_OR_GOOGLE"
+                               "&Email=%1&Passwd=%2"
+                               "&service=youtube&source=VLMC")
                               .arg(m_username, m_password) );
 }
 
@@ -85,6 +87,7 @@ YouTubeAuthentication::authenticate()
 
     QNetworkRequest request;
     request.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
+    request.setRawHeader("X-GData-Key", "key=AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ");
     request.setUrl(url);
 
     QNetworkAccessManager *networkManager = new QNetworkAccessManager();
@@ -106,6 +109,8 @@ YouTubeAuthentication::authenticationFinished()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
     QByteArray data = reply->readAll();
+
+    qDebug() << data;
 
     QStringList lines = QString(data).split( "\n", QString::SkipEmptyParts );
 
