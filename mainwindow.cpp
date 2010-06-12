@@ -2,14 +2,16 @@
 #include "ui_mainwindow.h"
 
 #include <QtNetwork>
+#include <QByteArray>
 
-#define SERVER "http://doc.trolltech.com/qtjambi-4.4/html/com/trolltech/qt/network/QNetworkAccessManager.html"
+#define SERVER "https://www.google.com/youtube/accounts/ClientLogin"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
 }
 
 MainWindow::~MainWindow()
@@ -31,12 +33,18 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_pushButton_clicked()
 {
+    data.clear();
+    data.append(QString("Email=" + ui->username->text() + "&Passwd="+ ui->password->text()+ "&service=youtube&source=Test"));
+
     //Work out stuff here to Upload video n stuff
     QNetworkAccessManager *networkManager =new QNetworkAccessManager();
     QUrl url(ui->url->text());
 
-    QNetworkRequest request(url);
-    QNetworkReply *r = networkManager->get(request);
+    QNetworkRequest request;
+    request.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    request.setUrl(url);
+    QNetworkReply *r = networkManager->post(request, data);
 
     //QFile certFile(":/secure.example.com.crt");
     //Q_ASSERT(certFile.open(QIODevice::ReadOnly));

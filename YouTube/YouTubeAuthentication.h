@@ -24,21 +24,47 @@
 #define YOUTUBEAUTHENTICATION_H
 
 #include "YouTubeServiceStates.h"
-
+#include <QNetworkReply>
 #include <QObject>
-#include <QString>
 
+#define CLIENT_LOGIN_URL "https://www.google.com/youtube/accounts/ClientLogin"
+
+class QByteArray;
+class QString;
 
 class YouTubeAuthentication : public QObject
 {
+    Q_OBJECT
+
     public:
-        YoutubeAuthentication( QString& username, QString& password );
+        YouTubeAuthentication( QString& username, QString& password );
+        void setCredentials( QString& username, QString& password );
+        bool isAuthenticated();
+        void authenticate();
+        QNetworkReply::NetworkError error();
+
+        QString getYouTubeError();
+        QString getYouTubeAuthString();
+        QString getYouTubeUser();
+
+    private:
+        void setPostData();
+        /** Youtube Credentials **/
+        QString        m_username;
+        QString        m_password;
+        QByteArray     m_postData;
+
+        QNetworkReply::NetworkError m_error;
 
     protected:
-        /** Youtube Credentials **/
-        QString        username;
-        QString        password;
         /** Youtube auth token */
-        QString        YouTubeAuthenticationToken;
+        QString        m_youTubeAuthString;
+        QString        m_youTubeUser;
+        QString        m_youTubeError;
+        bool           m_authenticated;
+
+    private slots:
+        void authenticationFinished();
+        void onError(QNetworkReply::NetworkError e);
 };
 #endif // YOUTUBEAUTHENTICATION_H

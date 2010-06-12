@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+class QByteArray;
+
 namespace Ui {
     class MainWindow;
 }
@@ -18,6 +20,7 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+    QByteArray data;
 
 private slots:
     void on_pushButton_clicked();
