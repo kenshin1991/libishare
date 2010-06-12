@@ -86,7 +86,7 @@ YouTubeAuthentication::authenticate()
     QUrl url(CLIENT_LOGIN_URL);
 
     QNetworkRequest request;
-    request.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("X-GData-Key", "key=AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ");
     request.setUrl(url);
 
