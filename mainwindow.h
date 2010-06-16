@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "YouTube/YouTubeAuthentication.h"
+#include "YouTube/YouTubeService.h"
 class QByteArray;
 
 namespace Ui {
@@ -20,7 +20,8 @@ protected:
 
 private:
     Ui::MainWindow *ui;
-    YouTubeAuthentication y;
+    YouTubeService y;
+    QString devKey;
     //QByteArray data;
 
 private slots:

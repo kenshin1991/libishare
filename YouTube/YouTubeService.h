@@ -23,6 +23,8 @@
 #ifndef YOUTUBESERVICE_H
 #define YOUTUBESERVICE_H
 
+#include "YouTubeAuthentication.h"
+
 #include <QObject>
 #include <QString>
 
@@ -31,20 +33,32 @@ class YouTubeService : public QObject
     Q_OBJECT
 
     public:
-
-        /**
-         *  \brief Contructor
-         *  \param  developerKey identifies the YouTube developer that is submitting an
-         *          API request.
-         */
-        YouTubeService( const QString& developerKey );
-
-        /** Destructor. **/
+        YouTubeService( const QString& username, const QString& password, const QString& devKey );
+        YouTubeService();
         ~YouTubeService();
 
-    private:
+        void setDeveloperKey(const QString& devKey);
+        void setCredentials( const QString& username, const QString& password );
 
-        QString     m_developerKey;
+        /* Different services */
+        void authenticate();
+        bool upload(const QString& file);
+        void search(const QString& search);
+
+        /* Check service states */
+        bool isAuthenticated();
+        bool isUploaded();
+
+    private:
+        QString                 m_devKey;
+        YouTubeAuthentication*  m_ytAuth;
+
+    signals:
+        void authenticationFinished();
+        void uploadFinished();
+        void searchFinished();
+
+        void error(QString message);
 };
 
 #endif // YOUTUBESERVICE_H

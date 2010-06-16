@@ -22,11 +22,65 @@
 
 #include "YouTubeService.h"
 
-YouTubeService::YouTubeService( const QString& developerKey ) :
-        m_developerKey( developerKey )
+YouTubeService::YouTubeService( const QString& username, const QString& password, const QString& devKey ) :
+        m_developerKey( devKey )
 {
+    YouTubeService();
+}
+
+YouTubeService::YouTubeService()
+{
+    m_ytAuth = new YouTubeAuthentication();
+
+    connect(m_ytAuth, SIGNAL(finished()), this, SIGNAL(authenticationFinished()));
+    connect(m_ytAuth, SIGNAL(error(QString)), this, SIGNAL(error(QString)));    
 }
 
 YouTubeService::~YouTubeService()
 {
+    delete m_ytAuth;
 }
+
+void YouTubeService::setDeveloperKey(const QString& devKey)
+{
+    m_devKey = devKey;
+}
+
+void YouTubeService::setCredentials( const QString& username, const QString& password )
+{
+    m_ytAuth->setCredentials(username, password);
+}
+
+
+/* Different services */
+void YouTubeService::authenticate()
+{
+    m_ytAuth->authenticate();
+}
+
+bool YouTubeService::upload(const QString& file)
+{
+    if( isAuthenticated() )
+    {
+        /* Upload Stuff here :) */
+
+
+        return true;
+    }
+    return false;
+}
+
+void YouTubeService::search(const QString& search)
+{
+}
+
+/* Check service states */
+bool YouTubeService::isAuthenticated()
+{
+    return m_ytAuth->isAuthenticated();
+}
+
+bool YouTubeService::isUploaded()
+{
+}
+
