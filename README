@@ -1,5 +1,7 @@
 Author: Rohit Yadav
 
+Got upload figured out, from here: http://code.google.com/apis/youtube/2.0/developers_guide_protocol.html#Direct_uploading
+
 Based on concepts from, many sources, esp:
   Youtube Demo 1.1 by Claus Höfele <claus@claushoefele.com> 
   Based on an article at gamasutra here: http://www.gamasutra.com/view/feature/3855/share_your_experience_youtube_.php
