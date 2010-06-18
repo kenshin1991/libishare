@@ -26,11 +26,12 @@
 #include <QtNetwork>
 #include <QMessageBox>
 
+#include <QDebug>
+
 YouTubeService::YouTubeService( const QString& username, const QString& password, const QString& devKey ) :
         m_devKey( devKey )
 {
     m_auth.setCredentials( username, password );
-
     YouTubeService();
 }
 
@@ -38,13 +39,21 @@ YouTubeService::YouTubeService()
 {
     m_nam = new QNetworkAccessManager();
 
+    /* In case the proxy asks for credentials, handle it */
     connect( m_nam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
             this, SLOT(proxyAuthRequired(QNetworkReply*,QAuthenticator*)) );
 
-#ifndef QT_NO_OPENSSL
+    /* If SSL is available, handle SSL errors for better security */
+    #ifndef QT_NO_OPENSSL
     connect( m_nam, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
             this, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)) );
-#endif
+    #endif
+
+    /* Tell world on successful authentication */
+    connect( &m_auth, SIGNAL(authOK()), this, SIGNAL(authOK()) );
+
+    /* On authentication error, m_auth will send the error token */
+    connect( &m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
 
 }
 
@@ -65,8 +74,6 @@ YouTubeService::setCredentials( const QString& username, const QString& password
     m_auth.setCredentials( username, password );
 }
 
-
-/* Different services */
 void
 YouTubeService::authenticate()
 {
@@ -74,7 +81,9 @@ YouTubeService::authenticate()
     devKeyBA.append( "key=" + m_devKey );
 
     QNetworkRequest request = m_auth.getNetworkRequest();
-    request.setRawHeader( "X-GData-Key", devKeyBA );
+
+    if( !m_devKey.isEmpty() )
+        request.setRawHeader( "X-GData-Key", devKeyBA );
 
     m_reply = m_nam->post( request, m_auth.getPOSTData() );
 
@@ -89,18 +98,21 @@ YouTubeService::authFinished()
     QByteArray data = m_reply->readAll();
     qDebug() << data;
 
-    m_auth.setAuthData( data );
+    /* Disconnect local mappings, just in case authenticate is called again */
+    disconnect( m_reply, SIGNAL(finished()),this,SLOT(authFinished()) );
+    disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
+            SLOT(networkError(QNetworkReply::NetworkError)) );
 
+    m_auth.setAuthData( data );
     m_reply->deleteLater();
 }
 
 bool
-YouTubeService::upload(const QString& file)
+YouTubeService::upload(const QString& fileName)
 {
-    if( isAuthenticated() )
+    if( m_auth.isAuthenticated() )
     {
         /* Upload Stuff here :) */
-
 
         return true;
     }
@@ -112,17 +124,10 @@ YouTubeService::search(const QString& search)
 {
 }
 
-/* Check service states */
-bool
-YouTubeService::isAuthenticated()
+void
+YouTubeService::authError(QString e)
 {
-    return m_auth.isAuthenticated();
-}
-
-bool
-YouTubeService::isUploaded()
-{
-    return true;
+    qDebug() << e;
 }
 
 void
@@ -150,8 +155,10 @@ YouTubeService::sslErrors( QNetworkReply*, const QList<QSslError> &errors )
         errorString += error.errorString();
     }
 
+    /* Prompt for insecure connection */
     if ( QMessageBox::warning(NULL, tr("YouTube Authentication"),
-                             tr("One or more SSL errors has occurred: %1").arg(errorString),
+                             tr("Connection may be insecure, do you want to continue?"
+                                "One or more SSL errors has occurred: %1").arg(errorString),
                              QMessageBox::Ignore | QMessageBox::Abort) == QMessageBox::Ignore )
     {
         m_reply->ignoreSslErrors();

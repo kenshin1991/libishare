@@ -40,28 +40,25 @@ class YouTubeService : public QObject
     Q_OBJECT
 
     public:
-        YouTubeService( const QString& username, const QString& password, const QString& devKey );
+        YouTubeService( const QString& username, const QString& password,
+                        const QString& devKey );
         YouTubeService();
         ~YouTubeService();
 
         void setDeveloperKey( const QString& devKey );
         void setCredentials( const QString& username, const QString& password );
 
-        /* Different services */
+        /* Services */
         void authenticate();
-        bool upload( const QString& file );
+        bool upload( const QString& fileName );
         void search( const QString& search );
-
-        /* Check service states */
-        bool isAuthenticated();
-        bool isUploaded();
 
     private:
         QString                 m_devKey;
         YouTubeAuthentication   m_auth;
 
-        QNetworkAccessManager*       m_nam;
-        QNetworkReply*               m_reply;
+        QNetworkAccessManager*  m_nam;
+        QNetworkReply*          m_reply;
 
     private slots:
         void authFinished();
@@ -69,13 +66,14 @@ class YouTubeService : public QObject
         //void searchFinished();
 
         void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
-        void networkError(QNetworkReply::NetworkError);
+        void authError( QString );
+        void networkError( QNetworkReply::NetworkError );
         #ifndef QT_NO_OPENSSL
         void sslErrors( QNetworkReply*,const QList<QSslError> &errors );
         #endif
 
-
-
+    signals:
+        void authOK();
 };
 
 #endif // YOUTUBESERVICE_H

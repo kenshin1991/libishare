@@ -126,7 +126,7 @@ YouTubeAuthentication::setAuthData( QByteArray& data )
         {
             m_authError = tokenList.at(1);
             emit authError( m_authError );
-            continue;
+            return;
         }
 
         if( tokenList.at(0) == "Auth" )
@@ -146,6 +146,6 @@ YouTubeAuthentication::setAuthData( QByteArray& data )
         m_authError.isEmpty() )
     {
         m_isAuthenticated = true;
+        emit authOK();
     }
 }
-

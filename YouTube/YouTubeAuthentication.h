@@ -66,6 +66,7 @@ class YouTubeAuthentication : public QObject
         bool           m_isAuthenticated;
 
     signals:
+        void authOK();
         void authError( QString );
 };
 #endif // YOUTUBEAUTHENTICATION_H
