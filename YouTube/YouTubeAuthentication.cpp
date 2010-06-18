@@ -38,14 +38,12 @@ YouTubeAuthentication::YouTubeAuthentication( const QString& username, const QSt
 
 YouTubeAuthentication::YouTubeAuthentication()
 {
-    setPostData();
 }
 
 YouTubeAuthentication::~YouTubeAuthentication()
 {
     m_username = "";
     m_password = "";
-
     m_authString = "";
 }
 
@@ -85,6 +83,7 @@ YouTubeAuthentication::getPOSTData()
 QNetworkRequest
 YouTubeAuthentication::getNetworkRequest()
 {
+    authInit();
     QUrl url( LOGIN_URL );
 
     QNetworkRequest request;
@@ -92,7 +91,6 @@ YouTubeAuthentication::getNetworkRequest()
                        "application/x-www-form-urlencoded" );
     request.setUrl( url );
 }
-
 
 const QString
 YouTubeAuthentication::getAuthUrl()

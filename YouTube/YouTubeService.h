@@ -26,12 +26,12 @@
 #include "YouTubeAuthentication.h"
 
 #include <QObject>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QString>
 
 class QAuthenticator;
 class QByteArray;
+class QNetworkAccessManager;
 class QSslError;
 class QString;
 
@@ -58,24 +58,24 @@ class YouTubeService : public QObject
 
     private:
         QString                 m_devKey;
-        YouTubeAuthentication*  m_auth;
+        YouTubeAuthentication   m_auth;
 
         QNetworkAccessManager*       m_nam;
         QNetworkReply*               m_reply;
-        QNetworkReply::NetworkError  m_error;
 
     private slots:
-        void proxyAuthenticationRequired( QNetworkReply*, QAuthenticator * );
-        #ifndef QT_NO_OPENSSL
-        void sslErrors( QNetworkReply*,const QList<QSslError> &errors );
-        #endif
-
-    signals:
         void authenticationFinished();
         void uploadFinished();
         void searchFinished();
 
-        void error(QString message);
+        void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
+        void networkError(QNetworkReply::NetworkError);
+        #ifndef QT_NO_OPENSSL
+        void sslErrors( QNetworkReply*,const QList<QSslError> &errors );
+        #endif
+
+
+
 };
 
 #endif // YOUTUBESERVICE_H

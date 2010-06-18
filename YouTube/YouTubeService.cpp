@@ -22,18 +22,14 @@
 
 #include "YouTubeService.h"
 
-#include <QAuthenticator>
 #include <QByteArray>
-#include <QNetworkAccessManager>
-#include <QNetworkProxy>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QSslError>
-#include <QUrl>
+#include <QtNetwork>
+#include <QMessageBox>
 
 YouTubeService::YouTubeService( const QString& username, const QString& password, const QString& devKey ) :
         m_devKey( devKey )
 {
+    m_auth.setCredentials( username, password );
     YouTubeService();
 }
 
@@ -49,45 +45,45 @@ YouTubeService::YouTubeService()
             this, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)) );
 #endif
 
-    m_auth = new YouTubeAuthentication();
-
-    connect(m_auth, SIGNAL(finished()), this, SIGNAL(authenticationFinished()));
-    connect(m_auth, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
 }
 
 YouTubeService::~YouTubeService()
 {
-    delete m_auth;
+    delete m_nam;
 }
 
-void YouTubeService::setDeveloperKey( const QString& devKey )
+void
+YouTubeService::setDeveloperKey( const QString& devKey )
 {
     m_devKey = devKey;
 }
 
-void YouTubeService::setCredentials( const QString& username, const QString& password )
+void
+YouTubeService::setCredentials( const QString& username, const QString& password )
 {
-    m_auth->setCredentials( username, password );
+    m_auth.setCredentials( username, password );
 }
 
 
 /* Different services */
-void YouTubeService::authenticate()
+void
+YouTubeService::authenticate()
 {
     QByteArray devKeyBA;
     devKeyBA.append( "key=" + m_devKey );
 
-    QNetworkRequest request = m_auth->getNetworkRequest();
+    QNetworkRequest request = m_auth.getNetworkRequest();
     request.setRawHeader( "X-GData-Key", devKeyBA );
 
-    m_reply = m_nam->post( request, m_auth->getPOSTData() );
+    m_reply = m_nam->post( request, m_auth.getPOSTData() );
 
     connect( m_reply, SIGNAL(finished()),this,SLOT(authenticationFinished()) );
     connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            SLOT(onError(QNetworkReply::NetworkError)) );
+            SLOT(networkError(QNetworkReply::NetworkError)) );
 }
 
-bool YouTubeService::upload(const QString& file)
+bool
+YouTubeService::upload(const QString& file)
 {
     if( isAuthenticated() )
     {
@@ -99,17 +95,20 @@ bool YouTubeService::upload(const QString& file)
     return false;
 }
 
-void YouTubeService::search(const QString& search)
+void
+YouTubeService::search(const QString& search)
 {
 }
 
 /* Check service states */
-bool YouTubeService::isAuthenticated()
+bool
+YouTubeService::isAuthenticated()
 {
-    return m_auth->isAuthenticated();
+    return m_auth.isAuthenticated();
 }
 
-bool YouTubeService::isUploaded()
+bool
+YouTubeService::isUploaded()
 {
     return true;
 }
@@ -134,7 +133,7 @@ YouTubeService::sslErrors( QNetworkReply*, const QList<QSslError> &errors )
         errorString += error.errorString();
     }
 
-    if ( QMessageBox::warning(this, tr("YouTube Authentication"),
+    if ( QMessageBox::warning(NULL, tr("YouTube Authentication"),
                              tr("One or more SSL errors has occurred: %1").arg(errorString),
                              QMessageBox::Ignore | QMessageBox::Abort) == QMessageBox::Ignore )
     {
