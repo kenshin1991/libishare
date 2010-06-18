@@ -64,9 +64,9 @@ class YouTubeService : public QObject
         QNetworkReply*               m_reply;
 
     private slots:
-        void authenticationFinished();
-        void uploadFinished();
-        void searchFinished();
+        void authFinished();
+        //void uploadFinished();
+        //void searchFinished();
 
         void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
         void networkError(QNetworkReply::NetworkError);

@@ -30,6 +30,7 @@ YouTubeService::YouTubeService( const QString& username, const QString& password
         m_devKey( devKey )
 {
     m_auth.setCredentials( username, password );
+
     YouTubeService();
 }
 
@@ -38,7 +39,7 @@ YouTubeService::YouTubeService()
     m_nam = new QNetworkAccessManager();
 
     connect( m_nam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
-            this, SLOT(slotAuthenticationRequired(QNetworkReply*,QAuthenticator*)) );
+            this, SLOT(proxyAuthRequired(QNetworkReply*,QAuthenticator*)) );
 
 #ifndef QT_NO_OPENSSL
     connect( m_nam, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
@@ -77,9 +78,20 @@ YouTubeService::authenticate()
 
     m_reply = m_nam->post( request, m_auth.getPOSTData() );
 
-    connect( m_reply, SIGNAL(finished()),this,SLOT(authenticationFinished()) );
+    connect( m_reply, SIGNAL(finished()),this,SLOT(authFinished()) );
     connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
             SLOT(networkError(QNetworkReply::NetworkError)) );
+}
+
+void
+YouTubeService::authFinished()
+{
+    QByteArray data = m_reply->readAll();
+    qDebug() << data;
+
+    m_auth.setAuthData( data );
+
+    m_reply->deleteLater();
 }
 
 bool
@@ -114,7 +126,12 @@ YouTubeService::isUploaded()
 }
 
 void
-YouTubeService::proxyAuthenticationRequired( QNetworkReply*, QAuthenticator *authenticator )
+YouTubeService::networkError(QNetworkReply::NetworkError e)
+{
+}
+
+void
+YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator )
 {
     /* Get username and password from VLMC's settings */
     //authenticator->setUser();

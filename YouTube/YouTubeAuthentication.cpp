@@ -38,22 +38,61 @@ YouTubeAuthentication::YouTubeAuthentication( const QString& username, const QSt
 
 YouTubeAuthentication::YouTubeAuthentication()
 {
-}
-
-YouTubeAuthentication::~YouTubeAuthentication()
-{
-    m_username = "";
-    m_password = "";
-    m_authString = "";
+    authInit();
 }
 
 void
 YouTubeAuthentication::authInit()
 {
-    m_authentication = false;
+    m_isAuthenticated = false;
     m_nick.clear();
     m_authString.clear();
-    m_youTubeError.clear();
+    m_authError.clear();
+}
+
+QByteArray
+YouTubeAuthentication::getPOSTData()
+{
+    return m_postData;
+}
+
+QNetworkRequest
+YouTubeAuthentication::getNetworkRequest()
+{
+    authInit();
+    QUrl url( LOGIN_URL );
+
+    QNetworkRequest request;
+    request.setHeader( QNetworkRequest::ContentTypeHeader,
+                       "application/x-www-form-urlencoded" );
+    request.setUrl( url );
+
+    return request;
+}
+
+const QString
+YouTubeAuthentication::getAuthUrl()
+{
+    return QString( LOGIN_URL );
+}
+
+QString
+YouTubeAuthentication::getAuthString()
+{
+    return m_authString;
+}
+
+
+QString
+YouTubeAuthentication::getNick()
+{
+    return m_nick;
+}
+
+bool
+YouTubeAuthentication::isAuthenticated()
+{
+    return m_isAuthenticated;
 }
 
 void
@@ -74,84 +113,39 @@ YouTubeAuthentication::setPOSTData()
                               .arg(m_username, m_password) );
 }
 
-QByteArray
-YouTubeAuthentication::getPOSTData()
-{
-    return m_postData;
-}
-
-QNetworkRequest
-YouTubeAuthentication::getNetworkRequest()
-{
-    authInit();
-    QUrl url( LOGIN_URL );
-
-    QNetworkRequest request;
-    request.setHeader( QNetworkRequest::ContentTypeHeader,
-                       "application/x-www-form-urlencoded" );
-    request.setUrl( url );
-}
-
-const QString
-YouTubeAuthentication::getAuthUrl()
-{
-    return LOGIN_URL;
-}
-
-QString
-YouTubeAuthentication::getAuthString()
-{
-    return m_youTubeAuthString;
-}
-
-
-QString
-YouTubeAuthentication::getNick()
-{
-    return m_youTubeUser;
-}
-
-bool
-YouTubeAuthentication::isAuthenticated()
-{
-    return m_authentication;
-}
-
 void
-YouTubeAuthentication::authenticationFinished()
+YouTubeAuthentication::setAuthData( QByteArray& data )
 {
-    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-    QByteArray data = reply->readAll();
-
-    qDebug() << data;
-
-    QStringList lines = QString(data).split( "\n", QString::SkipEmptyParts );
+    QStringList lines = QString( data ).split( "\n", QString::SkipEmptyParts );
 
     foreach( QString line, lines )
     {
-        QStringList tokenList = line.split("=");
+        QStringList tokenList = line.split( "=" );
 
-        if(tokenList.at(0) == "Auth")
-            m_youTubeAuthString = tokenList.at(1);
-
-        if(tokenList.at(0) == "YouTubeUser")
-            m_youTubeUser = tokenList.at(1);
-
-        if(tokenList.at(0) == "Error")
+        if( tokenList.at(0) == "Error" )
         {
-            m_youTubeError = tokenList.at(1);
-            emit error(m_youTubeError);
+            m_authError = tokenList.at(1);
+            emit authError( m_authError );
+            continue;
+        }
+
+        if( tokenList.at(0) == "Auth" )
+        {
+            m_authString = tokenList.at(1);
+            continue;
+        }
+
+        if( tokenList.at(0) == "YouTubeUser" )
+        {
+            m_nick = tokenList.at(1);
         }
     }
 
-    if( !m_youTubeAuthString.isEmpty() &&
-        !m_youTubeUser.isEmpty() &&
-        m_youTubeError.isEmpty() )
+    if( !m_authString.isEmpty() &&
+        !m_nick.isEmpty() &&
+        m_authError.isEmpty() )
     {
-        m_authentication = true;
-        emit finished();
+        m_isAuthenticated = true;
     }
-
-    reply->deleteLater();
 }
 
