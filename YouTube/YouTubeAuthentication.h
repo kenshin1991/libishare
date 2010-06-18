@@ -23,7 +23,6 @@
 #ifndef YOUTUBEAUTHENTICATION_H
 #define YOUTUBEAUTHENTICATION_H
 
-#include "YouTubeServiceStates.h"
 #include <QObject>
 
 #define LOGIN_URL "https://www.google.com/youtube/accounts/ClientLogin"

@@ -113,7 +113,7 @@ YouTubeAuthentication::setPOSTData()
                               .arg(m_username, m_password) );
 }
 
-void
+bool
 YouTubeAuthentication::setAuthData( QByteArray& data )
 {
     QStringList lines = QString( data ).split( "\n", QString::SkipEmptyParts );
@@ -141,11 +141,11 @@ YouTubeAuthentication::setAuthData( QByteArray& data )
         }
     }
 
-    if( !m_authString.isEmpty() &&
-        !m_nick.isEmpty() &&
-        m_authError.isEmpty() )
+    if( !m_authString.isEmpty() && !m_nick.isEmpty() && m_authError.isEmpty() )
     {
         m_isAuthenticated = true;
         emit authOK();
     }
+
+    return m_isAuthenticated;
 }

@@ -110,7 +110,9 @@ YouTubeService::authFinished()
     disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
             SLOT(networkError(QNetworkReply::NetworkError)) );
 
-    m_auth.setAuthData( data );
+    if( m_auth.setAuthData( data ) )
+        m_state = YouTubeServiceStates::Ok;
+
     m_reply->deleteLater();
 }
 
@@ -135,16 +137,31 @@ void
 YouTubeService::authError(QString e)
 {
     qDebug() << e;
+
+    if( e == "BadAuthentication" )
+        m_state = YouTubeServiceStates::BadAuthentication;
+    else
+    if( e == "CaptchaRequired")
+        m_state = YouTubeServiceStates::CaptchaRequired;
+    else
+    if( e == "ServiceUnavailable")
+        m_state = YouTubeServiceStates::ServiceUnavailable;
+    else
+        m_state = YouTubeServiceStates::UnknownError;
+
 }
 
 void
 YouTubeService::networkError(QNetworkReply::NetworkError e)
 {
+    m_state = YouTubeServiceStates::NetworkError;
 }
 
 void
 YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator )
 {
+    m_state = YouTubeServiceStates::ConnectionError;
+
     /* */
     if( !m_proxyUsername.isEmpty() && !m_proxyPassword.isEmpty() )
     {
@@ -160,6 +177,8 @@ YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator
 void
 YouTubeService::sslErrors( QNetworkReply*, const QList<QSslError> &errors )
 {
+    m_state = YouTubeServiceStates::SSLError;
+
     QString errorString;
     foreach (const QSslError &error, errors)
     {

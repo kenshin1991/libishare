@@ -24,6 +24,9 @@
 #define YOUTUBESERVICE_H
 
 #include "YouTubeAuthentication.h"
+#include "YouTubeUpload.h"
+
+#include "YouTubeServiceStates.h"
 
 #include <QObject>
 #include <QNetworkReply>
@@ -55,6 +58,7 @@ class YouTubeService : public QObject
         void search( const QString& search );
 
     private:
+        YouTubeServiceState     m_state;
         QString                 m_devKey;
         YouTubeAuthentication   m_auth;
 

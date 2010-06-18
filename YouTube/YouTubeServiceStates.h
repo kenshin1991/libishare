@@ -23,18 +23,29 @@
 #ifndef YOUTUBESERVICESTATES_H
 #define YOUTUBESERVICESTATES_H
 
+/*
+ * Error Code References:
+ *   Auth: http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html#Errors
+ *
+ */
+
 namespace YouTubeServiceStates
 {
-    /** Status codes for YouTubeService. */
+    /* Status codes for YouTubeService. */
     enum YouTubeServiceState
     {
         Ok = 0,
 
+        BadAuthentication,          // Incorrect User credentials
+        CaptchaRequired,            // If server is trying to challenge captcha
+        ServiceUnavailable,         // YT Service Unavailable
+        UnknownError,               // Unknown Error
+
         NetworkError,               // Some Network Error
         ConnectionError,            // Connection error
-        AuthenticationError,        // Incorrect User credentials
+        SSLError,                   // SSL Error
+
         FileMissing,                // File not file
-        YouTubeServerError,         // Error reported by YouTube Server
         XmlError                    // XML Parsing Error
     };
 }
