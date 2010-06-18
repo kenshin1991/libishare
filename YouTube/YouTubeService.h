@@ -3,7 +3,7 @@
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
- * Authors: Rohit Yadav <rohityadav89@gmail.com>
+ * Authors: Rohit Yadav <rohityadav89 AT gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QString>
 
 class QAuthenticator;
@@ -48,8 +49,8 @@ class YouTubeService : public QObject
 
         /* Different services */
         void authenticate();
-        bool upload(const QString& file);
-        void search(const QString& search);
+        bool upload( const QString& file );
+        void search( const QString& search );
 
         /* Check service states */
         bool isAuthenticated();
@@ -64,9 +65,9 @@ class YouTubeService : public QObject
         QNetworkReply::NetworkError  m_error;
 
     private slots:
-        void proxyAuthenticationRequired(QNetworkReply*, QAuthenticator *);
+        void proxyAuthenticationRequired( QNetworkReply*, QAuthenticator * );
         #ifndef QT_NO_OPENSSL
-        void sslErrors(QNetworkReply*,const QList<QSslError> &errors);
+        void sslErrors( QNetworkReply*,const QList<QSslError> &errors );
         #endif
 
     signals:

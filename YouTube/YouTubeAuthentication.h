@@ -3,7 +3,7 @@
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
- * Authors: Rohit Yadav <rohityadav89@gmail.com>
+ * Authors: Rohit Yadav <rohityadav89 AT gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +26,10 @@
 #include "YouTubeServiceStates.h"
 #include <QObject>
 
+#define LOGIN_URL "https://www.google.com/youtube/accounts/ClientLogin"
+
+class QNetworkRequest;
+
 class YouTubeAuthentication : public QObject
 {
     Q_OBJECT
@@ -37,14 +41,12 @@ class YouTubeAuthentication : public QObject
 
         void setCredentials( const QString& username, const QString& password );
 
-        const QString getAuthUrl();        
-        QByteArray    getPOSTData();
-        QString       getAuthString();
-        QString       getNick();
-        bool          isAuthenticated();
-
-        const QString LOGIN_URL = "https://www.google.com/youtube/accounts/ClientLogin";
-
+        const QString   getAuthUrl();
+        QByteArray      getPOSTData();
+        QString         getAuthString();
+        QString         getNick();
+        bool            isAuthenticated();
+        QNetworkRequest getNetworkRequest();
     private:
         void authInit();
         void setPOSTData();
@@ -60,13 +62,5 @@ class YouTubeAuthentication : public QObject
         QString        m_authString;
         QString        m_nick; /* YouTube User Nickname */
         bool           m_authentication;
-
-    signals:
-        void finished();
-        void error(QString message);
-
-    private slots:
-        void authenticationFinished();
-        void onError(QNetworkReply::NetworkError e);
 };
 #endif // YOUTUBEAUTHENTICATION_H

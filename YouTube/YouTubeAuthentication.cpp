@@ -3,7 +3,7 @@
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
- * Authors: Rohit Yadav <rohityadav89@gmail.com>
+ * Authors: Rohit Yadav <rohityadav89 AT gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,8 +23,10 @@
 #include "YouTubeAuthentication.h"
 
 #include <QByteArray>
+#include <QNetworkRequest>
 #include <QString>
 #include <QStringList>
+#include <QUrl>
 
 #include <QDebug>
 
@@ -33,7 +35,6 @@ YouTubeAuthentication::YouTubeAuthentication( const QString& username, const QSt
 {
     YouTubeAuthentication();
 }
-
 
 YouTubeAuthentication::YouTubeAuthentication()
 {
@@ -62,7 +63,7 @@ YouTubeAuthentication::setCredentials( const QString& username, const QString& p
 {
     m_username = username;
     m_password = password;
-    setPostData();
+    setPOSTData();
 }
 
 void
@@ -75,22 +76,28 @@ YouTubeAuthentication::setPOSTData()
                               .arg(m_username, m_password) );
 }
 
-QString
+QByteArray
 YouTubeAuthentication::getPOSTData()
 {
     return m_postData;
 }
 
+QNetworkRequest
+YouTubeAuthentication::getNetworkRequest()
+{
+    QUrl url( LOGIN_URL );
+
+    QNetworkRequest request;
+    request.setHeader( QNetworkRequest::ContentTypeHeader,
+                       "application/x-www-form-urlencoded" );
+    request.setUrl( url );
+}
+
+
 const QString
 YouTubeAuthentication::getAuthUrl()
 {
     return LOGIN_URL;
-}
-
-bool
-YouTubeAuthentication::isAuthenticated()
-{
-    return m_authentication;
 }
 
 QString
@@ -106,11 +113,10 @@ YouTubeAuthentication::getNick()
     return m_youTubeUser;
 }
 
-
-void
-YouTubeAuthentication::onError(QNetworkReply::NetworkError e)
+bool
+YouTubeAuthentication::isAuthenticated()
 {
-    m_error = e;
+    return m_authentication;
 }
 
 void

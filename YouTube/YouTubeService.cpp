@@ -3,7 +3,7 @@
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
- * Authors: Rohit Yadav <rohityadav89@gmail.com>
+ * Authors: Rohit Yadav <rohityadav89 AT gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,11 +22,13 @@
 
 #include "YouTubeService.h"
 
-#include <QMessageBox>
+#include <QAuthenticator>
+#include <QByteArray>
 #include <QNetworkAccessManager>
 #include <QNetworkProxy>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QSslError>
 #include <QUrl>
 
 YouTubeService::YouTubeService( const QString& username, const QString& password, const QString& devKey ) :
@@ -72,14 +74,11 @@ void YouTubeService::setCredentials( const QString& username, const QString& pas
 /* Different services */
 void YouTubeService::authenticate()
 {
-    /* define in xxAuthentication.h */
-    QUrl url( m_auth->getAuthUrl() );
+    QByteArray devKeyBA;
+    devKeyBA.append( "key=" + m_devKey );
 
-    QNetworkRequest request;
-    request.setHeader( QNetworkRequest::ContentTypeHeader,
-                       "application/x-www-form-urlencoded" );
-    request.setRawHeader( "X-GData-Key", "key=" + m_devkey );
-    request.setUrl( url );
+    QNetworkRequest request = m_auth->getNetworkRequest();
+    request.setRawHeader( "X-GData-Key", devKeyBA );
 
     m_reply = m_nam->post( request, m_auth->getPOSTData() );
 
@@ -107,26 +106,25 @@ void YouTubeService::search(const QString& search)
 /* Check service states */
 bool YouTubeService::isAuthenticated()
 {
-    return m_ytAuth->isAuthenticated();
+    return m_auth->isAuthenticated();
 }
 
 bool YouTubeService::isUploaded()
 {
+    return true;
 }
 
 void
-YouTubeService::proxyAuthenticationRequired(QNetworkReply*,QAuthenticator *authenticator)
+YouTubeService::proxyAuthenticationRequired( QNetworkReply*, QAuthenticator *authenticator )
 {
-    if (dlg.exec() == QDialog::Accepted)
-    {
-         authenticator->setUser(ui.userEdit->text());
-         authenticator->setPassword(ui.passwordEdit->text());
-    }
+    /* Get username and password from VLMC's settings */
+    //authenticator->setUser();
+    //authenticator->setPassword();
 }
 
 #ifndef QT_NO_OPENSSL
 void
-YouTubeService::sslErrors(QNetworkReply*,const QList<QSslError> &errors)
+YouTubeService::sslErrors( QNetworkReply*, const QList<QSslError> &errors )
 {
     QString errorString;
     foreach (const QSslError &error, errors)
@@ -136,11 +134,11 @@ YouTubeService::sslErrors(QNetworkReply*,const QList<QSslError> &errors)
         errorString += error.errorString();
     }
 
-    if (QMessageBox::warning(this, tr("YouTube Authentication"),
+    if ( QMessageBox::warning(this, tr("YouTube Authentication"),
                              tr("One or more SSL errors has occurred: %1").arg(errorString),
-                             QMessageBox::Ignore | QMessageBox::Abort) == QMessageBox::Ignore)
+                             QMessageBox::Ignore | QMessageBox::Abort) == QMessageBox::Ignore )
     {
-        reply->ignoreSslErrors();
+        m_reply->ignoreSslErrors();
     }
 }
 #endif
