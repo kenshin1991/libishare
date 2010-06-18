@@ -81,7 +81,7 @@ YouTubeService::authenticate()
     devKeyBA.append( "key=" + m_devKey );
 
     QNetworkRequest request = m_auth.getNetworkRequest();
-
+    
     if( !m_devKey.isEmpty() )
         request.setRawHeader( "X-GData-Key", devKeyBA );
 

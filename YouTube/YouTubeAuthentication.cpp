@@ -73,7 +73,7 @@ YouTubeAuthentication::getNetworkRequest()
 const QString
 YouTubeAuthentication::getAuthUrl()
 {
-    return QString( LOGIN_URL );
+    return const_cast<QString>( QString( LOGIN_URL ) )>;
 }
 
 QString
