@@ -21,23 +21,21 @@
  *****************************************************************************/
 
 #include "YouTubeAuthentication.h"
+
 #include <QByteArray>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkProxy>
 #include <QString>
 #include <QStringList>
-#include <QUrl>
 
 #include <QDebug>
 
-YouTubeAuthentication::YouTubeAuthentication()
-{
-    setPostData();
-}
-
 YouTubeAuthentication::YouTubeAuthentication( const QString& username, const QString& password ) :
         m_username( username ), m_password( password )
+{
+    YouTubeAuthentication();
+}
+
+
+YouTubeAuthentication::YouTubeAuthentication()
 {
     setPostData();
 }
@@ -47,17 +45,16 @@ YouTubeAuthentication::~YouTubeAuthentication()
     m_username = "";
     m_password = "";
 
-    m_youTubeAuthString = "";
+    m_authString = "";
 }
 
 void
 YouTubeAuthentication::authInit()
 {
     m_authentication = false;
-
-    m_youTubeAuthString.clear();
+    m_nick.clear();
+    m_authString.clear();
     m_youTubeError.clear();
-    m_youTubeUser.clear();
 }
 
 void
@@ -69,7 +66,7 @@ YouTubeAuthentication::setCredentials( const QString& username, const QString& p
 }
 
 void
-YouTubeAuthentication::setPostData()
+YouTubeAuthentication::setPOSTData()
 {
     m_postData.clear();
     m_postData.append( QString("accountType=HOSTED_OR_GOOGLE"
@@ -78,25 +75,37 @@ YouTubeAuthentication::setPostData()
                               .arg(m_username, m_password) );
 }
 
-void
-YouTubeAuthentication::authenticate()
+QString
+YouTubeAuthentication::getPOSTData()
 {
-    authInit();
-
-    QUrl url(CLIENT_LOGIN_URL);
-
-    QNetworkRequest request;
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setRawHeader("X-GData-Key", "key=AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ");
-    request.setUrl(url);
-
-    QNetworkAccessManager *networkManager = new QNetworkAccessManager();
-    QNetworkReply *reply = networkManager->post(request, m_postData);
-
-    connect(reply, SIGNAL(finished()),this,SLOT(authenticationFinished()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            SLOT(onError(QNetworkReply::NetworkError)));
+    return m_postData;
 }
+
+const QString
+YouTubeAuthentication::getAuthUrl()
+{
+    return LOGIN_URL;
+}
+
+bool
+YouTubeAuthentication::isAuthenticated()
+{
+    return m_authentication;
+}
+
+QString
+YouTubeAuthentication::getAuthString()
+{
+    return m_youTubeAuthString;
+}
+
+
+QString
+YouTubeAuthentication::getNick()
+{
+    return m_youTubeUser;
+}
+
 
 void
 YouTubeAuthentication::onError(QNetworkReply::NetworkError e)
@@ -142,34 +151,3 @@ YouTubeAuthentication::authenticationFinished()
     reply->deleteLater();
 }
 
-bool
-YouTubeAuthentication::isAuthenticated()
-{
-    return m_authentication;
-}
-
-QString
-YouTubeAuthentication::getYouTubeAuthString()
-{
-    return m_youTubeAuthString;
-}
-
-
-QString
-YouTubeAuthentication::getYouTubeUser()
-{
-    return m_youTubeUser;
-}
-
-
-QString
-YouTubeAuthentication::getYouTubeError()
-{
-    return m_youTubeError;
-}
-
-QNetworkReply::NetworkError
-YouTubeAuthentication::getNetworkError()
-{
-    return m_error;
-}

@@ -48,7 +48,7 @@ void MainWindow::finished()
                              or it's not authenticated yet... Then if it's true, it will upload*/
 }
 
-void MainWindow::error(QString)
+void MainWindow::error(QString e)
 {
-    ui->status->setText("U-ERR=" + y.getYouTubeError() + ", NET= " + y.getNetworkError());
+    ui->status->setText("Error: " + e);
 }
