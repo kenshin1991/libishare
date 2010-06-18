@@ -47,6 +47,7 @@ class YouTubeService : public QObject
 
         void setDeveloperKey( const QString& devKey );
         void setCredentials( const QString& username, const QString& password );
+        void setProxyCredentials( const QString& username, const QString& password );
 
         /* Services */
         void authenticate();
@@ -59,6 +60,9 @@ class YouTubeService : public QObject
 
         QNetworkAccessManager*  m_nam;
         QNetworkReply*          m_reply;
+
+        QString                 m_proxyUsername;
+        QString                 m_proxyPassword;
 
     private slots:
         void authFinished();

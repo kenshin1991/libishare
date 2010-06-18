@@ -75,6 +75,13 @@ YouTubeService::setCredentials( const QString& username, const QString& password
 }
 
 void
+YouTubeService::setProxyCredentials(const QString &username, const QString &password)
+{
+    m_proxyUsername = username;
+    m_proxyPassword = password;
+}
+
+void
 YouTubeService::authenticate()
 {
     QByteArray devKeyBA;
@@ -138,9 +145,15 @@ YouTubeService::networkError(QNetworkReply::NetworkError e)
 void
 YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator )
 {
-    /* Get username and password from VLMC's settings */
-    //authenticator->setUser();
-    //authenticator->setPassword();
+    /* */
+    if( !m_proxyUsername.isEmpty() && !m_proxyPassword.isEmpty() )
+    {
+        authenticator->setUser( m_proxyUsername );
+        authenticator->setPassword( m_proxyPassword );
+        return;
+    }
+
+    /* TODO: Exec a dialog take in credentials */
 }
 
 #ifndef QT_NO_OPENSSL
