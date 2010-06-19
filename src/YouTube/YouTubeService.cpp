@@ -57,10 +57,9 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
 
 YouTubeService::~YouTubeService()
 {
+    delete m_nam;
     delete m_auth;
     delete m_uploader;
-    delete m_nam;
-    delete m_reply;
 }
 
 void
@@ -121,6 +120,8 @@ YouTubeService::authFinished()
 {
     QByteArray data = m_reply->readAll();
 
+    qDebug() << data;
+
     /* Disconnect local mappings, just in case authenticate is called again */
     disconnect( m_reply, SIGNAL(finished()),this,SLOT(authFinished()) );
     disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
@@ -146,7 +147,7 @@ YouTubeService::upload()
 
         if( data->openFile() )
         {
-            if( m_reply )
+            if( m_reply != NULL )
                 delete m_reply;
 
             m_reply = m_nam->post( request, data );
@@ -173,10 +174,10 @@ YouTubeService::uploadFinished()
 
     /* Disconnect local mappings, just in case authenticate is called again */
     disconnect( m_reply, SIGNAL(finished()),this,SLOT(uploadFinished()) );
+    disconnect( m_reply, SIGNAL(uploadProgress(qint64,qint64)),
+                this, SIGNAL(uploadProgress(qint64,qint64) ) );
     disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
             SLOT(networkError(QNetworkReply::NetworkError)) );
-
-    delete m_reply;
 }
 
 void

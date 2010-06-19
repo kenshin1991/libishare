@@ -74,7 +74,8 @@ void MainWindow::uploadVideo( QString& fileName )
 
     delete exportToInternet;
 
-    qDebug() << username << password << title << category << description << keywords;
+    //qDebug() << username << password
+    //         << title << category << description << keywords;
 
     /* Add code to transcode/export video */
 
@@ -112,7 +113,9 @@ void MainWindow::uploadFinished( QString result )
     //disconnect( y, SIGNAL(serviceError(QString)), this, SLOT(error(QString)) );
 
     ui->log->appendPlainText(result);
-    //delete y;
+
+    if(y)
+        delete y;
 }
 
 void MainWindow::videoUploadProgress(qint64 received, qint64 total)
