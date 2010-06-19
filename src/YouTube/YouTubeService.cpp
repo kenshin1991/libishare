@@ -108,27 +108,23 @@ YouTubeService::authenticate()
 {
     QNetworkRequest request = m_auth->getNetworkRequest();
 
-    m_reply = m_nam->post( request, m_auth->getPOSTData() );
+    QNetworkReply* authReply = m_nam->post( request, m_auth->getPOSTData() );
 
-    connect( m_reply, SIGNAL(finished()),this,SLOT(authFinished()) );
-    connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            SLOT(networkError(QNetworkReply::NetworkError)) );
+    connect( authReply, SIGNAL(finished()),this,SLOT(authFinished()) );
+    connect( authReply, SIGNAL(error(QNetworkReply::NetworkError)),
+             this, SLOT(networkError(QNetworkReply::NetworkError)) );
 }
 
 void
 YouTubeService::authFinished()
 {
-    QByteArray data = m_reply->readAll();
-
-    qDebug() << data;
-
-    /* Disconnect local mappings, just in case authenticate is called again */
-    disconnect( m_reply, SIGNAL(finished()),this,SLOT(authFinished()) );
-    disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
-            SLOT(networkError(QNetworkReply::NetworkError)) );
+    QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
+    QByteArray data = reply->readAll();
 
     if( m_auth->setAuthData( data ) )
         m_state = YouTubeServiceStates::Ok;
+
+    reply->deleteLater();
 }
 
 bool
@@ -147,18 +143,16 @@ YouTubeService::upload()
 
         if( data->openFile() )
         {
-            if( m_reply != NULL )
-                delete m_reply;
+            QNetworkReply* upReply = m_nam->post( request, data );
 
-            m_reply = m_nam->post( request, data );
-
-            connect( m_reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
-            connect( m_reply, SIGNAL(uploadProgress(qint64,qint64)),
-                     this, SIGNAL(uploadProgress(qint64,qint64) ) );
-            connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
+            connect( upReply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
+            connect( upReply, SIGNAL(uploadProgress(qint64,qint64)),
+                     this, SIGNAL(uploadProgress(qint64,qint64)) );
+            connect( upReply, SIGNAL(error(QNetworkReply::NetworkError)),
                      this, SLOT(networkError(QNetworkReply::NetworkError)) );
+
+            return true;
         }
-        return true;
     }
     return false;
 }
@@ -166,20 +160,15 @@ YouTubeService::upload()
 void
 YouTubeService::uploadFinished()
 {
-    QByteArray data = m_reply->readAll();
+    QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
+    QByteArray data = reply->readAll();
 
     qDebug() << data;
 
     /* TODO: Handle XML response */
-
-    /* Disconnect local mappings, just in case authenticate is called again */
-    disconnect( m_reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
-    disconnect( m_reply, SIGNAL(uploadProgress(qint64,qint64)),
-                this, SIGNAL(uploadProgress(qint64,qint64) ) );
-    disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(networkError(QNetworkReply::NetworkError)) );
-
     emit uploadOK( QString( data ) );
+
+    reply->deleteLater();
 }
 
 void
@@ -229,7 +218,7 @@ YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator
 
 #ifndef QT_NO_OPENSSL
 void
-YouTubeService::sslErrors( QNetworkReply*, const QList<QSslError> &errors )
+YouTubeService::sslErrors( QNetworkReply* reply, const QList<QSslError> &errors )
 {
     m_state = YouTubeServiceStates::SSLError;
 
@@ -247,7 +236,7 @@ YouTubeService::sslErrors( QNetworkReply*, const QList<QSslError> &errors )
                                 "One or more SSL errors has occurred: %1").arg(errorString),
                              QMessageBox::Ignore | QMessageBox::Abort) == QMessageBox::Ignore )
     {
-        m_reply->ignoreSslErrors();
+        reply->ignoreSslErrors();
     }
 }
 #endif

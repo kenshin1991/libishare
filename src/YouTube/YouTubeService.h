@@ -73,7 +73,6 @@ class YouTubeService : public QObject
         QString                m_proxyPassword;
 
         QNetworkAccessManager* m_nam;
-        QNetworkReply*         m_reply;
 
     private slots:
         void authFinished();
