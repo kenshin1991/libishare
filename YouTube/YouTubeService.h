@@ -61,6 +61,7 @@ class YouTubeService : public QObject
         QString                getDeveloperKey();
         QString                getAuthString();
 
+    protected:
         YouTubeServiceState    m_state;
         QString                m_devKey;
         YouTubeAuthenticator*  m_auth;

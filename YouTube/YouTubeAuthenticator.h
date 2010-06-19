@@ -50,6 +50,7 @@ class YouTubeAuthenticator : public QObject
         QString         getNick();
         QByteArray      getPOSTData();
 
+    protected:
         void            authInit();
         void            setPOSTData();
 

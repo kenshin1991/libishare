@@ -96,10 +96,8 @@ void
 YouTubeAuthenticator::setPOSTData()
 {
     m_postData.clear();
-    m_postData.append( QString("accountType=HOSTED_OR_GOOGLE"
-                               "&Email=%1&Passwd=%2"
-                               "&service=youtube&source=VLMC")
-                              .arg(m_username, m_password) );
+    m_postData += QString("accountType=HOSTED_OR_GOOGLE&Email=%1&Passwd=%2"
+                          "&service=youtube&source=VLMC").arg(m_username, m_password);
 }
 
 bool
