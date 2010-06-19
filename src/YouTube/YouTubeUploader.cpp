@@ -121,8 +121,6 @@ YouTubeUploader::getMimeHead()
     data.append( "--" + m_boundary + "\r\n" );
     data.append( "Content-Type: video/*\r\nContent-Transfer-Encoding: binary\r\n\r\n");
 
-    qDebug() << data;
-
     return data;
 }
 
