@@ -168,16 +168,18 @@ YouTubeService::uploadFinished()
 {
     QByteArray data = m_reply->readAll();
 
+    qDebug() << data;
+
     /* TODO: Handle XML response */
 
-    emit uploadOK( QString( data ) );
-
     /* Disconnect local mappings, just in case authenticate is called again */
-    disconnect( m_reply, SIGNAL(finished()),this,SLOT(uploadFinished()) );
+    disconnect( m_reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
     disconnect( m_reply, SIGNAL(uploadProgress(qint64,qint64)),
                 this, SIGNAL(uploadProgress(qint64,qint64) ) );
-    disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
-            SLOT(networkError(QNetworkReply::NetworkError)) );
+    disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
+                this, SLOT(networkError(QNetworkReply::NetworkError)) );
+
+    emit uploadOK( QString( data ) );
 }
 
 void
