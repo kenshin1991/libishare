@@ -136,7 +136,7 @@ YouTubeService::upload()
     if( m_auth->isAuthenticated() )
     {
         /* Upload Stuff here :) */
-        UploaderIODevice* data = new UploaderIODevice( dynamic_cast<QObject*>(this), m_fileName,
+        UploaderIODevice* data = new UploaderIODevice( static_cast<QObject*>(this), m_fileName,
                                                        m_uploader->getMimeHead(),
                                                        m_uploader->getMimeTail() );
 
