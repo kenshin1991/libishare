@@ -52,8 +52,8 @@ class YouTubeService : public QObject
 
         /* Services */
         void authenticate();
-        bool upload( const QString& fileName );
-        void search( const QString& search );
+        bool upload( QString& fileName );
+        void search( QString& search );
 
     private:
         friend class           YouTubeUploader;
@@ -76,6 +76,8 @@ class YouTubeService : public QObject
         void authFinished();
         //void uploadFinished();
         //void searchFinished();
+
+        void uploadProgress(qint64,qint64);
 
         void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
         void authError( QString );

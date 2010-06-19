@@ -24,8 +24,6 @@
 #include "YouTubeUploader.h"
 
 #include <QByteArray>
-#include <QFile>
-#include <QIODevice>
 #include <QNetworkRequest>
 #include <QString>
 #include <QStringList>
@@ -44,11 +42,6 @@ void
 YouTubeUploader::uploadInit()
 {
     m_boundary = QString( QString::number( qrand(), 8 ).toAscii() );
-
-    QByteArray boundaryRegular(QString("--"+QString::number(qrand(), 10)).toAscii());
-      QByteArray boundary("\r\n--"+boundaryRegular+"\r\n");
-      QByteArray boundaryLast("\r\n--"+boundaryRegular+"--\r\n");
-
 
     API_XML_REQUEST =
             "<?xml version='1.0'?>"
@@ -70,7 +63,7 @@ YouTubeUploader::uploadInit()
 
     API_XML_REQUEST.arg("test", "testing.... man yo!", "People", "vlmc, hacking, testing");
 
-    qDebug() << API_XML_REQUEST;
+    qDebug() << m_boundary << API_XML_REQUEST;
 }
 
 void
@@ -78,14 +71,6 @@ YouTubeUploader::setServiceProvider(YouTubeService *service)
 {
     m_service = service;
 
-}
-
-QByteArray
-YouTubeUploader::getBA( QString token, QString value )
-{
-    QByteArray bA;
-    bA += ( token + value );
-    return bA;
 }
 
 QNetworkRequest
@@ -97,31 +82,41 @@ YouTubeUploader::getNetworkRequest()
     request.setUrl( url );
 
     /* Use the auth string for authentication of uploading */
-    request.setRawHeader( "Authorization", getBA( "GoogleLogin auth=",
-                                                  m_service->getAuthString() ) );
+    request.setRawHeader( "Authorization", QByteArray( "GoogleLogin auth=" )
+                          .append( m_service->getAuthString() ) );
     /* We've implemented v2.0 protocol */
     request.setRawHeader( "GData-Version", "2");
     /* Developer is used to track API usage */
-    request.setRawHeader( "X-GData-Key", getBA("key=", m_service->getDeveloperKey() ) );
+    request.setRawHeader( "X-GData-Key", QByteArray("key=")
+                          .append( m_service->getDeveloperKey() ) );
     /* Name of the video, the user is uploading */
-    request.setRawHeader( "Slug", getBA( m_fileName, "" ) );
+    request.setRawHeader( "Slug", QByteArray("").append( m_fileName ) );
 
     request.setHeader( QNetworkRequest::ContentTypeHeader,
-                       getBA( "Content-Type: multipart/related; boundary=", m_boundary ) );
+                       QByteArray( "Content-Type: multipart/related; boundary=" )
+                       .append( m_boundary ) );
 
     return request;
 }
 
-QIODevice*
-YouTubeUploader::getPOSTData()
+QByteArray
+YouTubeUploader::getMimeHead()
 {
     QByteArray data;
-    data += "--f93dcbA3";
-    data += "Content-Type: application/atom+xml; charset=UTF-8";
-    data += API_XML_REQUEST;
-    data += "--f93dcbA3";
-            "Content-Type: video/mp4"
-            "Content-Transfer-Encoding: binary";
-    QFile q;
-    q.open()
+    data.append( "--" + m_boundary + "\r\n" );
+    data.append( "Content-Type: application/atom+xml; charset=UTF-8\r\n\r\n" );
+    data.append( API_XML_REQUEST );
+    data.append( "\r\n--" + m_boundary + "\r\n" );
+    data.append( "Content-Type: video/mp4\r\nContent-Transfer-Encoding: binary\r\n\r\n");
+
+    return data;
+}
+
+QByteArray
+YouTubeUploader::getMimeTail()
+{
+    QByteArray data;
+    data.append( "--" + m_boundary + "\r\n" );
+
+    return data;
 }

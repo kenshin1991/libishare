@@ -23,6 +23,7 @@
 #include "YouTubeAuthenticator.h"
 #include "YouTubeService.h"
 #include "YouTubeUploader.h"
+#include "UploaderIODevice.h"
 
 #include <QByteArray>
 #include <QMessageBox>
@@ -121,20 +122,25 @@ YouTubeService::authFinished()
 }
 
 bool
-YouTubeService::upload(const QString& fileName)
+YouTubeService::upload( QString& fileName )
 {
     if( m_auth->isAuthenticated() )
     {
         /* Upload Stuff here :) */
         m_uploader = new YouTubeUploader( this, fileName );
 
+        UploaderIODevice* data = new UploaderIODevice( static_cast<QObject*>(this), fileName,
+                                                       m_uploader->getMimeHead(),
+                                                       m_uploader->getMimeTail() );
+
         QNetworkRequest request = m_uploader->getNetworkRequest();
-        request.setHeader( QNetworkRequest::ContentLengthHeader, 0);
+        request.setHeader( QNetworkRequest::ContentLengthHeader, data->size() );
         request.setRawHeader( "Connection", "close" );
 
-        m_reply = m_nam->post( request, m_uploader->getPOSTData() );
+        m_reply = m_nam->post( request, data );
 
         connect( m_reply, SIGNAL(finished()),this,SLOT(uploadFinished()) );
+        connect( m_reply, SIGNAL(uploadProgress(qint64,qint64)), this,SLOT(uploadProgress(qint64,qint64) ) );
         connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
                 SLOT(networkError(QNetworkReply::NetworkError)) );
 
@@ -144,12 +150,18 @@ YouTubeService::upload(const QString& fileName)
 }
 
 void
-YouTubeService::search(const QString& search)
+YouTubeService::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
+{
+    qDebug() << (byteSent * 100 / bytesTotal);
+}
+
+void
+YouTubeService::search( QString& search )
 {
 }
 
 void
-YouTubeService::authError(QString e)
+YouTubeService::authError( QString e )
 {
     qDebug() << e;
 

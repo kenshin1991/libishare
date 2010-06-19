@@ -8,10 +8,12 @@ TARGET = YTApp
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
+    UploaderIODevice.cpp \
     YouTube/YouTubeUploader.cpp \
     YouTube/YouTubeService.cpp \
     YouTube/YouTubeAuthenticator.cpp
 HEADERS += mainwindow.h \
+    UploaderIODevice.h \
     YouTube/YouTubeUploader.h \
     YouTube/YouTubeService.h \
     YouTube/YouTubeServiceStates.h \
