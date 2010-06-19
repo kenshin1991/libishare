@@ -46,8 +46,12 @@ void MainWindow::finished()
     /*On Finish, extract out the auth token and upload a test video */
     disconnect(&y, SIGNAL(authOK()), this, SLOT(finished()));
     qDebug() << "AUTH OK!";
-    QString vfile = "kick-start-vlmc.ogg";
-    y.upload( vfile ); /* YouTubeService will check if the auth token is expired
+    QString vfile = "kick-start-vlmc.mp4";
+    y.setVideoParameters(vfile, QString("Kick Start VLMC"),
+                         QString("This is the first ever video uploaded by (libqyoutube, VLMC) to YouTube directly.\n"
+                         "Credits: Rohit Yadav (the guy kicking the bottle :), SoC 2010 Student Developer for VLMC; VideoLAN."),
+                         QString("Comedy"), QString("vlmc, VLMC, youtube upload, soccer, kick-start"), false);
+    y.upload(); /* YouTubeService will check if the auth token is expired
                              or it's not authenticated yet... Then if it's true, it will upload*/
 }
 

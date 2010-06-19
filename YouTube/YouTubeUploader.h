@@ -37,8 +37,8 @@ class YouTubeUploader : public QObject
     public:
         YouTubeUploader( YouTubeService* service = 0, QString fileName = "" );
         void setServiceProvider( YouTubeService* service );
-        void setParameters( QString& title, QString& description, QString& category,
-                            QString& keywords, bool isPrivate );
+        void setVideoParameters( const QString& title, const QString& description,
+                                 const QString& category, const QString& keywords, bool isPrivate );
 
         QNetworkRequest getNetworkRequest();
         QByteArray      getMimeHead();

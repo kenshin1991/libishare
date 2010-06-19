@@ -49,10 +49,12 @@ class YouTubeService : public QObject
         void setDeveloperKey( const QString& devKey );
         void setCredentials( const QString& username, const QString& password );
         void setProxyCredentials( const QString& username, const QString& password );
+        void setVideoParameters( const QString& fileName, const QString& title, const QString& description,
+                                 const QString& category, const QString& keywords, bool isPrivate );
 
         /* Services */
         void authenticate();
-        bool upload( QString& fileName );
+        bool upload();
         void search( QString& search );
 
     private:
@@ -64,6 +66,7 @@ class YouTubeService : public QObject
     protected:
         YouTubeServiceState    m_state;
         QString                m_devKey;
+        QString                m_fileName;
         YouTubeAuthenticator*  m_auth;
         YouTubeUploader*       m_uploader;
         QString                m_proxyUsername;

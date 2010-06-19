@@ -80,6 +80,16 @@ YouTubeService::setProxyCredentials(const QString &username, const QString &pass
     m_proxyPassword = password;
 }
 
+void
+YouTubeService::setVideoParameters( const QString& fileName, const QString& title,
+                                    const QString& description, const QString& category,
+                                    const QString& keywords, bool isPrivate )
+{
+    m_fileName = fileName;
+    m_uploader = new YouTubeUploader( this, fileName );
+    m_uploader->setVideoParameters(title, description, category, keywords, isPrivate);
+}
+
 QString
 YouTubeService::getAuthString()
 {
@@ -121,14 +131,12 @@ YouTubeService::authFinished()
 }
 
 bool
-YouTubeService::upload( QString& fileName )
+YouTubeService::upload()
 {
     if( m_auth->isAuthenticated() )
     {
         /* Upload Stuff here :) */
-        m_uploader = new YouTubeUploader( this, fileName );
-
-        UploaderIODevice* data = new UploaderIODevice( dynamic_cast<QObject*>(this), fileName,
+        UploaderIODevice* data = new UploaderIODevice( dynamic_cast<QObject*>(this), m_fileName,
                                                        m_uploader->getMimeHead(),
                                                        m_uploader->getMimeTail() );
 
@@ -211,7 +219,7 @@ YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator
 {
     m_state = YouTubeServiceStates::ConnectionError;
 
-    /* */
+    /* TODO: Make a small QDialog to take in usr:passwd */
     if( !m_proxyUsername.isEmpty() && !m_proxyPassword.isEmpty() )
     {
         authenticator->setUser( m_proxyUsername );

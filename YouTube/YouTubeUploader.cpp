@@ -39,14 +39,16 @@ YouTubeUploader::YouTubeUploader( YouTubeService* service, QString fileName )
 }
 
 void
-YouTubeUploader::setParameters(QString &title, QString &description,
-                               QString &category, QString &keywords, bool isPrivate)
+YouTubeUploader::setVideoParameters( const QString &title, const QString &description,
+                                     const QString &category, const QString &keywords,
+                                     bool isPrivate)
 {
     m_title       = title;
     m_description = description;
     m_category    = category;
     m_keywords    = keywords;
     m_isPrivate   = isPrivate;
+    uploadInit();
 }
 
 void
@@ -118,6 +120,8 @@ YouTubeUploader::getMimeHead()
     data.append( API_XML_REQUEST );
     data.append( "--" + m_boundary + "\r\n" );
     data.append( "Content-Type: video/*\r\nContent-Transfer-Encoding: binary\r\n\r\n");
+
+    qDebug() << data;
 
     return data;
 }
