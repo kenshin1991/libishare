@@ -114,8 +114,7 @@ void MainWindow::uploadFinished( QString result )
 
     ui->log->appendPlainText(result);
 
-    if(y)
-        delete y;
+    y->deleteLater();
 }
 
 void MainWindow::videoUploadProgress(qint64 received, qint64 total)
