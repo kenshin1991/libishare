@@ -36,6 +36,8 @@ class YouTubeUploader : public QObject
 {
     public:
         YouTubeUploader( YouTubeService* service = 0, QString fileName = "" );
+        ~YouTubeUploader();
+
         void setServiceProvider( YouTubeService* service );
         void setVideoParameters( const QString& title, const QString& description,
                                  const QString& category, const QString& keywords, bool isPrivate );

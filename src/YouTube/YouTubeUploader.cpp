@@ -38,6 +38,11 @@ YouTubeUploader::YouTubeUploader( YouTubeService* service, QString fileName )
     uploadInit();
 }
 
+YouTubeUploader::~YouTubeUploader()
+{
+    m_service = NULL;
+}
+
 void
 YouTubeUploader::setVideoParameters( const QString &title, const QString &description,
                                      const QString &category, const QString &keywords,
@@ -62,7 +67,6 @@ YouTubeUploader::uploadInit()
 {
     m_boundary = QString( QString::number( qrand(), 10 ).toAscii() );
 
-    /* TODO: Fix XML stuff */
     API_XML_REQUEST =
             "<?xml version='1.0'?>\r\n"
             "<entry\r\n"
