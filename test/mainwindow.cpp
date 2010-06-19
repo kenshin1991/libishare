@@ -106,19 +106,18 @@ void MainWindow::uploadFinished( QString result )
 {
     qDebug() << "[TEST APP]: Upload Finished";
 
-    disconnect( y, SIGNAL(uploadOK(QString)), this, SLOT(uploadFinished(QString)));
-    disconnect( y, SIGNAL(uploadProgress(qint64,qint64)),
-                this, SLOT(videoUploadProgress(qint64,qint64)) );
-    disconnect( y, SIGNAL(serviceError(QString)), this, SLOT(error(QString)) );
+    //disconnect( y, SIGNAL(uploadOK(QString)), this, SLOT(uploadFinished(QString)));
+    //disconnect( y, SIGNAL(uploadProgress(qint64,qint64)),
+    //            this, SLOT(videoUploadProgress(qint64,qint64)) );
+    //disconnect( y, SIGNAL(serviceError(QString)), this, SLOT(error(QString)) );
 
     ui->log->appendPlainText(result);
-    delete y;
+    //delete y;
 }
 
 void MainWindow::videoUploadProgress(qint64 received, qint64 total)
 {
     qint64 progress = received * 100 / total;
-    qDebug() << progress << "%";
     ui->progressBar->setValue( progress );
 }
 
