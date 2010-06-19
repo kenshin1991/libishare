@@ -30,9 +30,9 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_pushButton_clicked()
 {
-    y.setCredentials(ui->username->text(), ui->password->text());
-    y.setDeveloperKey(devKey);
-    y.authenticate();
+    //y.setCredentials(ui->username->text(), ui->password->text());
+    //y.setDeveloperKey(devKey);
+    //y.authenticate();
 
     connect(&y, SIGNAL(authOK()), this, SLOT(finished()));
     //connect(&y, SIGNAL(error(QString)), this, SLOT(error(QString)) );
@@ -57,5 +57,5 @@ void MainWindow::finished()
 
 void MainWindow::error(QString e)
 {
-    ui->status->setText("Error: " + e);
+    ui->log->setPlainText("Error: " + e);
 }
