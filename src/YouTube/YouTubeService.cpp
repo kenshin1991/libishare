@@ -169,7 +169,7 @@ YouTubeService::uploadFinished()
 
     /* TODO: Handle XML response */
 
-    emit uploadOK( QSting( data ) );
+    emit uploadOK( QString( data ) );
 
     /* Disconnect local mappings, just in case authenticate is called again */
     disconnect( m_reply, SIGNAL(finished()),this,SLOT(uploadFinished()) );
