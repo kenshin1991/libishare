@@ -123,6 +123,21 @@ YouTubeService::upload(const QString& fileName)
     {
         /* Upload Stuff here :) */
 
+        QByteArray devKeyBA;
+        devKeyBA.append( "key=" + m_devKey );
+
+        QNetworkRequest request = m_auth.getNetworkRequest();
+
+        if( !m_devKey.isEmpty() )
+            request.setRawHeader( "X-GData-Key", devKeyBA );
+
+        m_reply = m_nam->post( request, m_auth.getPOSTData() );
+
+        connect( m_reply, SIGNAL(finished()),this,SLOT(authFinished()) );
+        connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
+                SLOT(networkError(QNetworkReply::NetworkError)) );
+
+
         return true;
     }
     return false;

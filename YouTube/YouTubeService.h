@@ -61,6 +61,7 @@ class YouTubeService : public QObject
         YouTubeServiceState     m_state;
         QString                 m_devKey;
         YouTubeAuthentication   m_auth;
+        YouTubeUpload*          m_uploader;
 
         QNetworkAccessManager*  m_nam;
         QNetworkReply*          m_reply;

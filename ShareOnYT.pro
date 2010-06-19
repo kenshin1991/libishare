@@ -8,14 +8,14 @@ TARGET = YTApp
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
-    YouTube/YouTubeUpload.cpp \
+    YouTube/YouTubeUploader.cpp \
     YouTube/YouTubeService.cpp \
-    YouTube/YouTubeAuthentication.cpp
+    YouTube/YouTubeAuthenticator.cpp
 HEADERS += mainwindow.h \
-    YouTube/YouTubeUpload.h \
+    YouTube/YouTubeUploader.h \
     YouTube/YouTubeService.h \
     YouTube/YouTubeServiceStates.h \
-    YouTube/YouTubeAuthentication.h
+    YouTube/YouTubeAuthenticator.h
 FORMS += mainwindow.ui
 
 CONFIG += debug
