@@ -28,6 +28,7 @@
 
 #define UPLOAD_URL "http://uploads.gdata.youtube.com/feeds/api/users/default/uploads"
 
+class QIODevice;
 class QNetworkRequest;
 class YouTubeService;
 
@@ -38,18 +39,23 @@ class YouTubeUploader : public QObject
 
         void setServiceProvider( YouTubeService* service );
         QNetworkRequest getNetworkRequest();
-        QByteArray      getPOSTData();
+        QIODevice*      getPOSTData();
 
     private:
+        void            uploadInit();
         QByteArray      getBA( QString token, QString value );
 
+        QString         API_XML_REQUEST;
+
         YouTubeService* m_service;
+
+        QString         m_boundary;
         QString         m_fileName;
         QString         m_mimeType;
         QString         m_title;
-        QString         m_category;
         QString         m_description;
-        QString         m_tags;
+        QString         m_category;
+        QString         m_keywords;
         bool            m_isPrivate;
 };
 

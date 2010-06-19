@@ -94,13 +94,7 @@ YouTubeService::getDeveloperKey()
 void
 YouTubeService::authenticate()
 {
-    QByteArray devKeyBA;
-    devKeyBA.append( "key=" + m_devKey );
-
     QNetworkRequest request = m_auth->getNetworkRequest();
-    
-    if( !m_devKey.isEmpty() )
-        request.setRawHeader( "X-GData-Key", devKeyBA );
 
     m_reply = m_nam->post( request, m_auth->getPOSTData() );
 
@@ -132,6 +126,17 @@ YouTubeService::upload(const QString& fileName)
     if( m_auth->isAuthenticated() )
     {
         /* Upload Stuff here :) */
+        m_uploader = new YouTubeUploader( this, fileName );
+
+        QNetworkRequest request = m_uploader->getNetworkRequest();
+        request.setHeader( QNetworkRequest::ContentLengthHeader, 0);
+        request.setRawHeader( "Connection", "close" );
+
+        m_reply = m_nam->post( request, m_uploader->getPOSTData() );
+
+        connect( m_reply, SIGNAL(finished()),this,SLOT(uploadFinished()) );
+        connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
+                SLOT(networkError(QNetworkReply::NetworkError)) );
 
         return true;
     }

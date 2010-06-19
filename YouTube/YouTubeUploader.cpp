@@ -24,6 +24,8 @@
 #include "YouTubeUploader.h"
 
 #include <QByteArray>
+#include <QFile>
+#include <QIODevice>
 #include <QNetworkRequest>
 #include <QString>
 #include <QStringList>
@@ -34,6 +36,41 @@
 YouTubeUploader::YouTubeUploader( YouTubeService* service, QString fileName )
 {
     m_service = service;
+    m_fileName = fileName;
+    uploadInit();
+}
+
+void
+YouTubeUploader::uploadInit()
+{
+    m_boundary = QString( QString::number( qrand(), 8 ).toAscii() );
+
+    QByteArray boundaryRegular(QString("--"+QString::number(qrand(), 10)).toAscii());
+      QByteArray boundary("\r\n--"+boundaryRegular+"\r\n");
+      QByteArray boundaryLast("\r\n--"+boundaryRegular+"--\r\n");
+
+
+    API_XML_REQUEST =
+            "<?xml version='1.0'?>"
+            "<entry "
+              "xmlns='http://www.w3.org/2005/Atom' "
+              "xmlns:media='http://search.yahoo.com/mrss/' "
+              "xmlns:yt='http://gdata.youtube.com/schemas/2007'>"
+              "<media:group>"
+                "<media:title type='plain'>%1</media:title>"              // 1 title
+                "<media:description type='plain'>"
+                  "%2"
+                "</media:description>"                                    // 2 description
+                "<media:category scheme='http://gdata.youtube.com/schemas/2007/categories.cat'>"
+                  "%3"                                                    // 3 category
+                "</media:category>"
+                "<media:keywords>%4</media:keywords>"                     // 4 key words
+              "</media:group>"
+            "</entry>";
+
+    API_XML_REQUEST.arg("test", "testing.... man yo!", "People", "vlmc, hacking, testing");
+
+    qDebug() << API_XML_REQUEST;
 }
 
 void
@@ -69,10 +106,22 @@ YouTubeUploader::getNetworkRequest()
     /* Name of the video, the user is uploading */
     request.setRawHeader( "Slug", getBA( m_fileName, "" ) );
 
-
     request.setHeader( QNetworkRequest::ContentTypeHeader,
-                       "Content-Type: multipart/related; boundary=" );
-    request.setHeader( QNetworkRequest::ContentLengthHeader, 0);
+                       getBA( "Content-Type: multipart/related; boundary=", m_boundary ) );
 
     return request;
+}
+
+QIODevice*
+YouTubeUploader::getPOSTData()
+{
+    QByteArray data;
+    data += "--f93dcbA3";
+    data += "Content-Type: application/atom+xml; charset=UTF-8";
+    data += API_XML_REQUEST;
+    data += "--f93dcbA3";
+            "Content-Type: video/mp4"
+            "Content-Transfer-Encoding: binary";
+    QFile q;
+    q.open()
 }
