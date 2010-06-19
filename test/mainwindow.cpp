@@ -39,7 +39,7 @@ void MainWindow::on_pushButton_clicked()
     QString path = QFileDialog::getOpenFileName( this,
                                                  tr( "Choose Video File to upload" ),
                                                  "",
-                                                 tr( "Video files (*.avi *.mp4 *.ogg)" ) );
+                                                 tr( "Video files (*.avi *.mov *.mp4 *.ogg *.*)" ) );
 
     ui->filePath->setText(path);
     uploadVideo( path );
