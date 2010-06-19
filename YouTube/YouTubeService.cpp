@@ -28,15 +28,17 @@
 
 #include <QDebug>
 
-YouTubeService::YouTubeService( const QString& username, const QString& password, const QString& devKey ) :
+YouTubeService::YouTubeService( const QString& devKey, const QString& username, const QString& password ) :
         m_devKey( devKey )
 {
     m_auth.setCredentials( username, password );
-    YouTubeService();
-}
 
-YouTubeService::YouTubeService()
-{
+    /* Tell world on successful authentication */
+    connect( &m_auth, SIGNAL(authOK()), this, SIGNAL(authOK()) );
+
+    /* On authentication error, m_auth will send the error token */
+    connect( &m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
+
     m_nam = new QNetworkAccessManager();
 
     /* In case the proxy asks for credentials, handle it */
@@ -48,13 +50,6 @@ YouTubeService::YouTubeService()
     connect( m_nam, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
             this, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)) );
     #endif
-
-    /* Tell world on successful authentication */
-    connect( &m_auth, SIGNAL(authOK()), this, SIGNAL(authOK()) );
-
-    /* On authentication error, m_auth will send the error token */
-    connect( &m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
-
 }
 
 YouTubeService::~YouTubeService()
@@ -107,7 +102,7 @@ YouTubeService::authFinished()
 
     /* Disconnect local mappings, just in case authenticate is called again */
     disconnect( m_reply, SIGNAL(finished()),this,SLOT(authFinished()) );
-    disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
+    disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
             SLOT(networkError(QNetworkReply::NetworkError)) );
 
     if( m_auth.setAuthData( data ) )

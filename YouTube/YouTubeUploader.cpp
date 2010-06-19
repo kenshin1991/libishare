@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeUpload.cpp:
+ * YouTubeUploader.cpp:
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -19,3 +19,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
+
+#include "YouTubeUploader.h"
+
+#include <QByteArray>
+#include <QNetworkRequest>
+#include <QString>
+#include <QStringList>
+#include <QUrl>
+
+#include <QDebug>
+
+YouTubeUploader::YouTubeUploader( YouTubeService* service, QString fileName )
+{
+
+}
+
+QNetworkRequest
+YouTubeUploader::getNetworkRequest()
+{
+    QUrl url( UPLOAD_URL );
+
+    QNetworkRequest request;
+    request.setHeader( QNetworkRequest::ContentTypeHeader,
+                       "application/x-www-form-urlencoded" );
+    request.setUrl( url );
+
+    return request;
+}

@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeAuthentication.h:
+ * YouTubeAuthenticator.h:
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -20,27 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#ifndef YOUTUBEAUTHENTICATION_H
-#define YOUTUBEAUTHENTICATION_H
+#ifndef YOUTUBEAUTHENTICATOR_H
+#define YOUTUBEAUTHENTICATOR_H
 
 #include <QObject>
 
 #define LOGIN_URL "https://www.google.com/youtube/accounts/ClientLogin"
 
+class QByteArray;
 class QNetworkRequest;
 
-class YouTubeAuthentication : public QObject
+class YouTubeAuthenticator : public QObject
 {
     Q_OBJECT
 
     public:
-        YouTubeAuthentication( const QString& username, const QString& password );
-        YouTubeAuthentication();
+        YouTubeAuthenticator( const QString& username = "", const QString& password = "" );
 
         void setCredentials( const QString& username, const QString& password );
-        void setAuthData( QByteArray& data );
+        bool setAuthData( QByteArray& data );
 
-        const QString   getAuthUrl();
         QByteArray      getPOSTData();
         QString         getAuthString();
         QString         getNick();
@@ -68,4 +67,4 @@ class YouTubeAuthentication : public QObject
         void authOK();
         void authError( QString );
 };
-#endif // YOUTUBEAUTHENTICATION_H
+#endif // YOUTUBEAUTHENTICATOR_H

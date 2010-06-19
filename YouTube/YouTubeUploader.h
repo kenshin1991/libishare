@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeUpload.h:
+ * YouTubeUploader.h:
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -20,27 +20,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#ifndef YOUTUBEUPLOAD_H
-#define YOUTUBEUPLOAD_H
+#ifndef YOUTUBEUPLOADER_H
+#define YOUTUBEUPLOADER_H
 
 #include <QObject>
 #include <QString>
 
 #define UPLOAD_URL "http://uploads.gdata.youtube.com/feeds/api/users/default/uploads"
 
-class YoutubeUpload : public QObject
+class QNetworkRequest;
+class YouTubeService;
+
+class YouTubeUploader : public QObject
 {
     public:
-        YoutubeUpload();
+        YouTubeUploader( YouTubeService* service = 0, QString fileName = "" );
+
+        QByteArray      getPOSTData();
+        QNetworkRequest getNetworkRequest();
 
     private:
-        QString      fileName;
-        QString      mimeType;
-        QString      title;
-        QString      category;
-        QString      description;
-        QString      tags;
-        bool         isPrivate;
+        YouTubeService* m_serviceProvider;
+        QString         fileName;
+        QString         mimeType;
+        QString         title;
+        QString         category;
+        QString         description;
+        QString         tags;
+        bool            isPrivate;
 };
 
-#endif // YOUTUBEUPLOAD_H
+#endif // YOUTUBEUPLOADER_H

@@ -23,8 +23,8 @@
 #ifndef YOUTUBESERVICE_H
 #define YOUTUBESERVICE_H
 
-#include "YouTubeAuthentication.h"
-#include "YouTubeUpload.h"
+#include "YouTubeAuthenticator.h"
+#include "YouTubeUploader.h"
 
 #include "YouTubeServiceStates.h"
 
@@ -43,9 +43,8 @@ class YouTubeService : public QObject
     Q_OBJECT
 
     public:
-        YouTubeService( const QString& username, const QString& password,
-                        const QString& devKey );
-        YouTubeService();
+        YouTubeService( const QString& devKey = "", const QString& username = "",
+                        const QString& password = "" );
         ~YouTubeService();
 
         void setDeveloperKey( const QString& devKey );
@@ -60,8 +59,8 @@ class YouTubeService : public QObject
     private:
         YouTubeServiceState     m_state;
         QString                 m_devKey;
-        YouTubeAuthentication   m_auth;
-        YouTubeUpload*          m_uploader;
+        YouTubeAuthenticator    m_auth;
+        YouTubeUploader*        m_uploader;
 
         QNetworkAccessManager*  m_nam;
         QNetworkReply*          m_reply;

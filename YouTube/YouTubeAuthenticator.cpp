@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeAuthentication.cpp:
+ * YouTubeAuthenticator.cpp:
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include "YouTubeAuthentication.h"
+#include "YouTubeAuthenticator.h"
 
 #include <QByteArray>
 #include <QNetworkRequest>
@@ -30,19 +30,14 @@
 
 #include <QDebug>
 
-YouTubeAuthentication::YouTubeAuthentication( const QString& username, const QString& password ) :
+YouTubeAuthenticator::YouTubeAuthenticator( const QString& username, const QString& password ) :
         m_username( username ), m_password( password )
-{
-    YouTubeAuthentication();
-}
-
-YouTubeAuthentication::YouTubeAuthentication()
 {
     authInit();
 }
 
 void
-YouTubeAuthentication::authInit()
+YouTubeAuthenticator::authInit()
 {
     m_isAuthenticated = false;
     m_nick.clear();
@@ -51,13 +46,13 @@ YouTubeAuthentication::authInit()
 }
 
 QByteArray
-YouTubeAuthentication::getPOSTData()
+YouTubeAuthenticator::getPOSTData()
 {
     return m_postData;
 }
 
 QNetworkRequest
-YouTubeAuthentication::getNetworkRequest()
+YouTubeAuthenticator::getNetworkRequest()
 {
     authInit();
     QUrl url( LOGIN_URL );
@@ -70,33 +65,27 @@ YouTubeAuthentication::getNetworkRequest()
     return request;
 }
 
-const QString
-YouTubeAuthentication::getAuthUrl()
-{
-    return const_cast<QString>( QString( LOGIN_URL ) )>;
-}
-
 QString
-YouTubeAuthentication::getAuthString()
+YouTubeAuthenticator::getAuthString()
 {
     return m_authString;
 }
 
 
 QString
-YouTubeAuthentication::getNick()
+YouTubeAuthenticator::getNick()
 {
     return m_nick;
 }
 
 bool
-YouTubeAuthentication::isAuthenticated()
+YouTubeAuthenticator::isAuthenticated()
 {
     return m_isAuthenticated;
 }
 
 void
-YouTubeAuthentication::setCredentials( const QString& username, const QString& password )
+YouTubeAuthenticator::setCredentials( const QString& username, const QString& password )
 {
     m_username = username;
     m_password = password;
@@ -104,7 +93,7 @@ YouTubeAuthentication::setCredentials( const QString& username, const QString& p
 }
 
 void
-YouTubeAuthentication::setPOSTData()
+YouTubeAuthenticator::setPOSTData()
 {
     m_postData.clear();
     m_postData.append( QString("accountType=HOSTED_OR_GOOGLE"
@@ -114,7 +103,7 @@ YouTubeAuthentication::setPOSTData()
 }
 
 bool
-YouTubeAuthentication::setAuthData( QByteArray& data )
+YouTubeAuthenticator::setAuthData( QByteArray& data )
 {
     QStringList lines = QString( data ).split( "\n", QString::SkipEmptyParts );
 
@@ -126,7 +115,7 @@ YouTubeAuthentication::setAuthData( QByteArray& data )
         {
             m_authError = tokenList.at(1);
             emit authError( m_authError );
-            return;
+            return m_isAuthenticated;
         }
 
         if( tokenList.at(0) == "Auth" )
