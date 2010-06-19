@@ -29,6 +29,7 @@
 
 class QByteArray;
 class QNetworkRequest;
+class YouTubeService;
 
 class YouTubeAuthenticator : public QObject
 {
@@ -39,29 +40,31 @@ class YouTubeAuthenticator : public QObject
 
         void setCredentials( const QString& username, const QString& password );
         bool setAuthData( QByteArray& data );
-
-        QByteArray      getPOSTData();
-        QString         getAuthString();
-        QString         getNick();
-        bool            isAuthenticated();
-        QNetworkRequest getNetworkRequest();
+        bool isAuthenticated();
 
     private:
-        void authInit();
-        void setPOSTData();
+        friend class    YouTubeService;
+
+        QString         getAuthString();
+        QNetworkRequest getNetworkRequest();
+        QString         getNick();
+        QByteArray      getPOSTData();
+
+        void            authInit();
+        void            setPOSTData();
 
         /* Youtube Credentials */
-        QString        m_username;
-        QString        m_password;
+        QString         m_username;
+        QString         m_password;
 
         /* HTTP/S POST HEADER */
-        QByteArray     m_postData;
+        QByteArray      m_postData;
 
         /* Youtube tokens */
-        QString        m_authString;
-        QString        m_authError;
-        QString        m_nick; /* YouTube User Nickname */
-        bool           m_isAuthenticated;
+        QString         m_authString;
+        QString         m_authError;
+        QString         m_nick; /* YouTube User Nickname */
+        bool            m_isAuthenticated;
 
     signals:
         void authOK();

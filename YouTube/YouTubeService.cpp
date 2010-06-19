@@ -20,24 +20,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#include "YouTubeAuthenticator.h"
 #include "YouTubeService.h"
+#include "YouTubeUploader.h"
 
 #include <QByteArray>
-#include <QtNetwork>
 #include <QMessageBox>
+#include <QtNetwork>
 
 #include <QDebug>
 
 YouTubeService::YouTubeService( const QString& devKey, const QString& username, const QString& password ) :
         m_devKey( devKey )
 {
-    m_auth.setCredentials( username, password );
+    m_auth = new YouTubeAuthenticator( username, password );
 
     /* Tell world on successful authentication */
-    connect( &m_auth, SIGNAL(authOK()), this, SIGNAL(authOK()) );
+    connect( m_auth, SIGNAL(authOK()), this, SIGNAL(authOK()) );
 
     /* On authentication error, m_auth will send the error token */
-    connect( &m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
+    connect( m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
 
     m_nam = new QNetworkAccessManager();
 
@@ -54,6 +56,7 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
 
 YouTubeService::~YouTubeService()
 {
+    delete m_auth;
     delete m_nam;
 }
 
@@ -66,7 +69,7 @@ YouTubeService::setDeveloperKey( const QString& devKey )
 void
 YouTubeService::setCredentials( const QString& username, const QString& password )
 {
-    m_auth.setCredentials( username, password );
+    m_auth->setCredentials( username, password );
 }
 
 void
@@ -76,18 +79,30 @@ YouTubeService::setProxyCredentials(const QString &username, const QString &pass
     m_proxyPassword = password;
 }
 
+QString
+YouTubeService::getAuthString()
+{
+    return m_auth->getAuthString();
+}
+
+QString
+YouTubeService::getDeveloperKey()
+{
+    return m_devKey;
+}
+
 void
 YouTubeService::authenticate()
 {
     QByteArray devKeyBA;
     devKeyBA.append( "key=" + m_devKey );
 
-    QNetworkRequest request = m_auth.getNetworkRequest();
+    QNetworkRequest request = m_auth->getNetworkRequest();
     
     if( !m_devKey.isEmpty() )
         request.setRawHeader( "X-GData-Key", devKeyBA );
 
-    m_reply = m_nam->post( request, m_auth.getPOSTData() );
+    m_reply = m_nam->post( request, m_auth->getPOSTData() );
 
     connect( m_reply, SIGNAL(finished()),this,SLOT(authFinished()) );
     connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
@@ -105,7 +120,7 @@ YouTubeService::authFinished()
     disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
             SLOT(networkError(QNetworkReply::NetworkError)) );
 
-    if( m_auth.setAuthData( data ) )
+    if( m_auth->setAuthData( data ) )
         m_state = YouTubeServiceStates::Ok;
 
     m_reply->deleteLater();
@@ -114,24 +129,9 @@ YouTubeService::authFinished()
 bool
 YouTubeService::upload(const QString& fileName)
 {
-    if( m_auth.isAuthenticated() )
+    if( m_auth->isAuthenticated() )
     {
         /* Upload Stuff here :) */
-
-        QByteArray devKeyBA;
-        devKeyBA.append( "key=" + m_devKey );
-
-        QNetworkRequest request = m_auth.getNetworkRequest();
-
-        if( !m_devKey.isEmpty() )
-            request.setRawHeader( "X-GData-Key", devKeyBA );
-
-        m_reply = m_nam->post( request, m_auth.getPOSTData() );
-
-        connect( m_reply, SIGNAL(finished()),this,SLOT(authFinished()) );
-        connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                SLOT(networkError(QNetworkReply::NetworkError)) );
-
 
         return true;
     }

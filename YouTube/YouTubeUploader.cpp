@@ -20,6 +20,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
+#include "YouTubeService.h"
 #include "YouTubeUploader.h"
 
 #include <QByteArray>
@@ -32,6 +33,13 @@
 
 YouTubeUploader::YouTubeUploader( YouTubeService* service, QString fileName )
 {
+    m_service = service;
+}
+
+void
+YouTubeUploader::setServiceProvider(YouTubeService *service)
+{
+    m_service = service;
 
 }
 

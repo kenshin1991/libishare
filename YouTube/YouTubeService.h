@@ -23,9 +23,6 @@
 #ifndef YOUTUBESERVICE_H
 #define YOUTUBESERVICE_H
 
-#include "YouTubeAuthenticator.h"
-#include "YouTubeUploader.h"
-
 #include "YouTubeServiceStates.h"
 
 #include <QObject>
@@ -37,6 +34,8 @@ class QByteArray;
 class QNetworkAccessManager;
 class QSslError;
 class QString;
+class YouTubeAuthenticator;
+class YouTubeUploader;
 
 class YouTubeService : public QObject
 {
@@ -57,16 +56,20 @@ class YouTubeService : public QObject
         void search( const QString& search );
 
     private:
-        YouTubeServiceState     m_state;
-        QString                 m_devKey;
-        YouTubeAuthenticator    m_auth;
-        YouTubeUploader*        m_uploader;
+        friend class           YouTubeUploader;
 
-        QNetworkAccessManager*  m_nam;
-        QNetworkReply*          m_reply;
+        QString                getDeveloperKey();
+        QString                getAuthString();
 
-        QString                 m_proxyUsername;
-        QString                 m_proxyPassword;
+        YouTubeServiceState    m_state;
+        QString                m_devKey;
+        YouTubeAuthenticator*  m_auth;
+        YouTubeUploader*       m_uploader;
+        QString                m_proxyUsername;
+        QString                m_proxyPassword;
+
+        QNetworkAccessManager* m_nam;
+        QNetworkReply*         m_reply;
 
     private slots:
         void authFinished();

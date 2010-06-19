@@ -36,11 +36,12 @@ class YouTubeUploader : public QObject
     public:
         YouTubeUploader( YouTubeService* service = 0, QString fileName = "" );
 
-        QByteArray      getPOSTData();
+        void setServiceProvider( YouTubeService* service );
         QNetworkRequest getNetworkRequest();
+        QByteArray      getPOSTData();
 
     private:
-        YouTubeService* m_serviceProvider;
+        YouTubeService* m_service;
         QString         fileName;
         QString         mimeType;
         QString         title;
