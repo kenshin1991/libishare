@@ -35,9 +35,24 @@ YouTubeUploader::YouTubeUploader( YouTubeService* service, QString fileName )
 {
     m_service = service;
     m_fileName = fileName;
-    qDebug() << fileName;
-    fileName = "test.mp4";
     uploadInit();
+}
+
+void
+YouTubeUploader::setParameters(QString &title, QString &description,
+                               QString &category, QString &keywords, bool isPrivate)
+{
+    m_title       = title;
+    m_description = description;
+    m_category    = category;
+    m_keywords    = keywords;
+    m_isPrivate   = isPrivate;
+}
+
+void
+YouTubeUploader::setServiceProvider(YouTubeService *service)
+{
+    m_service = service;
 }
 
 void
@@ -45,59 +60,51 @@ YouTubeUploader::uploadInit()
 {
     m_boundary = QString( QString::number( qrand(), 10 ).toAscii() );
 
+    /* TODO: Fix XML stuff */
     API_XML_REQUEST =
             "<?xml version='1.0'?>\r\n"
-            "<entry \r\n"
+            "<entry\r\n"
             "  xmlns='http://www.w3.org/2005/Atom'\r\n"
             "  xmlns:media='http://search.yahoo.com/mrss/' \r\n"
             "  xmlns:yt='http://gdata.youtube.com/schemas/2007'>\r\n"
             "  <media:group>\r\n"
             "    <media:title type='plain'>%1</media:title>\r\n"              // 1 title
             "    <media:description type='plain'>%2</media:description>\r\n"  // 2 description
-            "    <media:category scheme='http://gdata.youtube.com/schemas/2007/categories.cat'>"
-            "      %3"                                                        // 3 category
+            "    <media:category scheme='http://gdata.youtube.com/schemas/2007/categories.cat'>\r\n"
+            "    %3\r\n"                                                      // 3 category
             "    </media:category>\r\n"
             "    <media:keywords>%4</media:keywords>\r\n"                     // 4 key words
             "  </media:group>\r\n"
             "</entry>\r\n";
 
-    API_XML_REQUEST = API_XML_REQUEST.arg("test", "testing.... man yo!", "People", "vlmc, hacking, testing");
-
-    qDebug() << m_boundary << API_XML_REQUEST;
-}
-
-void
-YouTubeUploader::setServiceProvider(YouTubeService *service)
-{
-    m_service = service;
-
+    API_XML_REQUEST = API_XML_REQUEST.arg( m_title, m_description, m_category, m_keywords );
 }
 
 QNetworkRequest
 YouTubeUploader::getNetworkRequest()
 {
     QUrl url( UPLOAD_URL );
-    qDebug() << "URL" << url.toString();
 
-    QNetworkRequest request(url);
+    QNetworkRequest request;
+    request.setUrl(url);
 
     /* Use the auth string for authentication of uploading */
     request.setRawHeader( "Authorization", QByteArray( "GoogleLogin auth=" )
                           .append( m_service->getAuthString() ) );
+
     /* We've implemented v2.0 protocol */
     request.setRawHeader( "GData-Version", "2");
+
     /* Developer is used to track API usage */
     request.setRawHeader( "X-GData-Key", QByteArray("key=")
                           .append( m_service->getDeveloperKey() ) );
+
     /* Name of the video, the user is uploading */
-    request.setRawHeader( "Slug", QByteArray("").append( "test.mp4" ) );
+    request.setRawHeader( "Slug", QByteArray("").append( m_fileName ) );
 
     request.setRawHeader( "Content-Type",
                        QByteArray( "multipart/related; boundary=" )
                        .append( m_boundary ) );
-
-    qDebug() << "[UPLOADER, AUTH STR]"
-            << m_service->getAuthString();
 
     return request;
 }
@@ -106,13 +113,12 @@ QByteArray
 YouTubeUploader::getMimeHead()
 {
     QByteArray data;
-    data.append( "--" + m_boundary + "\r\n" );
+    data.append( "\r\n\r\n--" + m_boundary + "\r\n" );
     data.append( "Content-Type: application/atom+xml; charset=UTF-8\r\n\r\n" );
     data.append( API_XML_REQUEST );
-    data.append( "\r\n--" + m_boundary + "\r\n" );
-    data.append( "Content-Type: video/mp4\r\nContent-Transfer-Encoding: binary\r\n\r\n");
+    data.append( "--" + m_boundary + "\r\n" );
+    data.append( "Content-Type: video/*\r\nContent-Transfer-Encoding: binary\r\n\r\n");
 
-    qDebug() << "HEAD" << data;
     return data;
 }
 
@@ -120,9 +126,7 @@ QByteArray
 YouTubeUploader::getMimeTail()
 {
     QByteArray data;
-    data.append( "--" + m_boundary + "--");
-
-    qDebug() << "TAIL" << data;
+    data.append( "\r\n--" + m_boundary + "--\r\n\r\n");
 
     return data;
 }

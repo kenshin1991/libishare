@@ -47,7 +47,7 @@ qint64 UploaderIODevice::readData(char *data, qint64 maxlen)
     }
     char *pointer = data;
     qint64 atAll = 0;
-    if ((m_position<m_head->size()) && (maxlen>0))
+    if ( ( m_position < m_head->size() ) && (maxlen>0))
     {
         qint64 count = qMin(maxlen, (qint64)m_head->size());
         memcpy(pointer, m_head->data(), count);
@@ -72,6 +72,7 @@ qint64 UploaderIODevice::readData(char *data, qint64 maxlen)
         m_position+=count;
         atAll+=count;
     }
+    qDebug() << atAll;
     return atAll;
 }
 
