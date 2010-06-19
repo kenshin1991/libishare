@@ -36,14 +36,6 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_pushButton_clicked()
 {
-    if ( ui->filePath->text() == "" )
-    {
-        QMessageBox::warning( this,
-                              tr( "Warning" ),
-                              tr( "Please choose a video to transcode" ) );
-        return ;
-    }
-
     QString path = QFileDialog::getOpenFileName( this,
                                                  tr( "Choose Video File to upload" ),
                                                  "",
@@ -56,7 +48,8 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_actionShare_on_Internet_triggered()
 {
     /* No path checking is done, so handle it carefully */
-    uploadVideo( ui->filePath->text() );
+    QString path = ui->filePath->text();
+    uploadVideo( path );
 }
 
 void MainWindow::uploadVideo( QString& fileName )
@@ -81,6 +74,8 @@ void MainWindow::uploadVideo( QString& fileName )
 
     delete exportToInternet;
 
+    qDebug() << username << password << title << category << description << keywords;
+
     /* Add code to transcode/export video */
 
     y = new YouTubeService( devKey, username, password );
@@ -91,15 +86,16 @@ void MainWindow::uploadVideo( QString& fileName )
     connect( y, SIGNAL(uploadOK(QString)), this, SLOT(uploadFinished(QString)));
     connect( y, SIGNAL(uploadProgress(qint64,qint64)),
              this, SLOT(videoUploadProgress(qint64,qint64)) );
-    connect( y, SIGNAL(error(QString)), this, SLOT(error(QString)) );
+    connect( y, SIGNAL(serviceError(QString)), this, SLOT(error(QString)) );
 }
 
 
 void MainWindow::authFinished()
 {
     /*On Finish, extract out the auth token and upload a test video */
-    disconnect( y, SIGNAL(authOK()), this, SLOT(uploadVideo()) );
+    disconnect( y, SIGNAL(authOK()), this, SLOT(authFinished()) );
 
+    qDebug() << "[UPLOAD SERVICE]: START";
     y->upload();
 
     /* YouTubeService will check if the auth token is expired
@@ -108,10 +104,12 @@ void MainWindow::authFinished()
 
 void MainWindow::uploadFinished( QString result )
 {
+    qDebug() << "[TEST APP]: Upload Finished";
+
     disconnect( y, SIGNAL(uploadOK(QString)), this, SLOT(uploadFinished(QString)));
     disconnect( y, SIGNAL(uploadProgress(qint64,qint64)),
                 this, SLOT(videoUploadProgress(qint64,qint64)) );
-    disconnect( y, SIGNAL(error(QString)), this, SLOT(error(QString)) );
+    disconnect( y, SIGNAL(serviceError(QString)), this, SLOT(error(QString)) );
 
     ui->log->appendPlainText(result);
     delete y;
@@ -119,7 +117,9 @@ void MainWindow::uploadFinished( QString result )
 
 void MainWindow::videoUploadProgress(qint64 received, qint64 total)
 {
-    ui->progressBar->setValue( received * 100 / total );
+    qint64 progress = received * 100 / total;
+    qDebug() << progress << "%";
+    ui->progressBar->setValue( progress );
 }
 
 void MainWindow::error(QString e)

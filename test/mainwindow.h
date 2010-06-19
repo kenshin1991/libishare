@@ -23,13 +23,12 @@ private:
     YouTubeService* y;
     QString devKey;
 
-    void uploadVideo( QString& fileName );
-
 private slots:
     void on_actionShare_on_Internet_triggered();
     void on_pushButton_clicked();
 
     void authFinished();
+    void uploadVideo( QString& fileName );
     void uploadFinished(QString);
     void error(QString);
     void videoUploadProgress(qint64 received, qint64 total);

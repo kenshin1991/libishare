@@ -34,6 +34,7 @@ YouTubeAuthenticator::YouTubeAuthenticator( const QString& username, const QStri
         m_username( username ), m_password( password )
 {
     authInit();
+    setPOSTData();
 }
 
 void

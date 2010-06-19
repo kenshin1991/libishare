@@ -31,9 +31,9 @@
 
 #include <QDebug>
 
-YouTubeService::YouTubeService( const QString& devKey, const QString& username, const QString& password ) :
-        m_devKey( devKey )
+YouTubeService::YouTubeService( const QString& devKey, const QString& username, const QString& password )
 {
+    m_devKey = devKey;
     m_auth = new YouTubeAuthenticator( username, password );
 
     /* Tell world on successful authentication */
@@ -88,6 +88,8 @@ YouTubeService::setVideoParameters( const QString& fileName, const QString& titl
     m_fileName = fileName;
     m_uploader = new YouTubeUploader( this, fileName );
     m_uploader->setVideoParameters(title, description, category, keywords, isPrivate);
+
+    qDebug() << "[YT SERVICE PARAMS]: " << fileName << description << category << keywords;
 }
 
 QString
@@ -126,13 +128,13 @@ YouTubeService::authFinished()
 
     if( m_auth->setAuthData( data ) )
         m_state = YouTubeServiceStates::Ok;
-
-    //m_reply->deleteLater();
 }
 
 bool
 YouTubeService::upload()
 {
+    qDebug() << "[UPLOAD]: In Upload fx";
+
     if( m_auth->isAuthenticated() )
     {
         /* Upload Stuff here :) */
@@ -148,6 +150,9 @@ YouTubeService::upload()
         {
             if( m_reply )
                 delete m_reply;
+
+            qDebug() << "[STARTING UPLOAD]";
+
             m_reply = m_nam->post( request, data );
 
             connect( m_reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
@@ -187,7 +192,7 @@ YouTubeService::search( QString& search )
 void
 YouTubeService::authError( QString e )
 {
-    qDebug() << e;
+    qDebug() << "[AUTH ERROR]: " << e;
 
     if( e == "BadAuthentication" )
         m_state = YouTubeServiceStates::BadAuthentication;
@@ -199,6 +204,8 @@ YouTubeService::authError( QString e )
         m_state = YouTubeServiceStates::ServiceUnavailable;
     else
         m_state = YouTubeServiceStates::UnknownError;
+
+    emit serviceError( e );
 
 }
 

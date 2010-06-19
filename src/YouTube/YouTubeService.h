@@ -91,6 +91,7 @@ class YouTubeService : public QObject
         void authOK();
         void uploadOK( QString );
         void uploadProgress( qint64, qint64 );
+        void serviceError( QString );
 };
 
 #endif // YOUTUBESERVICE_H
