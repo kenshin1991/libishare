@@ -45,7 +45,8 @@ void MainWindow::finished()
 
     /*On Finish, extract out the auth token and upload a test video */
     disconnect(&y, SIGNAL(authOK()), this, SLOT(finished()));
-    QString vfile = "test.mpg";
+    qDebug() << "AUTH OK!";
+    QString vfile = "/home/rohit/GSoC/VideoLan/YT/test.mp4";
     y.upload( vfile ); /* YouTubeService will check if the auth token is expired
                              or it's not authenticated yet... Then if it's true, it will upload*/
 }

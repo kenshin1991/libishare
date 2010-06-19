@@ -129,7 +129,7 @@ YouTubeService::upload( QString& fileName )
         /* Upload Stuff here :) */
         m_uploader = new YouTubeUploader( this, fileName );
 
-        UploaderIODevice* data = new UploaderIODevice( static_cast<QObject*>(this), fileName,
+        UploaderIODevice* data = new UploaderIODevice( dynamic_cast<QObject*>(this), fileName,
                                                        m_uploader->getMimeHead(),
                                                        m_uploader->getMimeTail() );
 
@@ -137,12 +137,23 @@ YouTubeService::upload( QString& fileName )
         request.setHeader( QNetworkRequest::ContentLengthHeader, data->size() );
         request.setRawHeader( "Connection", "close" );
 
-        m_reply = m_nam->post( request, data );
+        foreach( QByteArray p, request.rawHeaderList())
+            qDebug() << p + ": " + request.rawHeader(p);
 
-        connect( m_reply, SIGNAL(finished()),this,SLOT(uploadFinished()) );
-        connect( m_reply, SIGNAL(uploadProgress(qint64,qint64)), this,SLOT(uploadProgress(qint64,qint64) ) );
-        connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                SLOT(networkError(QNetworkReply::NetworkError)) );
+        if( data->openFile() )
+        {
+            qDebug() << "[STARTING UPLOAD]";
+            
+            m_unam = new QNetworkAccessManager();
+            m_ureply = m_unam->post( request, data );
+
+            connect( m_unam, SIGNAL(finished(QNetworkReply*)) , this, SLOT(uploadFinished()));
+
+            connect( m_ureply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
+            connect( m_ureply, SIGNAL(uploadProgress(qint64,qint64)), this, SLOT(uploadProgress(qint64,qint64) ) );
+            connect( m_ureply, SIGNAL(error(QNetworkReply::NetworkError)), this,
+                    SLOT(networkError(QNetworkReply::NetworkError)) );
+        }
 
         return true;
     }
@@ -152,7 +163,22 @@ YouTubeService::upload( QString& fileName )
 void
 YouTubeService::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
 {
-    qDebug() << (byteSent * 100 / bytesTotal);
+    qDebug() << (bytesSent * 100 / bytesTotal) + "%";
+}
+
+void
+YouTubeService::uploadFinished()
+{
+    qDebug() << "Hello";
+    QByteArray data = m_ureply->readAll();
+    qDebug() << data;
+
+    /* Disconnect local mappings, just in case authenticate is called again */
+    disconnect( m_ureply, SIGNAL(finished()),this,SLOT(uploadFinished()) );
+    disconnect( m_ureply, SIGNAL(error(QNetworkReply::NetworkError)), this,
+            SLOT(networkError(QNetworkReply::NetworkError)) );
+
+    m_ureply->deleteLater();
 }
 
 void
@@ -181,6 +207,7 @@ YouTubeService::authError( QString e )
 void
 YouTubeService::networkError(QNetworkReply::NetworkError e)
 {
+    qDebug() << "Network Hello here" <<  e;
     m_state = YouTubeServiceStates::NetworkError;
 }
 

@@ -70,14 +70,16 @@ class YouTubeService : public QObject
         QString                m_proxyPassword;
 
         QNetworkAccessManager* m_nam;
+                QNetworkAccessManager* m_unam;
         QNetworkReply*         m_reply;
+        QNetworkReply*         m_ureply;
 
     private slots:
         void authFinished();
-        //void uploadFinished();
+        void uploadFinished();
         //void searchFinished();
 
-        void uploadProgress(qint64,qint64);
+        void uploadProgress( qint64, qint64 );
 
         void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
         void authError( QString );

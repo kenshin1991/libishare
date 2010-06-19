@@ -21,6 +21,7 @@
  *****************************************************************************/
 
 #include "UploaderIODevice.h"
+#include <QDebug>
 
 UploaderIODevice::UploaderIODevice(QObject *parent, QString& fileName,
                                    const QByteArray& head, const QByteArray& tail)
@@ -41,6 +42,7 @@ qint64 UploaderIODevice::readData(char *data, qint64 maxlen)
 {
     if (!m_file->isOpen())
     {
+        qDebug() << "ERRRRR";
         return -1;
     }
     char *pointer = data;
@@ -87,6 +89,7 @@ bool UploaderIODevice::openFile()
 {
     if (m_file->open(QIODevice::ReadOnly))
         return this->open(QIODevice::ReadOnly);
+    qDebug() << "ERR11 22";
     return false;
 }
 
