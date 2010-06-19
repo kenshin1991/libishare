@@ -43,15 +43,36 @@ YouTubeUploader::setServiceProvider(YouTubeService *service)
 
 }
 
+QByteArray
+YouTubeUploader::getBA( QString token, QString value )
+{
+    QByteArray bA;
+    bA += ( token + value );
+    return bA;
+}
+
 QNetworkRequest
 YouTubeUploader::getNetworkRequest()
 {
     QUrl url( UPLOAD_URL );
 
     QNetworkRequest request;
-    request.setHeader( QNetworkRequest::ContentTypeHeader,
-                       "application/x-www-form-urlencoded" );
     request.setUrl( url );
+
+    /* Use the auth string for authentication of uploading */
+    request.setRawHeader( "Authorization", getBA( "GoogleLogin auth=",
+                                                  m_service->getAuthString() ) );
+    /* We've implemented v2.0 protocol */
+    request.setRawHeader( "GData-Version", "2");
+    /* Developer is used to track API usage */
+    request.setRawHeader( "X-GData-Key", getBA("key=", m_service->getDeveloperKey() ) );
+    /* Name of the video, the user is uploading */
+    request.setRawHeader( "Slug", getBA( m_fileName, "" ) );
+
+
+    request.setHeader( QNetworkRequest::ContentTypeHeader,
+                       "Content-Type: multipart/related; boundary=" );
+    request.setHeader( QNetworkRequest::ContentLengthHeader, 0);
 
     return request;
 }

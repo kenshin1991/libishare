@@ -41,14 +41,16 @@ class YouTubeUploader : public QObject
         QByteArray      getPOSTData();
 
     private:
+        QByteArray      getBA( QString token, QString value );
+
         YouTubeService* m_service;
-        QString         fileName;
-        QString         mimeType;
-        QString         title;
-        QString         category;
-        QString         description;
-        QString         tags;
-        bool            isPrivate;
+        QString         m_fileName;
+        QString         m_mimeType;
+        QString         m_title;
+        QString         m_category;
+        QString         m_description;
+        QString         m_tags;
+        bool            m_isPrivate;
 };
 
 #endif // YOUTUBEUPLOADER_H
