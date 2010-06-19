@@ -22,8 +22,8 @@
 
 #include "UploaderIODevice.h"
 
-UploaderIODevice::UploaderIODevice(QObject *parent, QString& fileName,
-                                   const QByteArray& head, const QByteArray& tail)
+UploaderIODevice::UploaderIODevice( QObject *parent, QString& fileName,
+                                   const QByteArray& head, const QByteArray& tail )
 {
     m_file = new QFile( fileName, this );
     m_head = new QByteArray( head );
@@ -34,18 +34,19 @@ UploaderIODevice::~UploaderIODevice()
 {
     delete m_head;
     delete m_tail;
+    delete m_file;
 }
 
 /* Implement vitual method */
-qint64 UploaderIODevice::readData(char *data, qint64 maxlen)
+qint64 UploaderIODevice::readData( char *data, qint64 maxlen )
 {
-    if (!m_file->isOpen())
-    {
+    if ( !m_file->isOpen() )
         return -1;
-    }
+
     char *pointer = data;
     qint64 atAll = 0;
-    if ( ( m_position < m_head->size() ) && (maxlen>0))
+
+    if ( ( m_position < m_head->size() ) && (maxlen>0) )
     {
         qint64 count = qMin(maxlen, (qint64)m_head->size());
         memcpy(pointer, m_head->data(), count);
@@ -54,26 +55,29 @@ qint64 UploaderIODevice::readData(char *data, qint64 maxlen)
         atAll+=count;
         maxlen -= count;
     }
-    if (maxlen>0 && (m_position<sizefull()))
+
+    if ( maxlen>0 && ( m_position < sizefull() ) )
     {
-        qint64 count = qMin(maxlen, m_file->bytesAvailable());
-        int s = m_file->read(pointer, count);
-        pointer+=s;
+        qint64 count = qMin( maxlen, m_file->bytesAvailable() );
+        int s = m_file->read( pointer, count );
+        pointer += s;
         maxlen -= s;
-        m_position+=s;
-        atAll+=s;
+        m_position += s;
+        atAll += s;
     }
-    if (m_position>=sizepart() && (maxlen>0) && (m_position<sizefull()))
+
+    if ( m_position >= sizepart() && ( maxlen > 0 ) && ( m_position < sizefull() ) )
     {
-        qint64 count = qMin(maxlen, (qint64)m_tail->size());
-        memcpy(pointer, m_tail->data(), count);
-        m_position+=count;
-        atAll+=count;
+        qint64 count = qMin( maxlen, ( qint64 ) m_tail->size() );
+        memcpy( pointer, m_tail->data(), count );
+        m_position += count;
+        atAll += count;
     }
+
     return atAll;
 }
 
-qint64 UploaderIODevice::writeData(const char *, qint64)
+qint64 UploaderIODevice::writeData( const char *, qint64 )
 {
     return -1;
 }
@@ -85,17 +89,17 @@ qint64 UploaderIODevice::size() const
 
 bool UploaderIODevice::openFile()
 {
-    if (m_file->open(QIODevice::ReadOnly))
-        return this->open(QIODevice::ReadOnly);
+    if ( m_file->open( QIODevice::ReadOnly ) )
+        return this->open( QIODevice::ReadOnly );
     return false;
 }
 
 qint64 UploaderIODevice::sizefull() const
 {
-    return m_file->size()+m_head->size()+m_tail->size();
+    return ( m_file->size() + m_head->size() + m_tail->size() );
 }
 
 qint64 UploaderIODevice::sizepart() const
 {
-    return m_head->size()+m_file->size();
+    return ( m_head->size() + m_file->size() );
 }

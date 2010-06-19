@@ -58,7 +58,9 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
 YouTubeService::~YouTubeService()
 {
     delete m_auth;
+    delete m_uploader;
     delete m_nam;
+    delete m_reply;
 }
 
 void
@@ -88,8 +90,6 @@ YouTubeService::setVideoParameters( const QString& fileName, const QString& titl
     m_fileName = fileName;
     m_uploader = new YouTubeUploader( this, fileName );
     m_uploader->setVideoParameters(title, description, category, keywords, isPrivate);
-
-    qDebug() << "[YT SERVICE PARAMS]: " << fileName << description << category << keywords;
 }
 
 QString
@@ -133,8 +133,6 @@ YouTubeService::authFinished()
 bool
 YouTubeService::upload()
 {
-    qDebug() << "[UPLOAD]: In Upload fx";
-
     if( m_auth->isAuthenticated() )
     {
         /* Upload Stuff here :) */
@@ -150,8 +148,6 @@ YouTubeService::upload()
         {
             if( m_reply )
                 delete m_reply;
-
-            qDebug() << "[STARTING UPLOAD]";
 
             m_reply = m_nam->post( request, data );
 
@@ -170,7 +166,6 @@ void
 YouTubeService::uploadFinished()
 {
     QByteArray data = m_reply->readAll();
-    qDebug() << "[SEVER RESPONSE]:\n" << data;
 
     /* TODO: Handle XML response */
 
@@ -181,7 +176,7 @@ YouTubeService::uploadFinished()
     disconnect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this,
             SLOT(networkError(QNetworkReply::NetworkError)) );
 
-    m_reply->deleteLater();
+    delete m_reply;
 }
 
 void
@@ -192,8 +187,6 @@ YouTubeService::search( QString& search )
 void
 YouTubeService::authError( QString e )
 {
-    qDebug() << "[AUTH ERROR]: " << e;
-
     if( e == "BadAuthentication" )
         m_state = YouTubeServiceStates::BadAuthentication;
     else
@@ -212,7 +205,6 @@ YouTubeService::authError( QString e )
 void
 YouTubeService::networkError(QNetworkReply::NetworkError e)
 {
-    qDebug() << "[Network Error]: " <<  e;
     m_state = YouTubeServiceStates::NetworkError;
 }
 
