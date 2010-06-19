@@ -68,19 +68,19 @@ YouTubeUploader::uploadInit()
     m_boundary = QString( QString::number( qrand(), 10 ).toAscii() );
 
     API_XML_REQUEST =
-            "<?xml version='1.0'?>\r\n"
-            "<entry\r\n"
-            "  xmlns='http://www.w3.org/2005/Atom'\r\n"
-            "  xmlns:media='http://search.yahoo.com/mrss/' \r\n"
-            "  xmlns:yt='http://gdata.youtube.com/schemas/2007'>\r\n"
-            "  <media:group>\r\n"
-            "    <media:title type='plain'>%1</media:title>\r\n"              // 1 title
-            "    <media:description type='plain'>%2</media:description>\r\n"  // 2 description
-            "    <media:category scheme='http://gdata.youtube.com/schemas/2007/categories.cat'>%3\r\n" // 3 category
-            "    </media:category>\r\n"
-            "    <media:keywords>%4</media:keywords>\r\n"                     // 4 key words
-            "  </media:group>\r\n"
-            "</entry>\r\n";
+        "<?xml version='1.0'?>\r\n"
+        "<entry\r\n"
+        "  xmlns='http://www.w3.org/2005/Atom'\r\n"
+        "  xmlns:media='http://search.yahoo.com/mrss/' \r\n"
+        "  xmlns:yt='http://gdata.youtube.com/schemas/2007'>\r\n"
+        "  <media:group>\r\n"
+        "    <media:title type='plain'>%1</media:title>\r\n"              // 1 title
+        "    <media:description type='plain'>%2</media:description>\r\n"  // 2 description
+        "    <media:category scheme='http://gdata.youtube.com/schemas/2007/categories.cat'>%3\r\n" // 3 category
+        "    </media:category>\r\n"
+        "    <media:keywords>%4</media:keywords>\r\n"                     // 4 key words
+        "  </media:group>\r\n"
+        "</entry>\r\n";
 
     API_XML_REQUEST = API_XML_REQUEST.arg( m_title, m_description, m_category, m_keywords );
 }
@@ -124,7 +124,6 @@ YouTubeUploader::getMimeHead()
     data.append( "--" + m_boundary + "\r\n" );
     data.append( "Content-Type: video/*\r\nContent-Transfer-Encoding: binary\r\n\r\n");
 
-    qDebug() << data;
     return data;
 }
 
