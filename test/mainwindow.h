@@ -22,7 +22,8 @@ private:
     Ui::MainWindow *ui;
     YouTubeService* y;
     QString devKey;
-    QString fileName;
+
+    void uploadVideo( QString& fileName );
 
 private slots:
     void on_actionShare_on_Internet_triggered();

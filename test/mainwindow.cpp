@@ -5,6 +5,10 @@
 
 #include <QDebug>
 
+#include <QFile>
+#include <QFileDialog>
+#include <QMessageBox>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -32,9 +36,30 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_pushButton_clicked()
 {
+    if ( ui->filePath->text() == "" )
+    {
+        QMessageBox::warning( this,
+                              tr( "Warning" ),
+                              tr( "Please choose a video to transcode" ) );
+        return ;
+    }
+
+    QString path = QFileDialog::getOpenFileName( this,
+                                                 tr( "Choose Video File to upload" ),
+                                                 "",
+                                                 tr( "Video files (*.avi *.mp4 *.ogg)" ) );
+
+    ui->filePath->setText(path);
+    uploadVideo( path );
 }
 
 void MainWindow::on_actionShare_on_Internet_triggered()
+{
+    /* No path checking is done, so handle it carefully */
+    uploadVideo( ui->filePath->text() );
+}
+
+void MainWindow::uploadVideo( QString& fileName )
 {
     ShareOnInternet *exportToInternet = new ShareOnInternet;
 
@@ -74,7 +99,10 @@ void MainWindow::authFinished()
 {
     /*On Finish, extract out the auth token and upload a test video */
     disconnect( y, SIGNAL(authOK()), this, SLOT(uploadVideo()) );
-    y->upload(); /* YouTubeService will check if the auth token is expired
+
+    y->upload();
+
+    /* YouTubeService will check if the auth token is expired
                    or it's not authenticated yet... Then if it's true, it will upload*/
 }
 
@@ -86,7 +114,7 @@ void MainWindow::uploadFinished( QString result )
     disconnect( y, SIGNAL(error(QString)), this, SLOT(error(QString)) );
 
     ui->log->appendPlainText(result);
-
+    delete y;
 }
 
 void MainWindow::videoUploadProgress(qint64 received, qint64 total)
@@ -96,5 +124,5 @@ void MainWindow::videoUploadProgress(qint64 received, qint64 total)
 
 void MainWindow::error(QString e)
 {
-    ui->log->appendPlainText("Error: " + e);
+    ui->log->appendPlainText("[Error]: " + e);
 }
