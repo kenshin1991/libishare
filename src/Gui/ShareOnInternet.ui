@@ -95,7 +95,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Gaming</string>
+       <string>Games</string>
       </property>
      </item>
      <item>
@@ -115,7 +115,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Nonprofits &amp; Activism</string>
+       <string>Nonprofit &amp; Activism</string>
       </property>
      </item>
      <item>
@@ -125,12 +125,12 @@
      </item>
      <item>
       <property name="text">
-       <string>Pets &amp; Animals</string>
+       <string>Animals &amp; Pets</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Science &amp; Technology</string>
+       <string>Tech &amp; Science</string>
       </property>
      </item>
      <item>

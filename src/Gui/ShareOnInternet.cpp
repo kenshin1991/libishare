@@ -61,7 +61,8 @@ ShareOnInternet::password() const
 QString
 ShareOnInternet::category() const
 {
-    return m_ui.category->currentText();
+    QString cat = m_ui.category->currentText();
+    return cat.split(" & ").at(0);
 }
 
 QString
