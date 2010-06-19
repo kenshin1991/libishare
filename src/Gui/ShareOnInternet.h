@@ -37,7 +37,7 @@ class   ShareOnInternet : public QDialog
         QString         title() const;
         QString         category() const;
         QString         description() const;
-        QString         tags() const;
+        QString         keywords() const;
         quint32         width() const;
         quint32         height() const;
         bool            videoPrivacy() const;
@@ -47,6 +47,7 @@ class   ShareOnInternet : public QDialog
 
     private:
         Ui::ShareOnInternet   m_ui;
+        quint32               m_serviceProvider;
         quint32               m_width;
         quint32               m_height;
 };

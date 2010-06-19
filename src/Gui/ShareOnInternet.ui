@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ShareOnYoutube</class>
- <widget class="QDialog" name="ShareOnYoutube">
+ <class>ShareOnInternet</class>
+ <widget class="QDialog" name="ShareOnInternet">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>380</width>
-    <height>450</height>
+    <height>421</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -179,7 +179,7 @@
     </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QLineEdit" name="tags"/>
+    <widget class="QLineEdit" name="keywords"/>
    </item>
    <item row="7" column="0">
     <widget class="QLabel" name="label_7">
@@ -229,7 +229,7 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;By clicking OK, you agree with TOS of the video service providers: &lt;a href=&quot;http://code.google.com/apis/youtube/terms.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;YouTube&lt;/span&gt;&lt;/a&gt;, &lt;a href=&quot;http://vimeo.com/terms&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Vimeo&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;By clicking OK, you agree with Terms Of Services of the selected video service provider. ( &lt;a href=&quot;http://code.google.com/apis/youtube/terms.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;YouTube&lt;/span&gt;&lt;/a&gt;, &lt;a href=&quot;http://vimeo.com/terms&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Vimeo&lt;/span&gt;&lt;/a&gt; )&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>
@@ -259,7 +259,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ShareOnYoutube</receiver>
+   <receiver>ShareOnInternet</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -275,7 +275,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ShareOnYoutube</receiver>
+   <receiver>ShareOnInternet</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

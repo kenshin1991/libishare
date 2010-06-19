@@ -80,8 +80,6 @@ class YouTubeService : public QObject
         void uploadFinished();
         //void searchFinished();
 
-        void uploadProgress( qint64, qint64 );
-
         void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
         void authError( QString );
         void networkError( QNetworkReply::NetworkError );
@@ -91,6 +89,8 @@ class YouTubeService : public QObject
 
     signals:
         void authOK();
+        void uploadOK( QString );
+        void uploadProgress( qint64, qint64 );
 };
 
 #endif // YOUTUBESERVICE_H

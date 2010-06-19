@@ -40,7 +40,9 @@ ShareOnInternet::accept()
         default: m_width = 640;  m_height = 360;
     }
 
-    //Error checks here
+    /* Add here code to update service provider, default: YouTube */
+
+    /* Error checks here */
     QDialog::accept();
 }
 
@@ -75,9 +77,9 @@ ShareOnInternet::description() const
 }
 
 QString
-ShareOnInternet::tags() const
+ShareOnInternet::keywords() const
 {
-    return m_ui.tags->text();
+    return m_ui.keywords->text();
 }
 
 quint32

@@ -152,7 +152,7 @@ YouTubeService::upload()
 
             connect( m_reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
             connect( m_reply, SIGNAL(uploadProgress(qint64,qint64)),
-                     this, SLOT(uploadProgress(qint64,qint64) ) );
+                     this, SIGNAL(uploadProgress(qint64,qint64) ) );
             connect( m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
                      this, SLOT(networkError(QNetworkReply::NetworkError)) );
         }
@@ -162,19 +162,14 @@ YouTubeService::upload()
 }
 
 void
-YouTubeService::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
-{
-    qint64 perc = (bytesSent * 100 / bytesTotal);
-    qDebug() << perc << "%";
-}
-
-void
 YouTubeService::uploadFinished()
 {
     QByteArray data = m_reply->readAll();
     qDebug() << "[SEVER RESPONSE]:\n" << data;
 
     /* TODO: Handle XML response */
+
+    emit uploadOK( QSting( data ) );
 
     /* Disconnect local mappings, just in case authenticate is called again */
     disconnect( m_reply, SIGNAL(finished()),this,SLOT(uploadFinished()) );

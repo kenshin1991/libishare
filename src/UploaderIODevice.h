@@ -1,5 +1,5 @@
 /*****************************************************************************
- * UploaderIODevice.h:
+ * UploaderIODevice.h: Custom IODevice for uploading mutipart data and video
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *

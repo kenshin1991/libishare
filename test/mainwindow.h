@@ -20,16 +20,18 @@ protected:
 
 private:
     Ui::MainWindow *ui;
-    YouTubeService y;
+    YouTubeService* y;
     QString devKey;
-    //QByteArray data;
+    QString fileName;
 
 private slots:
+    void on_actionShare_on_Internet_triggered();
     void on_pushButton_clicked();
-    void finished();
+
+    void authFinished();
+    void uploadFinished(QString);
     void error(QString);
-    //void downloadFinished();
-    //void slotSetProgress(qint64 received, qint64 total);
+    void videoUploadProgress(qint64 received, qint64 total);
 };
 
 #endif // MAINWINDOW_H

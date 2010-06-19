@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "Gui/ShareOnInternet.h"
+
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -30,32 +32,69 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_pushButton_clicked()
 {
-    //y.setCredentials(ui->username->text(), ui->password->text());
-    //y.setDeveloperKey(devKey);
-    //y.authenticate();
-
-    connect(&y, SIGNAL(authOK()), this, SLOT(finished()));
-    //connect(&y, SIGNAL(error(QString)), this, SLOT(error(QString)) );
 }
 
-void MainWindow::finished()
+void MainWindow::on_actionShare_on_Internet_triggered()
 {
-    //ui->plainTextEdit->appendPlainText(y.getYouTubeAuthString());
-    //ui->plainTextEdit->appendPlainText(y.getYouTubeUser());
+    ShareOnInternet *exportToInternet = new ShareOnInternet;
 
+    if ( exportToInternet->exec() == QDialog::Rejected )
+    {
+        delete exportToInternet;
+        return ;
+    }
+
+    QString username     = exportToInternet->username();
+    QString password     = exportToInternet->password();
+    QString title        = exportToInternet->title();
+    QString category     = exportToInternet->category();
+    QString description  = exportToInternet->description();
+    QString keywords     = exportToInternet->keywords();
+    quint32 width        = exportToInternet->width();
+    quint32 height       = exportToInternet->height();
+    bool    videoPrivacy = exportToInternet->videoPrivacy();
+
+    delete exportToInternet;
+
+    /* Add code to transcode/export video */
+
+    y = new YouTubeService( devKey, username, password );
+    y->setVideoParameters( fileName, title, description, category, keywords, videoPrivacy );
+    y->authenticate();
+
+    connect( y, SIGNAL(authOK()), this, SLOT(authFinished()) );
+    connect( y, SIGNAL(uploadOK(QString)), this, SLOT(uploadFinished(QString)));
+    connect( y, SIGNAL(uploadProgress(qint64,qint64)),
+             this, SLOT(videoUploadProgress(qint64,qint64)) );
+    connect( y, SIGNAL(error(QString)), this, SLOT(error(QString)) );
+}
+
+
+void MainWindow::authFinished()
+{
     /*On Finish, extract out the auth token and upload a test video */
-    disconnect(&y, SIGNAL(authOK()), this, SLOT(finished()));
-    qDebug() << "AUTH OK!";
-    QString vfile = "kick-start-vlmc.mp4";
-    y.setVideoParameters(vfile, QString("Kick Start VLMC"),
-                         QString("This is the first ever video uploaded by (libqyoutube, VLMC) to YouTube directly.\n"
-                         "Credits: Rohit Yadav (the guy kicking the bottle :), SoC 2010 Student Developer for VLMC; VideoLAN."),
-                         QString("Comedy"), QString("vlmc, VLMC, youtube upload, soccer, kick-start"), false);
-    y.upload(); /* YouTubeService will check if the auth token is expired
-                             or it's not authenticated yet... Then if it's true, it will upload*/
+    disconnect( y, SIGNAL(authOK()), this, SLOT(uploadVideo()) );
+    y->upload(); /* YouTubeService will check if the auth token is expired
+                   or it's not authenticated yet... Then if it's true, it will upload*/
+}
+
+void MainWindow::uploadFinished( QString result )
+{
+    disconnect( y, SIGNAL(uploadOK(QString)), this, SLOT(uploadFinished(QString)));
+    disconnect( y, SIGNAL(uploadProgress(qint64,qint64)),
+                this, SLOT(videoUploadProgress(qint64,qint64)) );
+    disconnect( y, SIGNAL(error(QString)), this, SLOT(error(QString)) );
+
+    ui->log->appendPlainText(result);
+
+}
+
+void MainWindow::videoUploadProgress(qint64 received, qint64 total)
+{
+    ui->progressBar->setValue( received * 100 / total );
 }
 
 void MainWindow::error(QString e)
 {
-    ui->log->setPlainText("Error: " + e);
+    ui->log->appendPlainText("Error: " + e);
 }
