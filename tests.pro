@@ -14,7 +14,7 @@ SOURCES +=  test/main.cpp \
             src/YouTube/YouTubeUploader.cpp \
             src/YouTube/YouTubeService.cpp \
             src/YouTube/YouTubeAuthenticator.cpp \
-            src/Gui/ShareOnInternet.cpp
+            test/Gui/ShareOnInternet.cpp
 
 HEADERS +=  test/mainwindow.h \
             src/UploaderIODevice.h \
@@ -22,10 +22,10 @@ HEADERS +=  test/mainwindow.h \
             src/YouTube/YouTubeService.h \
             src/YouTube/YouTubeServiceStates.h \
             src/YouTube/YouTubeAuthenticator.h \
-            src/Gui/ShareOnInternet.h
+            test/Gui/ShareOnInternet.h
 
 FORMS += test/mainwindow.ui \
-         src/Gui/ShareOnInternet.ui
+         test/Gui/ShareOnInternet.ui
 
 INCLUDEPATH += src \
                test
