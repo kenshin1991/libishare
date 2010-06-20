@@ -7,6 +7,10 @@ Internet video sharing sites like YouTube and Vimeo.
 This library simply implements the HTTP/S and REST protocols at the core using 
 cross-platform Qt Network APIs. Report bugs to the author or at VLMC's Trac.
 
+USAGE: Directly add the src file(s) in your project and use them accrdingly. If you
+change some part of code, simple add your <name> <email> in the authors list, the license
+must be retained. You may also want to send a patch to VLMC devel or to me as well.
+
 NOTE: This library, is a part of VLMC, but can be used in other *open source* projects.
 If you want to use it in a *commercial software*, contact the developer.
 
@@ -35,4 +39,5 @@ Rohit Yadav <rohityadav89 AT gmail.com>
 
 References
 ==========
+
   * YouTube APIs: http://code.google.com/apis/youtube/2.0/developers_guide_protocol.html
