@@ -60,8 +60,8 @@ class YouTubeService : public QObject
     private:
         friend class           YouTubeUploader;
 
-        QString                getDeveloperKey();
-        QString                getAuthString();
+        const QString&         getDeveloperKey();
+        const QString&         getAuthString();
 
     protected:
         YouTubeServiceState    m_state;

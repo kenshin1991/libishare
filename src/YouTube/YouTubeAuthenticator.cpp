@@ -46,7 +46,7 @@ YouTubeAuthenticator::authInit()
     m_authError.clear();
 }
 
-QByteArray
+const QByteArray&
 YouTubeAuthenticator::getPOSTData()
 {
     return m_postData;
@@ -66,14 +66,14 @@ YouTubeAuthenticator::getNetworkRequest()
     return request;
 }
 
-QString
+const QString&
 YouTubeAuthenticator::getAuthString()
 {
     return m_authString;
 }
 
 
-QString
+const QString&
 YouTubeAuthenticator::getNick()
 {
     return m_nick;

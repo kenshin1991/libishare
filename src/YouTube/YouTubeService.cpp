@@ -91,13 +91,13 @@ YouTubeService::setVideoParameters( const QString& fileName, const QString& titl
     m_uploader->setVideoParameters(title, description, category, keywords, isPrivate);
 }
 
-QString
+const QString&
 YouTubeService::getAuthString()
 {
     return m_auth->getAuthString();
 }
 
-QString
+const QString&
 YouTubeService::getDeveloperKey()
 {
     return m_devKey;

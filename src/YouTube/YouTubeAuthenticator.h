@@ -45,10 +45,10 @@ class YouTubeAuthenticator : public QObject
     private:
         friend class    YouTubeService;
 
-        QString         getAuthString();
-        QNetworkRequest getNetworkRequest();
-        QString         getNick();
-        QByteArray      getPOSTData();
+        const QString&      getAuthString();
+        const QString&      getNick();
+        QNetworkRequest     getNetworkRequest();
+        const QByteArray&   getPOSTData();
 
     protected:
         void            authInit();
