@@ -52,10 +52,11 @@ class YouTubeService : public QObject
         void setVideoParameters( const QString& fileName, const QString& title, const QString& description,
                                  const QString& category, const QString& keywords, bool isPrivate );
 
-        /* Services */
-        void authenticate();
-        bool upload();
-        void search( QString& search );
+        /* Service Interfaces */
+        void authenticate();            // Authenticate the service
+        bool upload();                  // Upload video
+        void search( QString& search ); // Search for a video
+        bool abort();                   // Abort on going service
 
     private:
         friend class           YouTubeUploader;
@@ -73,6 +74,7 @@ class YouTubeService : public QObject
         QString                m_proxyPassword;
 
         QNetworkAccessManager* m_nam;
+        QNetworkReply*         m_currentReply;
 
     private slots:
         void authFinished();

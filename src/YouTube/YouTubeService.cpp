@@ -42,6 +42,9 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
     /* On authentication error, m_auth will send the error token */
     connect( m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
 
+    /* This is a temporary pointer to track current QNetworkReply in progress */
+    m_currentReply = NULL;
+
     m_nam = new QNetworkAccessManager();
 
     /* In case the proxy asks for credentials, handle it */
@@ -57,6 +60,9 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
 
 YouTubeService::~YouTubeService()
 {
+    if( m_currentReply )
+        m_currentReply->abort();
+
     delete m_nam;
     delete m_auth;
     delete m_uploader;
@@ -109,6 +115,7 @@ YouTubeService::authenticate()
     QNetworkRequest request = m_auth->getNetworkRequest();
 
     QNetworkReply* authReply = m_nam->post( request, m_auth->getPOSTData() );
+    m_currentReply = authReply;
 
     connect( authReply, SIGNAL(finished()),this,SLOT(authFinished()) );
     connect( authReply, SIGNAL(error(QNetworkReply::NetworkError)),
@@ -118,12 +125,15 @@ YouTubeService::authenticate()
 void
 YouTubeService::authFinished()
 {
+    m_currentReply = NULL;
+
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     QByteArray data = reply->readAll();
 
     if( m_auth->setAuthData( data ) )
         m_state = YouTubeServiceStates::Ok;
 
+    reply->close();
     reply->deleteLater();
 }
 
@@ -143,12 +153,13 @@ YouTubeService::upload()
 
         if( data->openFile() )
         {
-            QNetworkReply* upReply = m_nam->post( request, data );
+            QNetworkReply* uploadReply = m_nam->post( request, data );
+            m_currentReply = uploadReply;
 
-            connect( upReply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
-            connect( upReply, SIGNAL(uploadProgress(qint64,qint64)),
+            connect( uploadReply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
+            connect( uploadReply, SIGNAL(uploadProgress(qint64,qint64)),
                      this, SIGNAL(uploadProgress(qint64,qint64)) );
-            connect( upReply, SIGNAL(error(QNetworkReply::NetworkError)),
+            connect( uploadReply, SIGNAL(error(QNetworkReply::NetworkError)),
                      this, SLOT(networkError(QNetworkReply::NetworkError)) );
 
             return true;
@@ -160,6 +171,8 @@ YouTubeService::upload()
 void
 YouTubeService::uploadFinished()
 {
+    m_currentReply = NULL;
+
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     QByteArray data = reply->readAll();
 
@@ -168,12 +181,26 @@ YouTubeService::uploadFinished()
     /* TODO: Handle XML response */
     emit uploadOK( QString( data ) );
 
+    reply->close();
     reply->deleteLater();
 }
 
 void
 YouTubeService::search( QString& search )
 {
+}
+
+bool
+YouTubeService::abort()
+{
+    if( m_currentReply )
+    {
+        m_currentReply->abort();
+        m_currentReply->close();
+        m_currentReply->deleteLater();
+        return true;
+    }
+    return false;
 }
 
 void
