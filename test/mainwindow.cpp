@@ -64,12 +64,13 @@ void MainWindow::uploadVideo( QString& fileName )
 
     QString username     = exportToInternet->username();
     QString password     = exportToInternet->password();
+    quint32 width        = exportToInternet->width();
+    quint32 height       = exportToInternet->height();
+
     QString title        = exportToInternet->title();
     QString category     = exportToInternet->category();
     QString description  = exportToInternet->description();
     QString keywords     = exportToInternet->keywords();
-    quint32 width        = exportToInternet->width();
-    quint32 height       = exportToInternet->height();
     bool    videoPrivacy = exportToInternet->videoPrivacy();
 
     delete exportToInternet;

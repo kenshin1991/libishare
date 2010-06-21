@@ -25,7 +25,7 @@
 
 #include <QString>
 
-class YouTubeVideoData
+class VideoData
 {
     public:
         QString title;
@@ -34,6 +34,8 @@ class YouTubeVideoData
         QString keywords;
         bool    isPrivate;
 };
+
+typedef VideoData YouTubeVideoData;
 
 /*
  * Error Code References:
