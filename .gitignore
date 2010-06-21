@@ -1,6 +1,7 @@
 libishare-test
 /build
 /bin
+/videos
 Makefile*
 
 .DS_Store
