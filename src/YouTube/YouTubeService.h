@@ -23,7 +23,7 @@
 #ifndef YOUTUBESERVICE_H
 #define YOUTUBESERVICE_H
 
-#include "YouTubeServiceStates.h"
+#include "YouTubeCommon.h"
 
 #include <QObject>
 #include <QNetworkReply>

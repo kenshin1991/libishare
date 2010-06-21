@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>320</width>
-    <height>440</height>
+    <width>400</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>320</width>
-    <height>440</height>
+    <width>400</width>
+    <height>400</height>
    </size>
   </property>
   <property name="focusPolicy">
@@ -36,7 +36,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
+   <item row="0" column="1" colspan="3">
     <widget class="QComboBox" name="service">
      <item>
       <property name="text">
@@ -60,28 +60,28 @@
    <item row="1" column="1">
     <widget class="QLineEdit" name="username"/>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="2">
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Password</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="1" column="3">
     <widget class="QLineEdit" name="password">
      <property name="echoMode">
       <enum>QLineEdit::Password</enum>
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="2" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
       <string>Category</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
+   <item row="2" column="1" colspan="3">
     <widget class="QComboBox" name="category">
      <item>
       <property name="text">
@@ -160,17 +160,17 @@
      </item>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="3" column="0">
     <widget class="QLabel" name="label_4">
      <property name="text">
       <string>Title</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="3" column="1" colspan="3">
     <widget class="QLineEdit" name="title"/>
    </item>
-   <item row="5" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="label_5">
      <property name="text">
       <string>Description</string>
@@ -180,7 +180,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="4" column="1" colspan="3">
     <widget class="QPlainTextEdit" name="description">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -190,24 +190,24 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="label_6">
      <property name="text">
       <string>Keywords</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="1">
+   <item row="5" column="1" colspan="3">
     <widget class="QLineEdit" name="keywords"/>
    </item>
-   <item row="7" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="label_7">
      <property name="text">
       <string>Video Size</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
+   <item row="6" column="1" colspan="3">
     <widget class="QComboBox" name="videoSize">
      <item>
       <property name="text">
@@ -251,7 +251,7 @@
      </item>
     </widget>
    </item>
-   <item row="8" column="0" colspan="2">
+   <item row="7" column="0" colspan="4">
     <widget class="QCheckBox" name="videoPrivacy">
      <property name="text">
       <string>Make this video private</string>
@@ -261,14 +261,14 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="0" colspan="2">
+   <item row="8" column="0" colspan="4">
     <widget class="QLabel" name="label_9">
      <property name="text">
       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;By publishing the video, you agree with Terms Of Services of the selected video service provider. ( &lt;a href=&quot;http://code.google.com/apis/youtube/terms.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;YouTube&lt;/span&gt;&lt;/a&gt;, &lt;a href=&quot;http://vimeo.com/terms&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Vimeo&lt;/span&gt;&lt;/a&gt; )&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;By publishing, you agree with Terms Of Services of &lt;a href=&quot;http://code.google.com/apis/youtube/terms.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;YouTube&lt;/span&gt;&lt;/a&gt;, &lt;a href=&quot;http://vimeo.com/terms&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Vimeo&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>
@@ -281,7 +281,7 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </item>
-   <item row="10" column="0" colspan="2">
+   <item row="9" column="0" colspan="4">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <spacer name="horizontalSpacer">
@@ -305,6 +305,9 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <widget class="QPushButton" name="publishButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="text">
         <string>&amp;Publish</string>
        </property>

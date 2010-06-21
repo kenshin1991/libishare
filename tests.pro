@@ -20,8 +20,8 @@ HEADERS +=  test/mainwindow.h \
             src/UploaderIODevice.h \
             src/YouTube/YouTubeUploader.h \
             src/YouTube/YouTubeService.h \
-            src/YouTube/YouTubeServiceStates.h \
             src/YouTube/YouTubeAuthenticator.h \
+            src/YouTube/YouTubeCommon.h \
             test/Gui/ShareOnInternet.h
 
 FORMS += test/mainwindow.ui \

@@ -43,7 +43,7 @@ class YouTubeAuthenticator : public QObject
         bool isAuthenticated();
 
     private:
-        friend class    YouTubeService;
+        friend class        YouTubeService;
 
         const QString&      getAuthString();
         const QString&      getNick();

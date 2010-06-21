@@ -23,15 +23,27 @@
 #include "ShareOnInternet.h"
 #include "ui_ShareOnInternet.h"
 
+#include <QMessageBox>
+
 ShareOnInternet::ShareOnInternet()
 {
     m_ui.setupUi( this );
-    setWindowFlags( windowFlags() | Qt::Sheet );
+    setWindowFlags( windowFlags() | Qt::Sheet ); // Qt::Sheet is for UI on Mac
 }
 
 void
 ShareOnInternet::accept()
 {
+    if( m_ui.title->text().isEmpty() |
+        m_ui.username->text().isEmpty() |
+        m_ui.password->text().isEmpty() )
+    {
+        QMessageBox::critical( this, tr("Error"),
+                               tr("'Username' or 'Password' or 'Title' cannot be empty."
+                                  "Please check these fields.") );
+        return;
+    }
+
     switch( m_ui.videoSize->currentIndex() )
     {
         case 0:  m_width = 480;  m_height = 272; break;

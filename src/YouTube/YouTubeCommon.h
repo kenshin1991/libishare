@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeServiceStates.h: Different YT Service States
+ * YouTubeCommon.h: Generic Video Data Struct
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -20,8 +20,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#ifndef YOUTUBESERVICESTATES_H
-#define YOUTUBESERVICESTATES_H
+#ifndef YOUTUBECOMMON_H
+#define YOUTUBECOMMON_H
 
 /*
  * Error Code References:
@@ -52,4 +52,16 @@ namespace YouTubeServiceStates
 
 typedef YouTubeServiceStates::YouTubeServiceState YouTubeServiceState;
 
-#endif // YOUTUBESERVICESTATES_H
+class QString;
+class YouTubeVideoData
+{
+    QString username;
+    QString password;
+    QString title;
+    QString category;
+    QString description;
+    QString keywords;
+    bool    isPrivate;
+};
+
+#endif // YOUTUBECOMMON_H
