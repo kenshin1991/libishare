@@ -67,22 +67,28 @@ YouTubeUploader::uploadInit()
 {
     m_boundary = QString( QString::number( qrand(), 10 ).toAscii() );
 
+    QString privateToken = "";
+
+    if( m_isPrivate )
+        privateToken = "    <yt:private/>\r\n";
+
     API_XML_REQUEST =
         "<?xml version='1.0'?>\r\n"
         "<entry\r\n"
         "  xmlns='http://www.w3.org/2005/Atom'\r\n"
-        "  xmlns:media='http://search.yahoo.com/mrss/' \r\n"
+        "  xmlns:media='http://search.yahoo.com/mrss/'\r\n"
         "  xmlns:yt='http://gdata.youtube.com/schemas/2007'>\r\n"
         "  <media:group>\r\n"
         "    <media:title type='plain'>%1</media:title>\r\n"              // 1 title
         "    <media:description type='plain'>%2</media:description>\r\n"  // 2 description
         "    <media:category scheme='http://gdata.youtube.com/schemas/2007/categories.cat'>%3\r\n" // 3 category
         "    </media:category>\r\n"
-        "    <media:keywords>%4</media:keywords>\r\n"                     // 4 key words
+        "    <media:keywords>%4</media:keywords>\r\n%5"                   // 4 key words, 5 private video                                                        // 5 isPrivate
         "  </media:group>\r\n"
         "</entry>\r\n";
 
-    API_XML_REQUEST = API_XML_REQUEST.arg( m_title, m_description, m_category, m_keywords );
+    API_XML_REQUEST = API_XML_REQUEST.arg( m_title, m_description, m_category, m_keywords,
+                                           privateToken );
 }
 
 QNetworkRequest
