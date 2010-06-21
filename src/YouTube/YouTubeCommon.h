@@ -23,45 +23,40 @@
 #ifndef YOUTUBECOMMON_H
 #define YOUTUBECOMMON_H
 
+#include <QString>
+
+class YouTubeVideoData
+{
+    public:
+        QString title;
+        QString category;
+        QString description;
+        QString keywords;
+        bool    isPrivate;
+};
+
 /*
  * Error Code References:
  *   Auth: http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html#Errors
  *
  */
 
-namespace YouTubeServiceStates
+/* Status codes for YouTubeService. */
+enum YouTubeStatus
 {
-    /* Status codes for YouTubeService. */
-    enum YouTubeServiceState
-    {
-        Ok = 0,
+    Ok = 0,
 
-        BadAuthentication,          // Incorrect User credentials
-        CaptchaRequired,            // If server is trying to challenge captcha
-        ServiceUnavailable,         // YT Service Unavailable
-        UnknownError,               // Unknown Error
+    BadAuthentication,          // Incorrect User credentials
+    CaptchaRequired,            // If server is trying to challenge captcha
+    ServiceUnavailable,         // YT Service Unavailable
+    UnknownError,               // Unknown Error
 
-        NetworkError,               // Some Network Error
-        ConnectionError,            // Connection error
-        SSLError,                   // SSL Error
+    NetworkError,               // Some Network Error
+    ConnectionError,            // Connection error
+    SSLError,                   // SSL Error
 
-        FileMissing,                // File not file
-        XmlError                    // XML Parsing Error
-    };
-}
-
-typedef YouTubeServiceStates::YouTubeServiceState YouTubeServiceState;
-
-class QString;
-class YouTubeVideoData
-{
-    QString username;
-    QString password;
-    QString title;
-    QString category;
-    QString description;
-    QString keywords;
-    bool    isPrivate;
+    FileMissing,                // File not file
+    XmlError                    // XML Parsing Error
 };
 
 #endif // YOUTUBECOMMON_H

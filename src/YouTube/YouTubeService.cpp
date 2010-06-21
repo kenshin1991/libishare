@@ -88,13 +88,21 @@ YouTubeService::setProxyCredentials(const QString &username, const QString &pass
 }
 
 void
+YouTubeService::setVideoParameters( const QString& fileName, const YouTubeVideoData& data )
+{
+    m_fileName = fileName;
+    m_uploader = new YouTubeUploader( this, fileName );
+    m_uploader->setVideoData( data );
+}
+
+void
 YouTubeService::setVideoParameters( const QString& fileName, const QString& title,
                                     const QString& description, const QString& category,
                                     const QString& keywords, bool isPrivate )
 {
     m_fileName = fileName;
     m_uploader = new YouTubeUploader( this, fileName );
-    m_uploader->setVideoParameters(title, description, category, keywords, isPrivate);
+    m_uploader->setVideoData( title, description, category, keywords, isPrivate );
 }
 
 const QString&
@@ -131,7 +139,7 @@ YouTubeService::authFinished()
     QByteArray data = reply->readAll();
 
     if( m_auth->setAuthData( data ) )
-        m_state = YouTubeServiceStates::Ok;
+        m_status = Ok;
 
     reply->close();
     reply->deleteLater();
@@ -207,15 +215,15 @@ void
 YouTubeService::authError( QString e )
 {
     if( e == "BadAuthentication" )
-        m_state = YouTubeServiceStates::BadAuthentication;
+        m_status = BadAuthentication;
     else
     if( e == "CaptchaRequired")
-        m_state = YouTubeServiceStates::CaptchaRequired;
+        m_status = CaptchaRequired;
     else
     if( e == "ServiceUnavailable")
-        m_state = YouTubeServiceStates::ServiceUnavailable;
+        m_status = ServiceUnavailable;
     else
-        m_state = YouTubeServiceStates::UnknownError;
+        m_status = UnknownError;
 
     emit serviceError( e );
 
@@ -224,13 +232,13 @@ YouTubeService::authError( QString e )
 void
 YouTubeService::networkError(QNetworkReply::NetworkError e)
 {
-    m_state = YouTubeServiceStates::NetworkError;
+    m_status = NetworkError;
 }
 
 void
 YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator )
 {
-    m_state = YouTubeServiceStates::ConnectionError;
+    m_status = ConnectionError;
 
     /* TODO: Make a small QDialog to take in usr:passwd */
     if( !m_proxyUsername.isEmpty() && !m_proxyPassword.isEmpty() )
@@ -247,7 +255,7 @@ YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator
 void
 YouTubeService::sslErrors( QNetworkReply* reply, const QList<QSslError> &errors )
 {
-    m_state = YouTubeServiceStates::SSLError;
+    m_status = SSLError;
 
     QString errorString;
     foreach (const QSslError &error, errors)

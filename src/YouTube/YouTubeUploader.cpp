@@ -44,15 +44,22 @@ YouTubeUploader::~YouTubeUploader()
 }
 
 void
-YouTubeUploader::setVideoParameters( const QString &title, const QString &description,
-                                     const QString &category, const QString &keywords,
-                                     bool isPrivate)
+YouTubeUploader::setVideoData( const YouTubeVideoData& data )
 {
-    m_title       = title;
-    m_description = description;
-    m_category    = category;
-    m_keywords    = keywords;
-    m_isPrivate   = isPrivate;
+    m_videoData = data;
+    uploadInit();
+}
+
+void
+YouTubeUploader::setVideoData( const QString &title, const QString &description,
+                               const QString &category, const QString &keywords,
+                               bool isPrivate )
+{
+    m_videoData.title       = title;
+    m_videoData.description = description;
+    m_videoData.category    = category;
+    m_videoData.keywords    = keywords;
+    m_videoData.isPrivate   = isPrivate;
     uploadInit();
 }
 
@@ -69,7 +76,7 @@ YouTubeUploader::uploadInit()
 
     QString privateToken = "";
 
-    if( m_isPrivate )
+    if( m_videoData.isPrivate )
         privateToken = "    <yt:private/>\r\n";
 
     API_XML_REQUEST =
@@ -87,7 +94,8 @@ YouTubeUploader::uploadInit()
         "  </media:group>\r\n"
         "</entry>\r\n";
 
-    API_XML_REQUEST = API_XML_REQUEST.arg( m_title, m_description, m_category, m_keywords,
+    API_XML_REQUEST = API_XML_REQUEST.arg( m_videoData.title, m_videoData.description,
+                                           m_videoData.category, m_videoData.keywords,
                                            privateToken );
 }
 

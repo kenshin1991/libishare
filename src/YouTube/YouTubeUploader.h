@@ -23,8 +23,9 @@
 #ifndef YOUTUBEUPLOADER_H
 #define YOUTUBEUPLOADER_H
 
+#include "YouTubeCommon.h"
+
 #include <QObject>
-#include <QString>
 
 #define UPLOAD_URL "http://uploads.gdata.youtube.com/feeds/api/users/default/uploads"
 
@@ -39,25 +40,30 @@ class YouTubeUploader : public QObject
         ~YouTubeUploader();
 
         void setServiceProvider( YouTubeService* service );
-        void setVideoParameters( const QString& title, const QString& description,
-                                 const QString& category, const QString& keywords, bool isPrivate );
+        void setVideoData( const YouTubeVideoData& data );
+        void setVideoData( const QString &title, const QString &description,
+                           const QString &category, const QString &keywords,
+                           bool isPrivate );
 
         QNetworkRequest getNetworkRequest();
         QByteArray      getMimeHead();
         QByteArray      getMimeTail();
 
     private:
-        void            uploadInit();
-        QString         API_XML_REQUEST;
-        YouTubeService* m_service;
-        QString         m_boundary;
-        QString         m_fileName;
-        QString         m_mimeType;
-        QString         m_title;
+        void             uploadInit();
+
+        QString          API_XML_REQUEST;
+        YouTubeService*  m_service;
+        QString          m_boundary;
+
+        QString          m_fileName;
+        YouTubeVideoData m_videoData;
+
+/*        QString         m_title;
         QString         m_description;
         QString         m_category;
         QString         m_keywords;
-        bool            m_isPrivate;
+        bool            m_isPrivate; */
 };
 
 #endif // YOUTUBEUPLOADER_H
