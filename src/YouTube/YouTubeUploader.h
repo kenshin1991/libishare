@@ -58,12 +58,6 @@ class YouTubeUploader : public QObject
 
         QString          m_fileName;
         YouTubeVideoData m_videoData;
-
-/*        QString         m_title;
-        QString         m_description;
-        QString         m_category;
-        QString         m_keywords;
-        bool            m_isPrivate; */
 };
 
 #endif // YOUTUBEUPLOADER_H
