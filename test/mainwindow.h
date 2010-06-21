@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "YouTube/YouTubeService.h"
+
 class QByteArray;
 
 namespace Ui {
@@ -14,9 +15,6 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-protected:
-    void changeEvent(QEvent *e);
 
 private:
     Ui::MainWindow *ui;

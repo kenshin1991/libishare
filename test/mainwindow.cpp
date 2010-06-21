@@ -1,10 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
 #include "Gui/ShareOnInternet.h"
 
 #include <QDebug>
-
 #include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -22,24 +20,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::changeEvent(QEvent *e)
-{
-    QMainWindow::changeEvent(e);
-    switch (e->type()) {
-    case QEvent::LanguageChange:
-        ui->retranslateUi(this);
-        break;
-    default:
-        break;
-    }
-}
-
 void MainWindow::on_pushButton_clicked()
 {
     QString path = QFileDialog::getOpenFileName( this,
                                                  tr( "Choose Video File to upload" ),
                                                  "",
-                                                 tr( "Video files (*.avi *.mov *.mp4 *.ogg *.*)" ) );
+                                                 tr( "Video files (*.avi *.flv *.mov *.mp4 *.mpg)" ) );
 
     ui->filePath->setText(path);
     uploadVideo( path );
@@ -47,7 +33,6 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_actionShare_on_Internet_triggered()
 {
-    /* No path checking is done, so handle it carefully */
     QString path = ui->filePath->text();
     uploadVideo( path );
 }
@@ -66,22 +51,14 @@ void MainWindow::uploadVideo( QString& fileName )
     QString password     = exportToInternet->password();
     quint32 width        = exportToInternet->width();
     quint32 height       = exportToInternet->height();
-
-    QString title        = exportToInternet->title();
-    QString category     = exportToInternet->category();
-    QString description  = exportToInternet->description();
-    QString keywords     = exportToInternet->keywords();
-    bool    videoPrivacy = exportToInternet->videoPrivacy();
+    VideoData videoData  = exportToInternet->videoData();
 
     delete exportToInternet;
-
-    //qDebug() << username << password
-    //         << title << category << description << keywords;
 
     /* Add code to transcode/export video */
 
     y = new YouTubeService( devKey, username, password );
-    y->setVideoParameters( fileName, title, description, category, keywords, videoPrivacy );
+    y->setVideoParameters( fileName, videoData );//title, description, category, keywords, videoPrivacy );
     y->authenticate();
 
     connect( y, SIGNAL(authOK()), this, SLOT(authFinished()) );
@@ -97,8 +74,14 @@ void MainWindow::authFinished()
     /*On Finish, extract out the auth token and upload a test video */
     disconnect( y, SIGNAL(authOK()), this, SLOT(authFinished()) );
 
-    qDebug() << "[UPLOAD SERVICE]: START";
-    y->upload();
+    if( !y->upload() )
+    {
+        qDebug() << "[AUTH FAILED]";
+        y->deleteLater();
+        /* Add code here to work on fallback... */
+
+    }
+    qDebug() << "[UPLOAD STARTED]";
 
     /* YouTubeService will check if the auth token is expired
                    or it's not authenticated yet... Then if it's true, it will upload*/
@@ -106,15 +89,8 @@ void MainWindow::authFinished()
 
 void MainWindow::uploadFinished( QString result )
 {
-    qDebug() << "[TEST APP]: Upload Finished";
-
-    //disconnect( y, SIGNAL(uploadOK(QString)), this, SLOT(uploadFinished(QString)));
-    //disconnect( y, SIGNAL(uploadProgress(qint64,qint64)),
-    //            this, SLOT(videoUploadProgress(qint64,qint64)) );
-    //disconnect( y, SIGNAL(serviceError(QString)), this, SLOT(error(QString)) );
-
+    qDebug() << "[Upload Finished]";;
     ui->log->appendPlainText(result);
-
     y->deleteLater();
 }
 
