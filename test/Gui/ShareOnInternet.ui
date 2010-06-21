@@ -6,12 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
-    <height>437</height>
+    <width>320</width>
+    <height>440</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>320</width>
+    <height>440</height>
+   </size>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::TabFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Share Video On Internet</string>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>false</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -165,6 +180,16 @@
      </property>
     </widget>
    </item>
+   <item row="5" column="1">
+    <widget class="QPlainTextEdit" name="description">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="backgroundVisible">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
    <item row="6" column="0">
     <widget class="QLabel" name="label_6">
      <property name="text">
@@ -186,12 +211,32 @@
     <widget class="QComboBox" name="videoSize">
      <item>
       <property name="text">
+       <string>480p HD (720 x 480)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>720p HD (1280 x 720)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>1080p HD (1920, 1080)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>Small (480 x 272)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Medium (640 x 360)</string>
+       <string>VGA (640 x 480)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SVGA (800 x 600)</string>
       </property>
      </item>
      <item>
@@ -201,7 +246,7 @@
      </item>
      <item>
       <property name="text">
-       <string>HD (1280 x 720)</string>
+       <string>XGA (1024 x 768)</string>
       </property>
      </item>
     </widget>
@@ -209,7 +254,7 @@
    <item row="8" column="0" colspan="2">
     <widget class="QCheckBox" name="videoPrivacy">
      <property name="text">
-      <string>Make this video public (Default: private)</string>
+      <string>Make this video private</string>
      </property>
      <property name="tristate">
       <bool>false</bool>
@@ -223,7 +268,7 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;By clicking OK, you agree with Terms Of Services of the selected video service provider. ( &lt;a href=&quot;http://code.google.com/apis/youtube/terms.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;YouTube&lt;/span&gt;&lt;/a&gt;, &lt;a href=&quot;http://vimeo.com/terms&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Vimeo&lt;/span&gt;&lt;/a&gt; )&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;By publishing the video, you agree with Terms Of Services of the selected video service provider. ( &lt;a href=&quot;http://code.google.com/apis/youtube/terms.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;YouTube&lt;/span&gt;&lt;/a&gt;, &lt;a href=&quot;http://vimeo.com/terms&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Vimeo&lt;/span&gt;&lt;/a&gt; )&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>
@@ -236,59 +281,70 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </item>
-   <item row="10" column="1">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QPlainTextEdit" name="description">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="backgroundVisible">
-      <bool>false</bool>
-     </property>
-    </widget>
+   <item row="10" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>108</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelButton">
+       <property name="text">
+        <string>&amp;Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="publishButton">
+       <property name="text">
+        <string>&amp;Publish</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
+   <sender>publishButton</sender>
+   <signal>clicked()</signal>
    <receiver>ShareOnInternet</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>299</x>
-     <y>542</y>
+     <x>54</x>
+     <y>381</y>
     </hint>
     <hint type="destinationlabel">
-     <x>299</x>
-     <y>282</y>
+     <x>189</x>
+     <y>218</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
    <receiver>ShareOnInternet</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>299</x>
-     <y>542</y>
+     <x>51</x>
+     <y>414</y>
     </hint>
     <hint type="destinationlabel">
-     <x>299</x>
-     <y>282</y>
+     <x>189</x>
+     <y>218</y>
     </hint>
    </hints>
   </connection>

@@ -26,6 +26,7 @@
 ShareOnInternet::ShareOnInternet()
 {
     m_ui.setupUi( this );
+    setWindowFlags( windowFlags() | Qt::Sheet );
 }
 
 void
@@ -100,4 +101,3 @@ ShareOnInternet::videoPrivacy() const
 {
     return m_ui.videoPrivacy->isChecked();
 }
-
