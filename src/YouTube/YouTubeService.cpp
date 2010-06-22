@@ -56,10 +56,16 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
     connect( m_nam, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
             this, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)) );
     #endif
+
+    m_ioDevice     = NULL;
+    m_currentReply = NULL;
 }
 
 YouTubeService::~YouTubeService()
 {
+    if( m_currentReply )
+        m_currentReply->abort();
+
     cleanUp();
 
     delete m_nam;
@@ -71,10 +77,11 @@ void
 YouTubeService::cleanUp()
 {
     if( m_currentReply )
-        m_currentReply->abort();
-
-    m_currentReply->close();
-    m_currentReply->deleteLater();
+    {
+        m_currentReply->close();
+        delete m_currentReply;
+        //m_currentReply->deleteLater();
+    }
     m_currentReply = NULL;
 
     if( m_ioDevice )
@@ -151,6 +158,10 @@ YouTubeService::authFinished()
     if( m_auth->setAuthData( data ) )
         m_status = Ok;
 
+    disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
+    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
+             this, SLOT(networkError(QNetworkReply::NetworkError)) );
+
     cleanUp();
 }
 
@@ -196,6 +207,13 @@ YouTubeService::uploadFinished()
     /* TODO: Handle XML response */
     /* FIXME: check upload status of video, fix it as in AuthOK */
     emit uploadOK( QString( data ) );
+
+    disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
+    disconnect( reply, SIGNAL(uploadProgress(qint64,qint64)),
+             this, SIGNAL(uploadProgress(qint64,qint64)) );
+    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
+             this, SLOT(networkError(QNetworkReply::NetworkError)) );
+
     cleanUp();
 }
 
@@ -210,8 +228,7 @@ YouTubeService::abort()
     if( m_currentReply )
     {
         m_currentReply->abort();
-        m_currentReply->close();
-        m_currentReply->deleteLater();
+        cleanUp();
         return true;
     }
     return false;
@@ -220,6 +237,8 @@ YouTubeService::abort()
 void
 YouTubeService::authError( QString e )
 {
+    qDebug() << "[AUTH ERROR]: " << e;
+
     if( e == "BadAuthentication" )
         m_status = BadAuthentication;
     else
@@ -231,15 +250,17 @@ YouTubeService::authError( QString e )
     else
         m_status = UnknownError;
 
-    emit serviceError( e );
+    emit error( e );
 
 }
 
 void
-YouTubeService::networkError(QNetworkReply::NetworkError e)
+YouTubeService::networkError( QNetworkReply::NetworkError e )
 {
+    qDebug() << "[NETWORK ERROR]: " << e;
     m_status = NetworkError;
-    replyCleanUp();
+    emit error( QString().setNum( e ) );
+    //cleanUp();
 }
 
 void

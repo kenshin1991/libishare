@@ -65,9 +65,7 @@ class YouTubeService : public QObject
 
         const QString&         getDeveloperKey();
         const QString&         getAuthString();
-
-    protected:
-        YouTubeStatus          m_status;
+        void                   cleanUp();
 
         QString                m_devKey;
         QString                m_fileName;
@@ -75,6 +73,7 @@ class YouTubeService : public QObject
         YouTubeUploader*       m_uploader;
         UploaderIODevice*      m_ioDevice;
 
+        YouTubeStatus          m_status;
         QString                m_proxyUsername;
         QString                m_proxyPassword;
         QNetworkAccessManager* m_nam;
@@ -96,7 +95,7 @@ class YouTubeService : public QObject
         void authOK();
         void uploadOK( QString );
         void uploadProgress( qint64, qint64 );
-        void serviceError( QString );
+        void error( QString );
 };
 
 #endif // YOUTUBESERVICE_H
