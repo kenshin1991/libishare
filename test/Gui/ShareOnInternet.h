@@ -24,12 +24,8 @@
 #define SHAREONINTERNET_H
 
 #include <QDialog>
+#include "ui_ShareOnInternet.h"
 #include "YouTube/YouTubeCommon.h"
-
-namespace Ui
-{
-    class ShareOnInternet;
-}
 
 class ShareOnInternet : public QDialog
 {
@@ -45,17 +41,11 @@ class ShareOnInternet : public QDialog
         quint32          height() const;
         VideoData        videoData() const;
 
-/*        QString         title() const;
-        QString         category() const;
-        QString         description() const;
-        QString         keywords() const;
-        bool            videoPrivacy() const;
-*/
     private slots:
         virtual void    accept();
 
     private:
-        Ui::ShareOnInternet*  m_ui;
+        Ui::ShareOnInternet   m_ui;
         quint32               m_width;
         quint32               m_height;
         quint32               m_serviceProvider;

@@ -21,14 +21,11 @@
  *****************************************************************************/
 
 #include "ShareOnInternet.h"
-#include "ui_ShareOnInternet.h"
-
 #include <QMessageBox>
 
-ShareOnInternet::ShareOnInternet() :
-        m_ui( new Ui::ShareOnInternet )
+ShareOnInternet::ShareOnInternet()
 {
-    m_ui->setupUi( this );
+    m_ui.setupUi( this );
     setWindowFlags( windowFlags() | Qt::Sheet ); // Qt::Sheet is for UI on Mac
 }
 
@@ -40,9 +37,9 @@ ShareOnInternet::~ShareOnInternet()
 void
 ShareOnInternet::accept()
 {
-    if( m_ui->title->text().isEmpty() |
-        m_ui->username->text().isEmpty() |
-        m_ui->password->text().isEmpty() )
+    if( m_ui.title->text().isEmpty() |
+        m_ui.username->text().isEmpty() |
+        m_ui.password->text().isEmpty() )
     {
         QMessageBox::critical( this, tr("Error"),
                                tr("'Username' or 'Password' or 'Title' cannot be empty."
@@ -50,7 +47,7 @@ ShareOnInternet::accept()
         return;
     }
 
-    switch( m_ui->videoSize->currentIndex() )
+    switch( m_ui.videoSize->currentIndex() )
     {
         case 0:  m_width = 480;  m_height = 272; break;
         case 1:  m_width = 640;  m_height = 360; break;
@@ -68,13 +65,13 @@ ShareOnInternet::accept()
 QString
 ShareOnInternet::username() const
 {
-    return m_ui->username->text();
+    return m_ui.username->text();
 }
 
 QString
 ShareOnInternet::password() const
 {
-    return m_ui->password->text();
+    return m_ui.password->text();
 }
 
 quint32
@@ -94,44 +91,11 @@ ShareOnInternet::videoData() const
 {
     VideoData data;
 
-    data.title       = m_ui->title->text();
-    data.category    = m_ui->category->currentText().split(" & ").at( 0 );
-    data.description = m_ui->description->toPlainText();
-    data.keywords    = m_ui->keywords->text();
-    data.isPrivate   = m_ui->videoPrivacy->isChecked();
+    data.title       = m_ui.title->text();
+    data.category    = m_ui.category->currentText().split(" & ").at( 0 );
+    data.description = m_ui.description->toPlainText();
+    data.keywords    = m_ui.keywords->text();
+    data.isPrivate   = m_ui.videoPrivacy->isChecked();
 
     return data;
 }
-
-/*
-QString
-ShareOnInternet::category() const
-{
-    QString cat = m_ui.category->currentText();
-    return cat.split(" & ").at(0);
-}
-
-QString
-ShareOnInternet::title() const
-{
-    return m_ui.title->text();
-}
-
-QString
-ShareOnInternet::description() const
-{
-    return m_ui.description->toPlainText();
-}
-
-QString
-ShareOnInternet::keywords() const
-{
-    return m_ui.keywords->text();
-}
-
-bool
-ShareOnInternet::videoPrivacy() const
-{
-    return m_ui.videoPrivacy->isChecked();
-}
-*/
