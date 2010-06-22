@@ -34,6 +34,7 @@ class QByteArray;
 class QNetworkAccessManager;
 class QSslError;
 class QString;
+class UploaderIODevice;
 class YouTubeAuthenticator;
 class YouTubeUploader;
 
@@ -46,13 +47,12 @@ class YouTubeService : public QObject
                         const QString& password = "" );
         ~YouTubeService();
 
-        void setDeveloperKey( const QString& devKey );
         void setCredentials( const QString& username, const QString& password );
+        void setDeveloperKey( const QString& devKey );
         void setProxyCredentials( const QString& username, const QString& password );
         void setVideoParameters( const QString& fileName, const YouTubeVideoData& data );
-        void setVideoParameters( const QString& fileName, const QString& title,
-                                 const QString& description, const QString& category,
-                                 const QString& keywords, bool isPrivate );
+
+        const VideoData& getVideoData();
 
         /* Service Interfaces */
         void authenticate();            // Authenticate the service
@@ -73,9 +73,10 @@ class YouTubeService : public QObject
         QString                m_fileName;
         YouTubeAuthenticator*  m_auth;
         YouTubeUploader*       m_uploader;
+        UploaderIODevice*      m_ioDevice;
+
         QString                m_proxyUsername;
         QString                m_proxyPassword;
-
         QNetworkAccessManager* m_nam;
         QNetworkReply*         m_currentReply;
 

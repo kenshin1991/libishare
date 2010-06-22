@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeUploader.cpp:
+ * YouTubeUploader.cpp: YouTube Video Uploader class
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -47,19 +47,6 @@ void
 YouTubeUploader::setVideoData( const YouTubeVideoData& data )
 {
     m_videoData = data;
-    uploadInit();
-}
-
-void
-YouTubeUploader::setVideoData( const QString &title, const QString &description,
-                               const QString &category, const QString &keywords,
-                               bool isPrivate )
-{
-    m_videoData.title       = title;
-    m_videoData.description = description;
-    m_videoData.category    = category;
-    m_videoData.keywords    = keywords;
-    m_videoData.isPrivate   = isPrivate;
     uploadInit();
 }
 
@@ -148,4 +135,10 @@ YouTubeUploader::getMimeTail()
     data.append( "\r\n--" + m_boundary + "--\r\n\r\n");
 
     return data;
+}
+
+const YouTubeVideoData&
+YouTubeUploader::getVideoData()
+{
+    return m_videoData;
 }

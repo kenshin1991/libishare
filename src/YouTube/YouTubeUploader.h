@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeUploader.h:
+ * YouTubeUploader.h: YouTube Video Uploader class
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -41,20 +41,18 @@ class YouTubeUploader : public QObject
 
         void setServiceProvider( YouTubeService* service );
         void setVideoData( const YouTubeVideoData& data );
-        void setVideoData( const QString &title, const QString &description,
-                           const QString &category, const QString &keywords,
-                           bool isPrivate );
-
-        QNetworkRequest getNetworkRequest();
-        QByteArray      getMimeHead();
-        QByteArray      getMimeTail();
+        
+        QNetworkRequest         getNetworkRequest();
+        QByteArray              getMimeHead();
+        QByteArray              getMimeTail();
+        const YouTubeVideoData& getVideoData();
 
     private:
         void             uploadInit();
 
         QString          API_XML_REQUEST;
-        YouTubeService*  m_service;
         QString          m_boundary;
+        YouTubeService*  m_service;
 
         QString          m_fileName;
         YouTubeVideoData m_videoData;
