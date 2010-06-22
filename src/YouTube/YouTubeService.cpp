@@ -76,12 +76,6 @@ YouTubeService::~YouTubeService()
 void
 YouTubeService::cleanUp()
 {
-    if( m_currentReply )
-    {
-        m_currentReply->close();
-        delete m_currentReply;
-        //m_currentReply->deleteLater();
-    }
     m_currentReply = NULL;
 
     if( m_ioDevice )
@@ -162,7 +156,9 @@ YouTubeService::authFinished()
     disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
              this, SLOT(networkError(QNetworkReply::NetworkError)) );
 
-    cleanUp();
+    m_currentReply = NULL;
+    reply->close();
+    reply->deleteLater();
 }
 
 bool
@@ -214,7 +210,14 @@ YouTubeService::uploadFinished()
     disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
              this, SLOT(networkError(QNetworkReply::NetworkError)) );
 
-    cleanUp();
+    reply->close();
+    reply->deleteLater();
+
+    if( m_ioDevice )
+        delete m_ioDevice;
+
+    m_ioDevice = NULL;
+    m_currentReply = NULL;
 }
 
 void
@@ -257,10 +260,20 @@ YouTubeService::authError( QString e )
 void
 YouTubeService::networkError( QNetworkReply::NetworkError e )
 {
+    QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
+
     qDebug() << "[NETWORK ERROR]: " << e;
     m_status = NetworkError;
     emit error( QString().setNum( e ) );
-    //cleanUp();
+
+    reply->close();
+    reply->deleteLater();
+
+    if( m_ioDevice )
+        delete m_ioDevice;
+
+    m_ioDevice = NULL;
+    m_currentReply = NULL;
 }
 
 void
