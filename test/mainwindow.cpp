@@ -64,7 +64,7 @@ void MainWindow::uploadVideo( QString& fileName )
     connect( y, SIGNAL(uploadOK(QString)), this, SLOT(uploadFinished(QString)));
     connect( y, SIGNAL(uploadProgress(qint64,qint64)),
              this, SLOT(videoUploadProgress(qint64,qint64)) );
-    connect( y, SIGNAL(serviceError(QString)), this, SLOT(error(QString)) );
+    connect( y, SIGNAL(error(QString)), this, SLOT(error(QString)) );
 }
 
 
@@ -95,8 +95,11 @@ void MainWindow::uploadFinished( QString result )
 
 void MainWindow::videoUploadProgress(qint64 received, qint64 total)
 {
-    qint64 progress = received * 100 / total;
-    ui->progressBar->setValue( progress );
+    if( total != 0 )
+    {
+        qint64 progress = received * 100 / total;
+        ui->progressBar->setValue( progress );
+    }
 }
 
 void MainWindow::error(QString e)
