@@ -51,7 +51,7 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
     m_nam = new QNetworkAccessManager();
 
     /* In case the proxy asks for credentials, handle it */
-    connect( m_nam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
+    connect( m_nam, SIGNAL((authenticationRequired(QNetworkReply*,QAuthenticator*)),
             this, SLOT(proxyAuthRequired(QNetworkReply*,QAuthenticator*)) );
 
     /* If SSL is available, handle SSL errors for better security */
@@ -69,7 +69,7 @@ YouTubeService::~YouTubeService()
     if( m_currentReply )
     {
         m_currentReply->abort();
-        m_currentReply->deleteLater();;
+        m_currentReply->deleteLater();
     }
 
     delete m_nam;
@@ -260,17 +260,14 @@ YouTubeService::networkError( QNetworkReply::NetworkError e )
     m_status = NetworkError;
     emit error( QString().setNum( e ) );
 
-    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
-             this, SLOT(networkError(QNetworkReply::NetworkError)) );
+    //reply->abort();
+    //reply->deleteLater();
 
-    reply->abort();
-    reply->deleteLater();
+    //if( m_ioDevice )
+     //   delete m_ioDevice;
 
-    if( m_ioDevice )
-        delete m_ioDevice;
-
-    m_ioDevice = NULL;
-    m_currentReply = NULL;
+    //m_ioDevice = NULL;
+    //m_currentReply = NULL;
 }
 
 void

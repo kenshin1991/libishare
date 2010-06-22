@@ -102,13 +102,14 @@ void MainWindow::authFinished()
 
     }
     qDebug() << "[UPLOAD STARTED]";
-
+    ui->abortButton->setEnabled(true);
     /* YouTubeService will check if the auth token is expired
                    or it's not authenticated yet... Then if it's true, it will upload*/
 }
 
 void MainWindow::uploadFinished( QString result )
 {
+    ui->abortButton->setEnabled(false);
     qDebug() << "[Upload Finished]";;
     ui->log->appendPlainText(result);
     y->deleteLater();
