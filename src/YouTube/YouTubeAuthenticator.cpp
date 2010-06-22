@@ -28,8 +28,6 @@
 #include <QStringList>
 #include <QUrl>
 
-#include <QDebug>
-
 YouTubeAuthenticator::YouTubeAuthenticator( const QString& username, const QString& password ) :
         m_username( username ), m_password( password )
 {

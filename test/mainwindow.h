@@ -10,6 +10,7 @@ namespace Ui {
     class MainWindow;
 }
 
+class VideoData;
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
@@ -21,12 +22,15 @@ private:
     YouTubeService* y;
     QString devKey;
 
+    void shareOnInternet();
+    void uploadVideo( QString& username, QString& password,
+                      QString& fileName, VideoData& videoData );
+
 private slots:
-    void on_actionShare_on_Internet_triggered();
+    void on_abortButton_clicked();
     void on_pushButton_clicked();
 
     void authFinished();
-    void uploadVideo( QString& fileName );
     void uploadFinished(QString);
     void error(QString);
     void videoUploadProgress(qint64 received, qint64 total);

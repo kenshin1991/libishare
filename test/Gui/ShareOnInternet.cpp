@@ -22,11 +22,23 @@
 
 #include "ShareOnInternet.h"
 #include <QMessageBox>
+#include <QDebug>
 
 ShareOnInternet::ShareOnInternet()
 {
     m_ui.setupUi( this );
     setWindowFlags( windowFlags() | Qt::Sheet ); // Qt::Sheet is for UI on Mac
+}
+
+void
+ShareOnInternet::setData( const VideoData &data )
+{
+    qDebug() << "Setting up backed up video data";
+    m_ui.title->setText( data.title );
+    m_ui.description->setPlainText( data.description );
+    m_ui.keywords->setText( data.keywords );
+    if( data.isPrivate )
+        m_ui.videoPrivacy->setChecked( true );
 }
 
 void

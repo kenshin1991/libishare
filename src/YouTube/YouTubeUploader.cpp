@@ -29,8 +29,6 @@
 #include <QStringList>
 #include <QUrl>
 
-#include <QDebug>
-
 YouTubeUploader::YouTubeUploader( YouTubeService* service, QString fileName )
 {
     m_service = service;

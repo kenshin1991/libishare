@@ -65,7 +65,6 @@ class YouTubeService : public QObject
 
         const QString&         getDeveloperKey();
         const QString&         getAuthString();
-        void                   cleanUp();
 
         QString                m_devKey;
         QString                m_fileName;

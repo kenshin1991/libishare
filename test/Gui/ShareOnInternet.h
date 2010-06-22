@@ -33,6 +33,7 @@ class ShareOnInternet : public QDialog
 
     public:
         ShareOnInternet();
+        void setData( const VideoData& data );
 
         QString          username() const;
         QString          password() const;

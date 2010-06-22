@@ -15,38 +15,45 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" colspan="2">
-     <widget class="QLineEdit" name="filePath"/>
-    </item>
-    <item row="0" column="2">
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>Open File and Share</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Progress</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1" colspan="2">
-     <widget class="QProgressBar" name="progressBar">
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="3">
+    <item row="0" column="0" colspan="3">
      <widget class="QLabel" name="label">
       <property name="text">
        <string>Share On Internet: Select a video file and Share on Internet!</string>
       </property>
      </widget>
     </item>
+    <item row="1" column="0">
+     <widget class="QLineEdit" name="filePath"/>
+    </item>
+    <item row="1" column="1" colspan="2">
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>Open File and Share</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QPushButton" name="abortButton">
+      <property name="text">
+       <string>Abort</string>
+      </property>
+     </widget>
+    </item>
     <item row="3" column="0" colspan="3">
+     <widget class="QLabel" name="progress">
+      <property name="text">
+       <string>Bytes Uploaded:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="3">
      <widget class="QPlainTextEdit" name="log"/>
     </item>
    </layout>

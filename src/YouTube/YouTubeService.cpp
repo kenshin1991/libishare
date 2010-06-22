@@ -25,9 +25,12 @@
 #include "YouTubeUploader.h"
 #include "UploaderIODevice.h"
 
+#include <QAuthenticator>
 #include <QByteArray>
 #include <QMessageBox>
-#include <QtNetwork>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QSslError>
 
 #include <QDebug>
 
@@ -64,25 +67,14 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
 YouTubeService::~YouTubeService()
 {
     if( m_currentReply )
+    {
         m_currentReply->abort();
-
-    cleanUp();
+        m_currentReply->deleteLater();;
+    }
 
     delete m_nam;
     delete m_auth;
     delete m_uploader;
-}
-
-void
-YouTubeService::cleanUp()
-{
-    m_currentReply = NULL;
-
-    if( m_ioDevice )
-    {
-        delete m_ioDevice;
-        m_ioDevice = NULL;
-    }
 }
 
 void
@@ -135,11 +127,11 @@ YouTubeService::authenticate()
 {
     QNetworkRequest request = m_auth->getNetworkRequest();
 
-    QNetworkReply* authReply = m_nam->post( request, m_auth->getPOSTData() );
-    m_currentReply = authReply;
+    m_currentReply = m_nam->post( request, m_auth->getPOSTData() );
+    qDebug() << "Auth posted!";
 
-    connect( authReply, SIGNAL(finished()),this,SLOT(authFinished()) );
-    connect( authReply, SIGNAL(error(QNetworkReply::NetworkError)),
+    connect( m_currentReply, SIGNAL(finished()),this,SLOT(authFinished()) );
+    connect( m_currentReply, SIGNAL(error(QNetworkReply::NetworkError)),
              this, SLOT(networkError(QNetworkReply::NetworkError)) );
 }
 
@@ -149,6 +141,8 @@ YouTubeService::authFinished()
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     QByteArray data = reply->readAll();
 
+    qDebug() << "Auth data: " << data;
+
     if( m_auth->setAuthData( data ) )
         m_status = Ok;
 
@@ -156,9 +150,9 @@ YouTubeService::authFinished()
     disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
              this, SLOT(networkError(QNetworkReply::NetworkError)) );
 
-    m_currentReply = NULL;
     reply->close();
     reply->deleteLater();
+    m_currentReply = NULL;
 }
 
 bool
@@ -177,13 +171,12 @@ YouTubeService::upload()
 
         if( m_ioDevice->openFile() )
         {
-            QNetworkReply* uploadReply = m_nam->post( request, m_ioDevice );
-            m_currentReply = uploadReply;
+            m_currentReply = m_nam->post( request, m_ioDevice );
 
-            connect( uploadReply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
-            connect( uploadReply, SIGNAL(uploadProgress(qint64,qint64)),
+            connect( m_currentReply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
+            connect( m_currentReply, SIGNAL(uploadProgress(qint64,qint64)),
                      this, SIGNAL(uploadProgress(qint64,qint64)) );
-            connect( uploadReply, SIGNAL(error(QNetworkReply::NetworkError)),
+            connect( m_currentReply, SIGNAL(error(QNetworkReply::NetworkError)),
                      this, SLOT(networkError(QNetworkReply::NetworkError)) );
 
             return true;
@@ -197,8 +190,6 @@ YouTubeService::uploadFinished()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     QByteArray data = reply->readAll();
-
-    qDebug() << data;
 
     /* TODO: Handle XML response */
     /* FIXME: check upload status of video, fix it as in AuthOK */
@@ -216,8 +207,9 @@ YouTubeService::uploadFinished()
     if( m_ioDevice )
         delete m_ioDevice;
 
-    m_ioDevice = NULL;
+    m_ioDevice     = NULL;
     m_currentReply = NULL;
+
 }
 
 void
@@ -230,8 +222,10 @@ YouTubeService::abort()
 {
     if( m_currentReply )
     {
+        qDebug() << "in abort()";
         m_currentReply->abort();
-        cleanUp();
+        m_currentReply->deleteLater();
+        m_currentReply = NULL;
         return true;
     }
     return false;
@@ -266,7 +260,10 @@ YouTubeService::networkError( QNetworkReply::NetworkError e )
     m_status = NetworkError;
     emit error( QString().setNum( e ) );
 
-    reply->close();
+    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
+             this, SLOT(networkError(QNetworkReply::NetworkError)) );
+
+    reply->abort();
     reply->deleteLater();
 
     if( m_ioDevice )

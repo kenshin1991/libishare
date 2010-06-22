@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    y = NULL;
     devKey = "AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ";
 }
 
@@ -22,26 +23,32 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    QString path = QFileDialog::getOpenFileName( this,
+    QString fileName = QFileDialog::getOpenFileName( this,
                                                  tr( "Choose Video File to upload" ), "",
                                                  tr( "Video files (*.avi *.flv *.mov *.mp4 *.mpg)" ) );
 
-    ui->filePath->setText(path);
-    uploadVideo( path );
+    /* Add code to transcode/export video */
+    ui->filePath->setText( fileName );
+    shareOnInternet();
 }
 
-void MainWindow::on_actionShare_on_Internet_triggered()
+void MainWindow::shareOnInternet()
 {
-    QString path = ui->filePath->text();
-    uploadVideo( path );
-}
+    QString filePath = ui->filePath->text();
+    ShareOnInternet *exportToInternet = new ShareOnInternet();
 
-void MainWindow::uploadVideo( QString& fileName )
-{
-    ShareOnInternet *exportToInternet = new ShareOnInternet;
+    if( y )
+        exportToInternet->setData( y->getVideoData() );
 
     if ( exportToInternet->exec() == QDialog::Rejected )
     {
+        if( y )
+        {
+            qDebug() << "Dialog cancelled, deleting y";
+            y->deleteLater();
+            y = NULL;
+        }
+
         delete exportToInternet;
         return ;
     }
@@ -54,10 +61,22 @@ void MainWindow::uploadVideo( QString& fileName )
 
     delete exportToInternet;
 
-    /* Add code to transcode/export video */
+    uploadVideo( username, password, filePath, videoData );
+}
 
-    y = new YouTubeService( devKey, username, password );
-    y->setVideoParameters( fileName, videoData );//title, description, category, keywords, videoPrivacy );
+void MainWindow::uploadVideo( QString& username, QString& password,
+                              QString& fileName, VideoData& videoData )
+{
+    qDebug() << username << password
+            << fileName << videoData.title;
+
+    if( !y )
+    {
+        qDebug() << "creating y object";
+        y = new YouTubeService( devKey, username, password );
+    }
+
+    y->setVideoParameters( fileName, videoData );
     y->authenticate();
 
     connect( y, SIGNAL(authOK()), this, SLOT(authFinished()) );
@@ -70,13 +89,15 @@ void MainWindow::uploadVideo( QString& fileName )
 
 void MainWindow::authFinished()
 {
+    qDebug() << "[AUTH FINISHED]";
+
     /*On Finish, extract out the auth token and upload a test video */
     disconnect( y, SIGNAL(authOK()), this, SLOT(authFinished()) );
 
     if( !y->upload() )
     {
         qDebug() << "[AUTH FAILED]";
-        y->deleteLater();
+        shareOnInternet();
         /* Add code here to work on fallback... */
 
     }
@@ -99,10 +120,18 @@ void MainWindow::videoUploadProgress(qint64 received, qint64 total)
     {
         qint64 progress = received * 100 / total;
         ui->progressBar->setValue( progress );
+        ui->progress->setText( QString("Bytes Uploaded: %1").arg( received ) );
     }
 }
 
 void MainWindow::error(QString e)
 {
     ui->log->appendPlainText("[Error]: " + e);
+}
+
+void MainWindow::on_abortButton_clicked()
+{
+    y->abort();
+    y->deleteLater();
+    ui->log->appendPlainText("[UPLOAD ABORTED]");
 }
