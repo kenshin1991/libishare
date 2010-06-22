@@ -33,7 +33,6 @@ class ShareOnInternet : public QDialog
 
     public:
         ShareOnInternet();
-        ~ShareOnInternet();
 
         QString          username() const;
         QString          password() const;

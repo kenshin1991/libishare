@@ -29,11 +29,6 @@ ShareOnInternet::ShareOnInternet()
     setWindowFlags( windowFlags() | Qt::Sheet ); // Qt::Sheet is for UI on Mac
 }
 
-ShareOnInternet::~ShareOnInternet()
-{
-    delete m_ui;
-}
-
 void
 ShareOnInternet::accept()
 {
