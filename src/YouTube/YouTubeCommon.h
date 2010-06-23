@@ -44,9 +44,20 @@ typedef VideoData YouTubeVideoData;
  */
 
 /* Status codes for YouTubeService. */
-enum YouTubeStatus
+enum YouTubeServiceState
+{
+    AUTH_START = 0,
+    AUTH_FINISH,
+    UPLOAD_START,
+    UPLOAD_FINISH,
+    SEARCH_START,
+    SEARCH_FINISH
+};
+
+enum YouTubeError
 {
     Ok = 0,
+    Abort,                      // Service was aborted
 
     BadAuthentication,          // Incorrect User credentials
     CaptchaRequired,            // If server is trying to challenge captcha

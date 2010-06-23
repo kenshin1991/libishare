@@ -72,7 +72,8 @@ class YouTubeService : public QObject
         YouTubeUploader*       m_uploader;
         UploaderIODevice*      m_ioDevice;
 
-        YouTubeStatus          m_status;
+        YouTubeServiceState    m_state;
+        YouTubeError           m_error;
         QString                m_proxyUsername;
         QString                m_proxyPassword;
         QNetworkAccessManager* m_nam;
@@ -91,8 +92,8 @@ class YouTubeService : public QObject
         #endif
 
     signals:
-        void authOK();
-        void uploadOK( QString );
+        void authOver();
+        void uploadOver( QString );
         void uploadProgress( qint64, qint64 );
         void error( QString );
 };

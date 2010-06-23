@@ -40,7 +40,7 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
     m_auth = new YouTubeAuthenticator( username, password );
 
     /* Tell world on successful authentication */
-    connect( m_auth, SIGNAL(authOK()), this, SIGNAL(authOK()) );
+    connect( m_auth, SIGNAL(authOver()), this, SIGNAL(authOver()) );
 
     /* On authentication error, m_auth will send the error token */
     connect( m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
@@ -51,7 +51,7 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
     m_nam = new QNetworkAccessManager();
 
     /* In case the proxy asks for credentials, handle it */
-    connect( m_nam, SIGNAL((authenticationRequired(QNetworkReply*,QAuthenticator*)),
+    connect( m_nam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
             this, SLOT(proxyAuthRequired(QNetworkReply*,QAuthenticator*)) );
 
     /* If SSL is available, handle SSL errors for better security */
@@ -129,6 +129,7 @@ YouTubeService::authenticate()
 
     m_currentReply = m_nam->post( request, m_auth->getPOSTData() );
     qDebug() << "Auth posted!";
+    m_state = AUTH_START;
 
     connect( m_currentReply, SIGNAL(finished()),this,SLOT(authFinished()) );
     connect( m_currentReply, SIGNAL(error(QNetworkReply::NetworkError)),
@@ -141,10 +142,10 @@ YouTubeService::authFinished()
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     QByteArray data = reply->readAll();
 
-    qDebug() << "Auth data: " << data;
+    qDebug() << reply << "Auth data: " << data;
 
     if( m_auth->setAuthData( data ) )
-        m_status = Ok;
+        m_state = AUTH_FINISH;
 
     disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
     disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
@@ -172,6 +173,7 @@ YouTubeService::upload()
         if( m_ioDevice->openFile() )
         {
             m_currentReply = m_nam->post( request, m_ioDevice );
+            m_state = UPLOAD_START;
 
             connect( m_currentReply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
             connect( m_currentReply, SIGNAL(uploadProgress(qint64,qint64)),
@@ -191,9 +193,10 @@ YouTubeService::uploadFinished()
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     QByteArray data = reply->readAll();
 
+    m_state = UPLOAD_FINISH;
     /* TODO: Handle XML response */
     /* FIXME: check upload status of video, fix it as in AuthOK */
-    emit uploadOK( QString( data ) );
+    emit uploadOver( QString( data ) );
 
     disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
     disconnect( reply, SIGNAL(uploadProgress(qint64,qint64)),
@@ -237,15 +240,15 @@ YouTubeService::authError( QString e )
     qDebug() << "[AUTH ERROR]: " << e;
 
     if( e == "BadAuthentication" )
-        m_status = BadAuthentication;
+        m_error = BadAuthentication;
     else
     if( e == "CaptchaRequired")
-        m_status = CaptchaRequired;
+        m_error = CaptchaRequired;
     else
     if( e == "ServiceUnavailable")
-        m_status = ServiceUnavailable;
+        m_error = ServiceUnavailable;
     else
-        m_status = UnknownError;
+        m_error = UnknownError;
 
     emit error( e );
 
@@ -254,26 +257,46 @@ YouTubeService::authError( QString e )
 void
 YouTubeService::networkError( QNetworkReply::NetworkError e )
 {
+    qDebug() << "[NETWORK ERROR]: " << e;
+
+    switch( e )
+    {
+        case QNetworkReply::ContentOperationNotPermittedError:
+        default: return;
+    }
+
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
 
-    qDebug() << "[NETWORK ERROR]: " << e;
-    m_status = NetworkError;
+    m_error = NetworkError;
     emit error( QString().setNum( e ) );
 
-    //reply->abort();
-    //reply->deleteLater();
+    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
+             this, SLOT(networkError(QNetworkReply::NetworkError)) );
 
-    //if( m_ioDevice )
-     //   delete m_ioDevice;
+    if( m_state == AUTH_START );
+        //disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
 
-    //m_ioDevice = NULL;
-    //m_currentReply = NULL;
+    if( m_state == UPLOAD_START )
+    {
+        disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
+        disconnect( reply, SIGNAL(uploadProgress(qint64,qint64)),
+                 this, SIGNAL(uploadProgress(qint64,qint64)) );
+
+        if( m_ioDevice )
+            delete m_ioDevice;
+
+        m_ioDevice = NULL;
+    }
+
+    reply->close();
+    reply->deleteLater();
+    m_currentReply = NULL;
 }
 
 void
 YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator )
 {
-    m_status = ConnectionError;
+    m_error = ConnectionError;
 
     /* TODO: Make a small QDialog to take in usr:passwd */
     if( !m_proxyUsername.isEmpty() && !m_proxyPassword.isEmpty() )
@@ -290,7 +313,7 @@ YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator
 void
 YouTubeService::sslErrors( QNetworkReply* reply, const QList<QSslError> &errors )
 {
-    m_status = SSLError;
+    m_error = SSLError;
 
     QString errorString;
     foreach (const QSslError &error, errors)

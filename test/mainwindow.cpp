@@ -75,12 +75,14 @@ void MainWindow::uploadVideo( QString& username, QString& password,
         qDebug() << "creating y object";
         y = new YouTubeService( devKey, username, password );
     }
+    else
+        y->setCredentials( username, password );
 
     y->setVideoParameters( fileName, videoData );
     y->authenticate();
 
-    connect( y, SIGNAL(authOK()), this, SLOT(authFinished()) );
-    connect( y, SIGNAL(uploadOK(QString)), this, SLOT(uploadFinished(QString)));
+    connect( y, SIGNAL(authOver()), this, SLOT(authFinished()) );
+    connect( y, SIGNAL(uploadOver(QString)), this, SLOT(uploadFinished(QString)));
     connect( y, SIGNAL(uploadProgress(qint64,qint64)),
              this, SLOT(videoUploadProgress(qint64,qint64)) );
     connect( y, SIGNAL(error(QString)), this, SLOT(error(QString)) );
@@ -92,7 +94,7 @@ void MainWindow::authFinished()
     qDebug() << "[AUTH FINISHED]";
 
     /*On Finish, extract out the auth token and upload a test video */
-    disconnect( y, SIGNAL(authOK()), this, SLOT(authFinished()) );
+    //disconnect( y, SIGNAL(authOver()), this, SLOT(authFinished()) );
 
     if( !y->upload() )
     {
