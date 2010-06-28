@@ -34,11 +34,17 @@
 YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service,
                                             const QString& username, const QString& password )
 {
+    m_service  = service;
     m_username = username;
     m_password = password;
 
     authInit();
     setPOSTData();
+}
+
+YouTubeAuthenticator::~YouTubeAuthenticator()
+{
+    m_service = NULL;
 }
 
 void

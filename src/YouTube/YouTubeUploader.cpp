@@ -31,7 +31,7 @@
 
 YouTubeUploader::YouTubeUploader( YouTubeService* service, const QString& fileName )
 {
-    m_service = service;
+    m_service  = service;
     m_fileName = fileName;
     uploadInit();
 }

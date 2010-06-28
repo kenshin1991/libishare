@@ -39,6 +39,7 @@ class YouTubeAuthenticator : public QObject
     public:
         YouTubeAuthenticator( YouTubeService* service = 0, const QString& username = "",
                               const QString& password = "" );
+        ~YouTubeAuthenticator();
 
         void setServiceProvider( YouTubeService* service );
         void setCredentials( const QString& username, const QString& password );
