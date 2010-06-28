@@ -100,7 +100,12 @@ void
 YouTubeService::setVideoParameters( const QString& fileName, const YouTubeVideoData& data )
 {
     m_fileName = fileName;
-    m_uploader = new YouTubeUploader( this, fileName );
+
+    if( m_uploader )
+        m_uploader = new YouTubeUploader( this, fileName );
+    else
+        m_uploader->setVideoFile( fileName );
+
     m_uploader->setVideoData( data );
 }
 
@@ -121,7 +126,7 @@ YouTubeService::getVideoData()
 {
     return m_uploader->getVideoData();
 }
-
+/*
 void
 YouTubeService::authenticate()
 {
@@ -155,7 +160,7 @@ YouTubeService::authFinished()
     reply->deleteLater();
     m_currentReply = NULL;
 }
-
+*/
 bool
 YouTubeService::upload()
 {

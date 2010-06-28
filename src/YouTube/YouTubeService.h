@@ -55,7 +55,7 @@ class YouTubeService : public QObject
         const VideoData& getVideoData();
 
         /* Service Interfaces */
-        void authenticate();            // Authenticate the service
+        //void authenticate();            // Authenticate the service
         bool upload();                  // Upload video
         void search( QString& search ); // Search for a video
         bool abort();                   // Abort on going service
