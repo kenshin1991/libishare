@@ -30,6 +30,7 @@
 #define UPLOAD_URL "http://uploads.gdata.youtube.com/feeds/api/users/default/uploads"
 
 class QIODevice;
+class QNetworkAccessManager;
 class QNetworkRequest;
 class YouTubeService;
 
@@ -53,7 +54,9 @@ class YouTubeUploader : public QObject
 
         QString          API_XML_REQUEST;
         QString          m_boundary;
-        YouTubeService*  m_service;
+
+        YouTubeService*        m_service;
+        QNetworkAccessManager* m_nam;
 
         QString          m_fileName;
         YouTubeVideoData m_videoData;

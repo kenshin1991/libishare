@@ -37,7 +37,8 @@ class YouTubeAuthenticator : public QObject
     Q_OBJECT
 
     public:
-        YouTubeAuthenticator( const QString& username = "", const QString& password = "" );
+        YouTubeAuthenticator( YouTubeService* service = 0, const QString& username = "",
+                              const QString& password = "" );
 
         void setCredentials( const QString& username, const QString& password );
         bool setAuthData( QByteArray& data );
@@ -70,6 +71,7 @@ class YouTubeAuthenticator : public QObject
         QString         m_nick; /* YouTube User Nickname */
         bool            m_isAuthenticated;
 
+        YouTubeService*        m_service;
         QNetworkAccessManager* m_nam;
 
     private slots:

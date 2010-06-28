@@ -61,6 +61,7 @@ class YouTubeService : public QObject
         bool abort();                   // Abort on going service
 
     private:
+        friend class           YouTubeAuthenticator;
         friend class           YouTubeUploader;
 
         const QString&         getDeveloperKey();

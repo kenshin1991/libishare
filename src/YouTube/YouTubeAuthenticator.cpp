@@ -21,6 +21,7 @@
  *****************************************************************************/
 
 #include "YouTubeAuthenticator.h"
+#include "YouTubeService.h"
 
 #include <QByteArray>
 #include <QNetworkAccessManager>
@@ -30,9 +31,12 @@
 #include <QStringList>
 #include <QUrl>
 
-YouTubeAuthenticator::YouTubeAuthenticator( const QString& username, const QString& password ) :
-        m_username( username ), m_password( password )
+YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service,
+                                            const QString& username, const QString& password )
 {
+    m_username = username;
+    m_password = password;
+
     authInit();
     setPOSTData();
 }
@@ -141,7 +145,7 @@ YouTubeAuthenticator::authenticate()
 {
     QNetworkRequest request = m_auth->getNetworkRequest();
 
-    m_currentReply = m_nam->post( request, m_auth->getPOSTData() );
+    m_currentReply = m_nam->post( request, getPOSTData() );
     qDebug() << "Auth posted!";
     m_state = AUTH_START;
 
