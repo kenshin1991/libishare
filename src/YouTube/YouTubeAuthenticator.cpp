@@ -23,7 +23,9 @@
 #include "YouTubeAuthenticator.h"
 
 #include <QByteArray>
+#include <QNetworkAccessManager>
 #include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QString>
 #include <QStringList>
 #include <QUrl>
@@ -132,4 +134,38 @@ YouTubeAuthenticator::setAuthData( QByteArray& data )
 
     emit authOver();
     return m_isAuthenticated;
+}
+
+void
+YouTubeAuthenticator::authenticate()
+{
+    QNetworkRequest request = m_auth->getNetworkRequest();
+
+    m_currentReply = m_nam->post( request, m_auth->getPOSTData() );
+    qDebug() << "Auth posted!";
+    m_state = AUTH_START;
+
+    connect( m_currentReply, SIGNAL(finished()),this,SLOT(authFinished()) );
+    connect( m_currentReply, SIGNAL(error(QNetworkReply::NetworkError)),
+             this, SLOT(networkError(QNetworkReply::NetworkError)) );
+}
+
+void
+YouTubeAuthenticator::authFinished()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
+    QByteArray data = reply->readAll();
+
+    qDebug() << reply << "Auth data: " << data;
+
+    if( m_auth->setAuthData( data ) )
+        m_state = AUTH_FINISH;
+
+    disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
+    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
+             this, SLOT(networkError(QNetworkReply::NetworkError)) );
+
+    reply->close();
+    reply->deleteLater();
+    m_currentReply = NULL;
 }

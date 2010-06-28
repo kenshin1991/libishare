@@ -28,6 +28,7 @@
 #define LOGIN_URL "https://www.google.com/youtube/accounts/ClientLogin"
 
 class QByteArray;
+class QNetworkAccessManager;
 class QNetworkRequest;
 class YouTubeService;
 
@@ -40,6 +41,8 @@ class YouTubeAuthenticator : public QObject
 
         void setCredentials( const QString& username, const QString& password );
         bool setAuthData( QByteArray& data );
+
+        void authenticate();
         bool isAuthenticated();
 
     private:
@@ -66,6 +69,11 @@ class YouTubeAuthenticator : public QObject
         QString         m_authError;
         QString         m_nick; /* YouTube User Nickname */
         bool            m_isAuthenticated;
+
+        QNetworkAccessManager* m_nam;
+
+    private slots:
+        void authFinished();
 
     signals:
         void authOver();
