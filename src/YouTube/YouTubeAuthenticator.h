@@ -40,23 +40,23 @@ class YouTubeAuthenticator : public QObject
         YouTubeAuthenticator( YouTubeService* service = 0, const QString& username = "",
                               const QString& password = "" );
 
+        void setServiceProvider( YouTubeService* service );
         void setCredentials( const QString& username, const QString& password );
         bool setAuthData( QByteArray& data );
 
         void authenticate();
         bool isAuthenticated();
 
-    private:
-        friend class        YouTubeService;
-
         const QString&      getAuthString();
         const QString&      getNick();
+
+    private:
+        void                authInit();
+
         QNetworkRequest     getNetworkRequest();
         const QByteArray&   getPOSTData();
 
-    protected:
-        void            authInit();
-        void            setPOSTData();
+        void                setPOSTData();
 
         /* Youtube Credentials */
         QString         m_username;

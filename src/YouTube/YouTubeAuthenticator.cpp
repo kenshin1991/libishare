@@ -42,6 +42,12 @@ YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service,
 }
 
 void
+YouTubeUploader::setServiceProvider(YouTubeService *service)
+{
+    m_service = service;
+}
+
+void
 YouTubeAuthenticator::authInit()
 {
     m_isAuthenticated = false;
