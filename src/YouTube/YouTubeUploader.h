@@ -36,10 +36,11 @@ class YouTubeService;
 class YouTubeUploader : public QObject
 {
     public:
-        YouTubeUploader( YouTubeService* service = 0, QString fileName = "" );
+        YouTubeUploader( YouTubeService* service = 0, const QString& fileName = "" );
         ~YouTubeUploader();
 
         void setServiceProvider( YouTubeService* service );
+        void setVideoFile( const QString& fileName );
         void setVideoData( const YouTubeVideoData& data );
         
         QNetworkRequest         getNetworkRequest();

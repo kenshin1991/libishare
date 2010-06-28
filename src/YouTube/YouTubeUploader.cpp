@@ -29,7 +29,7 @@
 #include <QStringList>
 #include <QUrl>
 
-YouTubeUploader::YouTubeUploader( YouTubeService* service, QString fileName )
+YouTubeUploader::YouTubeUploader( YouTubeService* service, const QString& fileName )
 {
     m_service = service;
     m_fileName = fileName;
@@ -42,16 +42,22 @@ YouTubeUploader::~YouTubeUploader()
 }
 
 void
+YouTubeUploader::setServiceProvider(YouTubeService *service)
+{
+    m_service = service;
+}
+
+void
+YouTubeUploader::setVideoFile( const QString& fileName )
+{
+    m_fileName = fileName;
+}
+
+void
 YouTubeUploader::setVideoData( const YouTubeVideoData& data )
 {
     m_videoData = data;
     uploadInit();
-}
-
-void
-YouTubeUploader::setServiceProvider(YouTubeService *service)
-{
-    m_service = service;
 }
 
 void
