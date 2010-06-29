@@ -48,8 +48,8 @@ class YouTubeAuthenticator : public QObject
         void authenticate();
         bool isAuthenticated();
 
-        const QString&      getAuthString();
-        const QString&      getNick();
+        const QString& getAuthString();
+        const QString& getNick();
 
     private:
         void                authInit();

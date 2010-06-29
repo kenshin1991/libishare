@@ -48,18 +48,6 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
     /* This is a temporary pointer to track current QNetworkReply in progress */
     m_currentReply = NULL;
 
-    m_nam = new QNetworkAccessManager();
-
-    /* In case the proxy asks for credentials, handle it */
-    connect( m_nam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
-            this, SLOT(proxyAuthRequired(QNetworkReply*,QAuthenticator*)) );
-
-    /* If SSL is available, handle SSL errors for better security */
-    #ifndef QT_NO_OPENSSL
-    connect( m_nam, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
-            this, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)) );
-    #endif
-
     m_ioDevice     = NULL;
     m_currentReply = NULL;
 }

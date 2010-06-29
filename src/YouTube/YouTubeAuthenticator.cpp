@@ -40,6 +40,18 @@ YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service,
     m_username = username;
     m_password = password;
 
+    m_nam = new QNetworkAccessManager( this );
+
+    /* In case the proxy asks for credentials, handle it */
+    connect( m_nam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
+            m_service, SLOT(proxyAuthRequired(QNetworkReply*,QAuthenticator*)) );
+
+    /* If SSL is available, handle SSL errors for better security */
+    #ifndef QT_NO_OPENSSL
+    connect( m_nam, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
+            m_service, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)) );
+    #endif
+
     authInit();
     setPOSTData();
 }
@@ -47,6 +59,7 @@ YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service,
 YouTubeAuthenticator::~YouTubeAuthenticator()
 {
     m_service = NULL;
+    delete m_nam;
 }
 
 void
@@ -184,5 +197,5 @@ YouTubeAuthenticator::authFinished()
              this, SLOT(networkError(QNetworkReply::NetworkError)) );
 
     reply->close();
-    reply->deleteLater();
+    delete reply;
 }
