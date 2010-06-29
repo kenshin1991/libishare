@@ -38,12 +38,6 @@ YouTubeService::YouTubeService( const QString& devKey,
 {
     m_devKey = devKey;
     m_auth = new YouTubeAuthenticator( this, username, password );
-
-    /* Tell world on successful authentication */
-    connect( m_auth, SIGNAL(authOver()), this, SIGNAL(authOver()) );
-
-    /* On authentication error, m_auth will send the error token */
-    connect( m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
 }
 
 YouTubeService::~YouTubeService()
@@ -55,6 +49,12 @@ YouTubeService::~YouTubeService()
 void
 YouTubeService::authenticate()
 {
+    /* Tell world on successful authentication */
+    connect( m_auth, SIGNAL(authOver()), this, SIGNAL(authOver()) );
+
+    /* On authentication error, m_auth will send the error token */
+    connect( m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
+
     m_auth->authenticate();
 }
 
@@ -62,8 +62,16 @@ bool
 YouTubeService::upload()
 {
     if( m_auth->isAuthenticated() )
-        return m_uploader->upload();
+    {
+        /* Tell world on successful uploading */
+        connect( m_uploader, SIGNAL(uploadOver()), this, SIGNAL(uploadOver()) );
 
+        /* Connect upload progress */
+        connect( m_uploader, SIGNAL(uploadProgress(qint64,qint64)),
+                 this, SIGNAL(uploadProgress(qint64,qint64)) );
+
+        return m_uploader->upload();
+    }
     return false;
 }
 

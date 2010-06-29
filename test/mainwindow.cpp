@@ -78,8 +78,9 @@ void MainWindow::uploadVideo( QString& username, QString& password,
     else
         y->setCredentials( username, password );
 
-    y->setVideoParameters( fileName, videoData );
     y->authenticate();
+    y->setVideoParameters( fileName, videoData );
+
 
     connect( y, SIGNAL(authOver()), this, SLOT(authFinished()) );
     connect( y, SIGNAL(uploadOver(QString)), this, SLOT(uploadFinished(QString)));
