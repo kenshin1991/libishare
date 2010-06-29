@@ -159,6 +159,12 @@ YouTubeAuthenticator::setPOSTData()
                           "&service=youtube&source=VLMC").arg(m_username, m_password);
 }
 
+void
+YouTubeAuthenticator::setServiceProvider( YouTubeService *service )
+{
+    m_service = service;
+}
+
 bool
 YouTubeAuthenticator::setAuthData( QByteArray& data )
 {
@@ -192,10 +198,4 @@ YouTubeAuthenticator::setAuthData( QByteArray& data )
 
     emit authOver();
     return m_isAuthenticated;
-}
-
-void
-YouTubeAuthenticator::setServiceProvider( YouTubeService *service )
-{
-    m_service = service;
 }

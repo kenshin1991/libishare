@@ -22,7 +22,7 @@
 
 #include "UploaderIODevice.h"
 
-UploaderIODevice::UploaderIODevice( QObject *parent, QString& fileName,
+UploaderIODevice::UploaderIODevice( QObject *parent, const QString& fileName,
                                    const QByteArray& head, const QByteArray& tail )
 {
     m_file = new QFile( fileName, this );
@@ -30,12 +30,23 @@ UploaderIODevice::UploaderIODevice( QObject *parent, QString& fileName,
     m_tail = new QByteArray( tail );
     m_position = 0;
 }
+
 UploaderIODevice::~UploaderIODevice()
 {
     delete m_head;
     delete m_tail;
     delete m_file;
 }
+
+void
+UploaderIODevice::setFile( const QString& fileName )
+{
+    if( m_file )
+        delete m_file;
+
+    m_file = new QFile( fileName, this );
+}
+
 
 /* Implement vitual method */
 qint64 UploaderIODevice::readData( char *data, qint64 maxlen )

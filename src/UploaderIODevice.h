@@ -31,9 +31,12 @@ class UploaderIODevice : public QIODevice
     Q_OBJECT
 
 public:
-    UploaderIODevice( QObject *parent, QString & fileName,
+    UploaderIODevice( QObject *parent, const QString & fileName,
                       const QByteArray &head, const QByteArray &tail );
     ~UploaderIODevice();
+
+    void setFile( const QString& fileName );
+
     bool openFile();
     qint64 readData( char *data, qint64 maxlen );
     qint64 writeData( const char *data, qint64 len );

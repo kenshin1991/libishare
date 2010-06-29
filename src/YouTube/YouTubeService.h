@@ -80,7 +80,7 @@ class YouTubeService : public QObject
 
     private slots:
         //void authFinished();
-        void uploadFinished();
+        //void uploadFinished();
         //void searchFinished();
 
         void proxyAuthRequired( QNetworkReply*, QAuthenticator * );

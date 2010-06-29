@@ -37,6 +37,8 @@ class YouTubeService;
 
 class YouTubeUploader : public QObject
 {
+    Q_OBJECT
+
     public:
         YouTubeUploader( YouTubeService* service = 0, const QString& fileName = "" );
         ~YouTubeUploader();
@@ -64,6 +66,9 @@ class YouTubeUploader : public QObject
 
         QString          m_fileName;
         YouTubeVideoData m_videoData;
+
+    private slots:
+        void uploadFinished();
 };
 
 #endif // YOUTUBEUPLOADER_H
