@@ -77,8 +77,6 @@ class YouTubeService : public QObject
         YouTubeError           m_error;
         QString                m_proxyUsername;
         QString                m_proxyPassword;
-        QNetworkAccessManager* m_nam;
-        QNetworkReply*         m_currentReply;
 
     private slots:
         //void authFinished();

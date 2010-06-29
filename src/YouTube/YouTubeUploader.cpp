@@ -22,6 +22,7 @@
 
 #include "YouTubeService.h"
 #include "YouTubeUploader.h"
+#include "UploaderIODevice.h"
 
 #include <QByteArray>
 #include <QNetworkRequest>
@@ -33,31 +34,28 @@ YouTubeUploader::YouTubeUploader( YouTubeService* service, const QString& fileNa
 {
     m_service  = service;
     m_fileName = fileName;
+
+    m_nam = new QNetworkAccessManager( this );
+
+    /* In case the proxy asks for credentials, handle it */
+    connect( m_nam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
+            m_service, SLOT(proxyAuthRequired(QNetworkReply*,QAuthenticator*)) );
+
+    /* If SSL is available, handle SSL errors for better security */
+    #ifndef QT_NO_OPENSSL
+    connect( m_nam, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
+            m_service, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)) );
+    #endif
+
     uploadInit();
 }
 
 YouTubeUploader::~YouTubeUploader()
 {
     m_service = NULL;
-}
-
-void
-YouTubeUploader::setServiceProvider(YouTubeService *service)
-{
-    m_service = service;
-}
-
-void
-YouTubeUploader::setVideoFile( const QString& fileName )
-{
-    m_fileName = fileName;
-}
-
-void
-YouTubeUploader::setVideoData( const YouTubeVideoData& data )
-{
-    m_videoData = data;
-    uploadInit();
+    delete m_nam;
+    if( m_ioDevice )
+        delete m_ioDevice;
 }
 
 void
@@ -88,6 +86,32 @@ YouTubeUploader::uploadInit()
     API_XML_REQUEST = API_XML_REQUEST.arg( m_videoData.title, m_videoData.description,
                                            m_videoData.category, m_videoData.keywords,
                                            privateToken );
+}
+
+bool
+YouTubeUploader::upload()
+{
+    /* Upload Stuff here :) */
+    m_ioDevice = new UploaderIODevice( static_cast<QObject*>(this), m_fileName,
+                                       getMimeHead(), getMimeTail() );
+
+    QNetworkRequest request = getNetworkRequest();
+    request.setHeader( QNetworkRequest::ContentLengthHeader, m_ioDevice->size() );
+    request.setRawHeader( "Connection", "close" );
+
+    if( m_ioDevice->openFile() )
+    {
+        QNetworkReply* reply = m_nam->post( request, m_ioDevice );
+        m_state = UPLOAD_START;
+
+        connect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
+        connect( reply, SIGNAL(uploadProgress(qint64,qint64)),
+                 this, SIGNAL(uploadProgress(qint64,qint64)) );
+        connect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
+                 m_service, SLOT(networkError(QNetworkReply::NetworkError)) );
+
+        return true;
+    }
 }
 
 QNetworkRequest
@@ -145,4 +169,23 @@ const YouTubeVideoData&
 YouTubeUploader::getVideoData()
 {
     return m_videoData;
+}
+
+void
+YouTubeUploader::setServiceProvider(YouTubeService *service)
+{
+    m_service = service;
+}
+
+void
+YouTubeUploader::setVideoFile( const QString& fileName )
+{
+    m_fileName = fileName;
+}
+
+void
+YouTubeUploader::setVideoData( const YouTubeVideoData& data )
+{
+    m_videoData = data;
+    uploadInit();
 }

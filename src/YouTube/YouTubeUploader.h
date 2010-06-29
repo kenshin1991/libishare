@@ -32,6 +32,7 @@
 class QIODevice;
 class QNetworkAccessManager;
 class QNetworkRequest;
+class UploaderIODevice;
 class YouTubeService;
 
 class YouTubeUploader : public QObject
@@ -39,6 +40,8 @@ class YouTubeUploader : public QObject
     public:
         YouTubeUploader( YouTubeService* service = 0, const QString& fileName = "" );
         ~YouTubeUploader();
+
+        bool upload();
 
         void setServiceProvider( YouTubeService* service );
         void setVideoFile( const QString& fileName );
@@ -56,6 +59,7 @@ class YouTubeUploader : public QObject
         QString          m_boundary;
 
         YouTubeService*        m_service;
+        UploaderIODevice*      m_ioDevice;
         QNetworkAccessManager* m_nam;
 
         QString          m_fileName;

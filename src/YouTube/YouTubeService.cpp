@@ -23,7 +23,6 @@
 #include "YouTubeAuthenticator.h"
 #include "YouTubeService.h"
 #include "YouTubeUploader.h"
-#include "UploaderIODevice.h"
 
 #include <QAuthenticator>
 #include <QByteArray>
@@ -45,22 +44,12 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
     /* On authentication error, m_auth will send the error token */
     connect( m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
 
-    /* This is a temporary pointer to track current QNetworkReply in progress */
-    m_currentReply = NULL;
-
     m_ioDevice     = NULL;
     m_currentReply = NULL;
 }
 
 YouTubeService::~YouTubeService()
 {
-    if( m_currentReply )
-    {
-        m_currentReply->abort();
-        m_currentReply->deleteLater();
-    }
-
-    delete m_nam;
     delete m_auth;
     delete m_uploader;
 }
@@ -121,37 +110,6 @@ YouTubeService::authenticate()
     m_auth->authenticate();
 }
 
-/*    QNetworkRequest request = m_auth->getNetworkRequest();
-
-    m_currentReply = m_nam->post( request, m_auth->getPOSTData() );
-    qDebug() << "Auth posted!";
-    m_state = AUTH_START;
-
-    connect( m_currentReply, SIGNAL(finished()),this,SLOT(authFinished()) );
-    connect( m_currentReply, SIGNAL(error(QNetworkReply::NetworkError)),
-             this, SLOT(networkError(QNetworkReply::NetworkError)) );
-}
-
-void
-YouTubeService::authFinished()
-{
-    QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
-    QByteArray data = reply->readAll();
-
-    qDebug() << reply << "Auth data: " << data;
-
-    if( m_auth->setAuthData( data ) )
-        m_state = AUTH_FINISH;
-
-    disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
-    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
-             this, SLOT(networkError(QNetworkReply::NetworkError)) );
-
-    reply->close();
-    reply->deleteLater();
-    m_currentReply = NULL;
-}
-*/
 bool
 YouTubeService::upload()
 {
