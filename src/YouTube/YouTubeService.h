@@ -34,7 +34,6 @@ class QByteArray;
 class QNetworkAccessManager;
 class QSslError;
 class QString;
-class UploaderIODevice;
 class YouTubeAuthenticator;
 class YouTubeUploader;
 
@@ -47,18 +46,18 @@ class YouTubeService : public QObject
                         const QString& password = "" );
         ~YouTubeService();
 
-        void setCredentials( const QString& username, const QString& password );
-        void setDeveloperKey( const QString& devKey );
-        void setProxyCredentials( const QString& username, const QString& password );
-        void setVideoParameters( const QString& fileName, const YouTubeVideoData& data );
-
-        const VideoData& getVideoData();
-
         /* Service Interfaces */
         void authenticate();            // Authenticate the service
         bool upload();                  // Upload video
         void search( QString& search ); // Search for a video
         bool abort();                   // Abort on going service
+
+        const VideoData& getVideoData();
+
+        void setCredentials( const QString& username, const QString& password );
+        void setDeveloperKey( const QString& devKey );
+        void setProxyCredentials( const QString& username, const QString& password );
+        void setVideoParameters( const QString& fileName, const YouTubeVideoData& data );
 
     private:
         friend class           YouTubeAuthenticator;
@@ -68,10 +67,8 @@ class YouTubeService : public QObject
         const QString&         getAuthString();
 
         QString                m_devKey;
-        QString                m_fileName;
         YouTubeAuthenticator*  m_auth;
         YouTubeUploader*       m_uploader;
-        UploaderIODevice*      m_ioDevice;
 
         YouTubeServiceState    m_state;
         YouTubeError           m_error;
@@ -79,10 +76,6 @@ class YouTubeService : public QObject
         QString                m_proxyPassword;
 
     private slots:
-        //void authFinished();
-        //void uploadFinished();
-        //void searchFinished();
-
         void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
         void authError( QString );
         void networkError( QNetworkReply::NetworkError );

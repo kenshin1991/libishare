@@ -53,6 +53,7 @@ class YouTubeAuthenticator : public QObject
 
     private:
         void                authInit();
+        void                error( QString& error );
 
         QNetworkRequest     getNetworkRequest();
         const QByteArray&   getPOSTData();
@@ -68,9 +69,9 @@ class YouTubeAuthenticator : public QObject
 
         /* Youtube tokens */
         QString         m_authString;
-        QString         m_authError;
         QString         m_nick; /* YouTube User Nickname */
         bool            m_isAuthenticated;
+        QString         m_authError;
 
         YouTubeService*        m_service;
         QNetworkAccessManager* m_nam;

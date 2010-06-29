@@ -93,8 +93,10 @@ YouTubeUploader::upload()
 {
     /* Upload Stuff here :) */
     if( m_ioDevice )
-        m_ioDevice = new UploaderIODevice( static_cast<QObject*>(this), m_fileName,
+        m_ioDevice = new UploaderIODevice( static_cast<QObject*>( this ), m_fileName,
                                            getMimeHead(), getMimeTail() );
+    else
+        m_ioDevice->setFile( m_fileName );
 
     QNetworkRequest request = getNetworkRequest();
     request.setHeader( QNetworkRequest::ContentLengthHeader, m_ioDevice->size() );
@@ -122,26 +124,22 @@ YouTubeUploader::uploadFinished()
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     QByteArray data = reply->readAll();
 
-    m_state = UPLOAD_FINISH;
+    m_service->m_state = UPLOAD_FINISH;
     /* TODO: Handle XML response */
     /* FIXME: check upload status of video, fix it as in AuthOK */
     emit uploadOver( QString( data ) );
 
     disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
     disconnect( reply, SIGNAL(uploadProgress(qint64,qint64)),
-             this, SIGNAL(uploadProgress(qint64,qint64)) );
+                this, SIGNAL(uploadProgress(qint64,qint64)) );
     disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
-             this, SLOT(networkError(QNetworkReply::NetworkError)) );
+                m_service, SLOT(networkError(QNetworkReply::NetworkError)) );
 
     reply->close();
     delete reply;
 
     if( m_ioDevice )
         delete m_ioDevice;
-
-    m_ioDevice     = NULL;
-    m_currentReply = NULL;
-
 }
 
 QNetworkRequest

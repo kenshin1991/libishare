@@ -33,7 +33,8 @@
 
 #include <QDebug>
 
-YouTubeService::YouTubeService( const QString& devKey, const QString& username, const QString& password )
+YouTubeService::YouTubeService( const QString& devKey,
+                                const QString& username, const QString& password )
 {
     m_devKey = devKey;
     m_auth = new YouTubeAuthenticator( this, username, password );
@@ -43,15 +44,57 @@ YouTubeService::YouTubeService( const QString& devKey, const QString& username, 
 
     /* On authentication error, m_auth will send the error token */
     connect( m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
-
-    m_ioDevice     = NULL;
-    m_currentReply = NULL;
 }
 
 YouTubeService::~YouTubeService()
 {
     delete m_auth;
     delete m_uploader;
+}
+
+void
+YouTubeService::authenticate()
+{
+    m_auth->authenticate();
+}
+
+bool
+YouTubeService::upload()
+{
+    if( m_auth->isAuthenticated() )
+        return m_uploader->upload();
+
+    return false;
+}
+
+void
+YouTubeService::search( QString& search )
+{
+}
+
+bool
+YouTubeService::abort()
+{
+    /* Check States and abort corresponding service */
+    return false;
+}
+
+const QString&
+YouTubeService::getAuthString()
+{
+    return m_auth->getAuthString();
+}
+
+const QString&
+YouTubeService::getDeveloperKey()
+{
+    return m_devKey;
+}
+
+const VideoData&
+YouTubeService::getVideoData()
+{
+    return m_uploader->getVideoData();
 }
 
 void
@@ -76,8 +119,6 @@ YouTubeService::setProxyCredentials(const QString &username, const QString &pass
 void
 YouTubeService::setVideoParameters( const QString& fileName, const YouTubeVideoData& data )
 {
-    m_fileName = fileName;
-
     if( m_uploader )
         m_uploader = new YouTubeUploader( this, fileName );
     else
@@ -86,107 +127,6 @@ YouTubeService::setVideoParameters( const QString& fileName, const YouTubeVideoD
     m_uploader->setVideoData( data );
 }
 
-const QString&
-YouTubeService::getAuthString()
-{
-    return m_auth->getAuthString();
-}
-
-const QString&
-YouTubeService::getDeveloperKey()
-{
-    return m_devKey;
-}
-
-const VideoData&
-YouTubeService::getVideoData()
-{
-    return m_uploader->getVideoData();
-}
-
-void
-YouTubeService::authenticate()
-{
-    m_auth->authenticate();
-}
-
-bool
-YouTubeService::upload()
-{
-    if( m_auth->isAuthenticated() )
-    {
-        /* Upload Stuff here :) */
-        m_ioDevice = new UploaderIODevice( static_cast<QObject*>(this), m_fileName,
-                                                       m_uploader->getMimeHead(),
-                                                       m_uploader->getMimeTail() );
-
-        QNetworkRequest request = m_uploader->getNetworkRequest();
-        request.setHeader( QNetworkRequest::ContentLengthHeader, m_ioDevice->size() );
-        request.setRawHeader( "Connection", "close" );
-
-        if( m_ioDevice->openFile() )
-        {
-            m_currentReply = m_nam->post( request, m_ioDevice );
-            m_state = UPLOAD_START;
-
-            connect( m_currentReply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
-            connect( m_currentReply, SIGNAL(uploadProgress(qint64,qint64)),
-                     this, SIGNAL(uploadProgress(qint64,qint64)) );
-            connect( m_currentReply, SIGNAL(error(QNetworkReply::NetworkError)),
-                     this, SLOT(networkError(QNetworkReply::NetworkError)) );
-
-            return true;
-        }
-    }
-    return false;
-}
-
-void
-YouTubeService::uploadFinished()
-{
-    QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
-    QByteArray data = reply->readAll();
-
-    m_state = UPLOAD_FINISH;
-    /* TODO: Handle XML response */
-    /* FIXME: check upload status of video, fix it as in AuthOK */
-    emit uploadOver( QString( data ) );
-
-    disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
-    disconnect( reply, SIGNAL(uploadProgress(qint64,qint64)),
-             this, SIGNAL(uploadProgress(qint64,qint64)) );
-    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
-             this, SLOT(networkError(QNetworkReply::NetworkError)) );
-
-    reply->close();
-    reply->deleteLater();
-
-    if( m_ioDevice )
-        delete m_ioDevice;
-
-    m_ioDevice     = NULL;
-    m_currentReply = NULL;
-
-}
-
-void
-YouTubeService::search( QString& search )
-{
-}
-
-bool
-YouTubeService::abort()
-{
-    if( m_currentReply )
-    {
-        qDebug() << "in abort()";
-        m_currentReply->abort();
-        m_currentReply->deleteLater();
-        m_currentReply = NULL;
-        return true;
-    }
-    return false;
-}
 
 void
 YouTubeService::authError( QString e )
@@ -227,7 +167,7 @@ YouTubeService::networkError( QNetworkReply::NetworkError e )
     disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
              this, SLOT(networkError(QNetworkReply::NetworkError)) );
 
-    if( m_state == AUTH_START );
+    //if( m_state == AUTH_START );
         //disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
 
     if( m_state == UPLOAD_START )
@@ -235,16 +175,10 @@ YouTubeService::networkError( QNetworkReply::NetworkError e )
         disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
         disconnect( reply, SIGNAL(uploadProgress(qint64,qint64)),
                  this, SIGNAL(uploadProgress(qint64,qint64)) );
-
-        if( m_ioDevice )
-            delete m_ioDevice;
-
-        m_ioDevice = NULL;
     }
 
     reply->close();
     reply->deleteLater();
-    m_currentReply = NULL;
 }
 
 void

@@ -33,8 +33,8 @@
 
 #include <QDebug>
 
-YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service,
-                                            const QString& username, const QString& password )
+YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service, const QString& username,
+                                            const QString& password )
 {
     m_service  = service;
     m_username = username;
@@ -102,6 +102,13 @@ YouTubeAuthenticator::authFinished()
 
     reply->close();
     delete reply;
+}
+
+void
+YouTubeAuthenticator::error( QString& e )
+{
+    qDebug() << "[AUTH ERROR]: " << e;
+    emit authError( e );
 }
 
 bool
@@ -177,7 +184,7 @@ YouTubeAuthenticator::setAuthData( QByteArray& data )
         if( tokenList.at(0) == "Error" )
         {
             m_authError = tokenList.at(1);
-            emit authError( m_authError );
+            error( m_authError );
             continue;
         }
 
