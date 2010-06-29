@@ -37,7 +37,7 @@
 YouTubeService::YouTubeService( const QString& devKey, const QString& username, const QString& password )
 {
     m_devKey = devKey;
-    m_auth = new YouTubeAuthenticator( username, password );
+    m_auth = new YouTubeAuthenticator( this, username, password );
 
     /* Tell world on successful authentication */
     connect( m_auth, SIGNAL(authOver()), this, SIGNAL(authOver()) );
@@ -126,11 +126,14 @@ YouTubeService::getVideoData()
 {
     return m_uploader->getVideoData();
 }
-/*
+
 void
 YouTubeService::authenticate()
 {
-    QNetworkRequest request = m_auth->getNetworkRequest();
+    m_auth->authenticate();
+}
+
+/*    QNetworkRequest request = m_auth->getNetworkRequest();
 
     m_currentReply = m_nam->post( request, m_auth->getPOSTData() );
     qDebug() << "Auth posted!";

@@ -31,6 +31,8 @@
 #include <QStringList>
 #include <QUrl>
 
+#include <QDebug>
+
 YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service,
                                             const QString& username, const QString& password )
 {
@@ -48,7 +50,7 @@ YouTubeAuthenticator::~YouTubeAuthenticator()
 }
 
 void
-YouTubeUploader::setServiceProvider(YouTubeService *service)
+YouTubeAuthenticator::setServiceProvider( YouTubeService *service )
 {
     m_service = service;
 }
@@ -155,14 +157,14 @@ YouTubeAuthenticator::setAuthData( QByteArray& data )
 void
 YouTubeAuthenticator::authenticate()
 {
-    QNetworkRequest request = m_auth->getNetworkRequest();
+    QNetworkRequest request = getNetworkRequest();
 
-    m_currentReply = m_nam->post( request, getPOSTData() );
+    QNetworkReply* reply = m_nam->post( request, getPOSTData() );
     qDebug() << "Auth posted!";
-    m_state = AUTH_START;
+    m_service->m_state = AUTH_START;
 
-    connect( m_currentReply, SIGNAL(finished()),this,SLOT(authFinished()) );
-    connect( m_currentReply, SIGNAL(error(QNetworkReply::NetworkError)),
+    connect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
+    connect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
              this, SLOT(networkError(QNetworkReply::NetworkError)) );
 }
 
@@ -174,8 +176,8 @@ YouTubeAuthenticator::authFinished()
 
     qDebug() << reply << "Auth data: " << data;
 
-    if( m_auth->setAuthData( data ) )
-        m_state = AUTH_FINISH;
+    if( setAuthData( data ) )
+        m_service->m_state = AUTH_FINISH;
 
     disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
     disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
@@ -183,5 +185,4 @@ YouTubeAuthenticator::authFinished()
 
     reply->close();
     reply->deleteLater();
-    m_currentReply = NULL;
 }
