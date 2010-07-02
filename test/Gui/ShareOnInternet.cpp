@@ -76,16 +76,13 @@ ShareOnInternet::accept()
 void
 ShareOnInternet::publish()
 {
-    QString fileName = "/home/rohit/GSoC/VideoLan/libishare/videos/mp4.mp4";
-
     QString username     = getUsername();
     QString password     = getPassword();
     quint32 width        = getWidth();
     quint32 height       = getHeight();
-    VideoData videoData  = getVideoData();
 
     qDebug() << "[SHARE ON INTERNET]: Going to publish video!"
-            << username << password << videoData.title;
+            << username << password;
 
     if( !m_service )
     {
@@ -96,8 +93,6 @@ ShareOnInternet::publish()
         m_service->setCredentials( username, password );
 
     m_service->authenticate();
-    m_service->setVideoParameters( fileName, videoData );
-
 
     connect( m_service, SIGNAL(authOver()), this, SLOT(authFinished()) );
     connect( m_service, SIGNAL(error(QString)), this, SLOT(serviceError(QString)) );
@@ -106,12 +101,18 @@ ShareOnInternet::publish()
 void
 ShareOnInternet::authFinished()
 {
-    qDebug() << "[AUTH FINISHED]";
+    qDebug() << "[SHARE ON INTERNET]: AUTH FINISHED";
     m_ui.progressBar->setEnabled( true );
     m_ui.progressBar->setVisible( true );
 
     /*On Finish, extract out the auth token and upload a test video */
     disconnect( m_service, SIGNAL(authOver()), this, SLOT(authFinished()) );
+
+
+    QString fileName = "/home/rohit/GSoC/VideoLan/libishare/videos/mp4.mp4";
+    VideoData videoData  = getVideoData();
+
+    m_service->setVideoParameters( fileName, videoData );
 
     connect( m_service, SIGNAL(uploadOver(QString)), this, SLOT(uploadFinished(QString)));
     connect( m_service, SIGNAL(uploadProgress(qint64,qint64)),
@@ -119,12 +120,18 @@ ShareOnInternet::authFinished()
 
     if( !m_service->upload() )
     {
-        qDebug() << "[AUTH FAILED]";
+        disconnect( m_service, SIGNAL(uploadOver(QString)), this, SLOT(uploadFinished(QString)));
+        disconnect( m_service, SIGNAL(uploadProgress(qint64,qint64)),
+                    this, SLOT(uploadProgress(qint64,qint64)) );
+        disconnect( m_service, SIGNAL(error(QString)), this, SLOT(serviceError(QString)) );
+
+        qDebug() << "[SHARE ON INTERNET][AUTH FAILED]";
 
         /* Add code here to work on fallback... */
+        return;
     }
 
-    qDebug() << "[UPLOAD STARTED]";
+    qDebug() << "[SHARE ON INTERNET]: UPLOAD STARTED";
 
     /* TODO: Add code to activate Abort button etc. */
     /* YouTubeService will check if the auth token is expired

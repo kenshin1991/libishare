@@ -30,6 +30,8 @@
 #include <QStringList>
 #include <QUrl>
 
+#include <QDebug>
+
 YouTubeUploader::YouTubeUploader( YouTubeService* service, const QString& fileName )
 {
     m_service  = service;
@@ -47,6 +49,7 @@ YouTubeUploader::YouTubeUploader( YouTubeService* service, const QString& fileNa
             m_service, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)) );
     #endif
 
+    m_ioDevice = NULL;
     uploadInit();
 }
 
@@ -92,11 +95,13 @@ bool
 YouTubeUploader::upload()
 {
     /* Upload Stuff here :) */
-    if( m_ioDevice )
+    if( !m_ioDevice )
         m_ioDevice = new UploaderIODevice( static_cast<QObject*>( this ), m_fileName,
                                            getMimeHead(), getMimeTail() );
     else
         m_ioDevice->setFile( m_fileName );
+
+    qDebug() << "[YT UPLOADER]: In Upload";
 
     QNetworkRequest request = getNetworkRequest();
     request.setHeader( QNetworkRequest::ContentLengthHeader, m_ioDevice->size() );
@@ -107,6 +112,8 @@ YouTubeUploader::upload()
         QNetworkReply* reply = m_nam->post( request, m_ioDevice );
         m_service->m_state = UPLOAD_START;
 
+        qDebug() << "[YT UPLOADER]: File opened, ready to upload";
+
         connect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
         connect( reply, SIGNAL(uploadProgress(qint64,qint64)),
                  this, SIGNAL(uploadProgress(qint64,qint64)) );
@@ -115,6 +122,7 @@ YouTubeUploader::upload()
 
         return true;
     }
+    qDebug() << "[YT UPLOADER]: File opening failed.";
     return false;
 }
 
@@ -136,10 +144,12 @@ YouTubeUploader::uploadFinished()
                 m_service, SLOT(networkError(QNetworkReply::NetworkError)) );
 
     reply->close();
-    delete reply;
+    reply->deleteLater();
 
     if( m_ioDevice )
         delete m_ioDevice;
+
+    m_ioDevice = NULL;
 }
 
 QNetworkRequest

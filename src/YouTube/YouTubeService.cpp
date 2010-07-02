@@ -36,19 +36,34 @@
 YouTubeService::YouTubeService( const QString& devKey,
                                 const QString& username, const QString& password )
 {
-    m_devKey = devKey;
-    m_auth = new YouTubeAuthenticator( this, username, password );
+    m_devKey   = devKey;
+    m_username = username;
+    m_password = password;
+
+    m_auth     = NULL;
+    m_uploader = NULL;
 }
 
 YouTubeService::~YouTubeService()
 {
-    delete m_auth;
-    delete m_uploader;
+    if( m_auth )
+        delete m_auth;
+
+    if( m_uploader )
+        delete m_uploader;
 }
 
 void
 YouTubeService::authenticate()
 {
+    if( !m_auth )
+    {
+        m_auth = new YouTubeAuthenticator( this, m_username, m_password );
+        qDebug() << "[YT SERVICE]: Creating auth object";
+    }
+    else
+        m_auth->setCredentials( m_username, m_password );
+
     /* Tell world on successful authentication */
     connect( m_auth, SIGNAL(authOver()), this, SIGNAL(authOver()) );
 
@@ -63,6 +78,16 @@ YouTubeService::upload()
 {
     if( m_auth->isAuthenticated() )
     {
+        if( !m_uploader )
+        {
+            m_uploader = new YouTubeUploader( this, m_fileName );
+            qDebug() << "[YT SERVICE]: Creating uploader object, uploading file: " << m_fileName;
+        }
+        else
+            m_uploader->setVideoFile( m_fileName );
+
+        m_uploader->setVideoData( m_videoData );
+
         /* Tell world on successful uploading */
         connect( m_uploader, SIGNAL(uploadOver(QString)),
                  this, SIGNAL(uploadOver(QString)) );
@@ -73,6 +98,7 @@ YouTubeService::upload()
 
         return m_uploader->upload();
     }
+    qDebug() << "[YT SERVICE]: AUTH FAILED, so no upload";
     return false;
 }
 
@@ -109,7 +135,8 @@ YouTubeService::getVideoData()
 void
 YouTubeService::setCredentials( const QString& username, const QString& password )
 {
-    m_auth->setCredentials( username, password );
+    m_username = username;
+    m_password = password;
 }
 
 void
@@ -128,19 +155,14 @@ YouTubeService::setProxyCredentials(const QString &username, const QString &pass
 void
 YouTubeService::setVideoParameters( const QString& fileName, const YouTubeVideoData& data )
 {
-    if( m_uploader )
-        m_uploader = new YouTubeUploader( this, fileName );
-    else
-        m_uploader->setVideoFile( fileName );
-
-    m_uploader->setVideoData( data );
+    m_fileName  = fileName;
+    m_videoData = data;
 }
-
 
 void
 YouTubeService::authError( QString e )
 {
-    qDebug() << "[AUTH ERROR]: " << e;
+    qDebug() << "[YT SERVICE]: [AUTH ERROR]: " << e;
 
     if( e == "BadAuthentication" )
         m_error = BadAuthentication;
@@ -167,6 +189,8 @@ YouTubeService::networkError( QNetworkReply::NetworkError e )
         case QNetworkReply::ContentOperationNotPermittedError:
         default: return;
     }
+
+    qDebug() << "[YT SERVICE]: DANGER!!!";
 
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
 

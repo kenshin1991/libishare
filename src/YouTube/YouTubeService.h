@@ -41,6 +41,9 @@ class YouTubeService : public QObject
 {
     Q_OBJECT
 
+    friend class YouTubeAuthenticator;
+    friend class YouTubeUploader;
+
     public:
         YouTubeService( const QString& devKey = "", const QString& username = "",
                         const QString& password = "" );
@@ -60,13 +63,17 @@ class YouTubeService : public QObject
         void setVideoParameters( const QString& fileName, const YouTubeVideoData& data );
 
     private:
-        friend class           YouTubeAuthenticator;
-        friend class           YouTubeUploader;
 
         const QString&         getDeveloperKey();
         const QString&         getAuthString();
 
         QString                m_devKey;
+        QString                m_username;
+        QString                m_password;
+
+        QString                m_fileName;
+        VideoData              m_videoData;
+
         YouTubeAuthenticator*  m_auth;
         YouTubeUploader*       m_uploader;
 
