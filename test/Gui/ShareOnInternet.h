@@ -33,6 +33,13 @@ class ShareOnInternet : public QDialog
 {
     Q_OBJECT
 
+    enum ServiceProviders
+    {
+        YOUTUBE = 0,
+        VIMEO,
+        JUSTIN,
+    };
+
     public:
         ShareOnInternet( QWidget* parent = 0 );
         ~ShareOnInternet();
@@ -50,7 +57,7 @@ class ShareOnInternet : public QDialog
 
         Ui::ShareOnInternet      m_ui;
         AbstractSharingService*  m_service;
-        quint32                  m_serviceProvider;
+        int                      m_serviceProvider;
         QString                  m_devKey;
         QString                  m_fileName;
 
