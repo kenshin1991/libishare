@@ -43,17 +43,22 @@ class ShareOnInternet : public QDialog
         quint32          getHeight() const;
         VideoData        getVideoData() const;
 
+        void             setVideoFile( QString& fileName );
+
     private:
+        void                     publish();
+
         Ui::ShareOnInternet      m_ui;
         YouTubeService*          m_service;
-        QString                  devKey;
+        quint32                  m_serviceProvider;
+        QString                  m_devKey;
+        QString                  m_fileName;
+
         quint32                  m_width;
         quint32                  m_height;
-        quint32                  m_serviceProvider;
 
     private slots:
         virtual void    accept();
-        void publish();// QString& filePath );
 
         void authFinished();
         void uploadFinished( QString );

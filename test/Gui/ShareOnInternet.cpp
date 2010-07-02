@@ -34,12 +34,13 @@ ShareOnInternet::ShareOnInternet( QWidget* parent )
     m_service = NULL;
     m_ui.setupUi( this );
     m_ui.progressBar->setVisible( false );
-    devKey = "AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ";
+    /* Get DevKey from VLMC settings */
+    m_devKey = "AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ";
 }
 
 ShareOnInternet::~ShareOnInternet()
 {
-    qDebug() << "[SHARE ON INTERNET]: Oh boy, gotta go";
+    qDebug() << "[SHARE ON INTERNET]: dtor, deleting m_service";
     delete m_service;
 }
 
@@ -65,33 +66,29 @@ ShareOnInternet::accept()
         default: m_width = 640;  m_height = 360;
     }
 
-    /* Add here code to update service provider, default: YouTube */
-    QString temp = "/home/rohit/GSoC/VideoLan/libishare/videos/mp4.mp4";
-    publish();// temp );
-
-    /* Error checks here */
-    //QDialog::accept();
+    publish();
 }
 
 void
 ShareOnInternet::publish()
 {
+    m_ui.publishButton->setEnabled( false );
+
     QString username     = getUsername();
     QString password     = getPassword();
     quint32 width        = getWidth();
     quint32 height       = getHeight();
 
-    qDebug() << "[SHARE ON INTERNET]: Going to publish video!"
-            << username << password;
-
     if( !m_service )
     {
         qDebug() << "[SHARE ON INTERNET]: Created Service object";
-        m_service = new YouTubeService( devKey, username, password );
+        /* Add here code to update service provider, default: YouTube */
+        m_service = new YouTubeService( m_devKey, username, password );
     }
     else
         m_service->setCredentials( username, password );
 
+    m_ui.statusLabel->setText( tr("Authenticating...") );
     m_service->authenticate();
 
     connect( m_service, SIGNAL(authOver()), this, SLOT(authFinished()) );
@@ -106,11 +103,9 @@ ShareOnInternet::authFinished()
     /*On Finish, extract out the auth token and upload a test video */
     disconnect( m_service, SIGNAL(authOver()), this, SLOT(authFinished()) );
 
-
-    QString fileName = "/home/rohit/GSoC/VideoLan/libishare/videos/mp4.mp4";
     VideoData videoData  = getVideoData();
 
-    m_service->setVideoParameters( fileName, videoData );
+    m_service->setVideoParameters( m_fileName, videoData );
 
     connect( m_service, SIGNAL(uploadOver(QString)), this, SLOT(uploadFinished(QString)));
     connect( m_service, SIGNAL(uploadProgress(qint64,qint64)),
@@ -118,12 +113,14 @@ ShareOnInternet::authFinished()
 
     if( !m_service->upload() )
     {
+        m_ui.publishButton->setEnabled( true );
+
         disconnect( m_service, SIGNAL(uploadOver(QString)), this, SLOT(uploadFinished(QString)));
         disconnect( m_service, SIGNAL(uploadProgress(qint64,qint64)),
                     this, SLOT(uploadProgress(qint64,qint64)) );
         disconnect( m_service, SIGNAL(error(QString)), this, SLOT(serviceError(QString)) );
 
-        qDebug() << "[SHARE ON INTERNET][AUTH FAILED]";
+        qDebug() << "[SHARE ON INTERNET]: AUTH failed or Perhaps file not found";
 
         /* Add code here to work on fallback... */
         return;
@@ -147,7 +144,7 @@ ShareOnInternet::uploadFinished( QString result )
     m_ui.progressBar->setVisible( false );
 
     qDebug() << result
-            << "[SHARE ON INTERNET]: Upload Finished";
+            << "\n[SHARE ON INTERNET]: Upload Finished";
 
     /* Finish exec() */
     QDialog::accept();
@@ -167,7 +164,7 @@ ShareOnInternet::uploadProgress(qint64 received, qint64 total)
 void
 ShareOnInternet::serviceError(QString e)
 {
-    qDebug() << "[SERVICE ERROR]: " << e;
+    qDebug() << "[SHARE ON INTERNET]: [SERVICE ERROR]: " << e;
     m_ui.statusLabel->setText( e );
     emit error( e );
 }
@@ -208,4 +205,10 @@ ShareOnInternet::getVideoData() const
     data.isPrivate   = m_ui.videoPrivacy->isChecked();
 
     return data;
+}
+
+void
+ShareOnInternet::setVideoFile( QString& fileName )
+{
+    m_fileName = fileName;
 }

@@ -36,6 +36,9 @@ void MainWindow::shareOnInternet()
     ShareOnInternet *exportToInternet = new ShareOnInternet();
 
 
+    QString fileName = "/home/rohit/GSoC/VideoLan/libishare/videos/mp4.mp4";
+    exportToInternet->setVideoFile(fileName);
+
     if ( exportToInternet->exec() == QDialog::Rejected )
     {
         qDebug() << "Dialog cancelled...";
