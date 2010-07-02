@@ -21,13 +21,17 @@
  *****************************************************************************/
 
 #include "ShareOnInternet.h"
+#include "AbstractSharingService.h"
+#include "Vimeo/VimeoService.h"
+#include "YouTube/YouTubeService.h"
+
 #include <QMessageBox>
 #include <QDebug>
 
-ShareOnInternet::ShareOnInternet()
+ShareOnInternet::ShareOnInternet( QWidget* parent )
+    : QWidget( parent, Qt::Sheet | Qt::Dialog )
 {
     m_ui.setupUi( this );
-    setWindowFlags( windowFlags() | Qt::Sheet ); // Qt::Sheet is for UI on Mac
 }
 
 void
