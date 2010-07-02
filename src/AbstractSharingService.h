@@ -36,15 +36,15 @@ class AbstractSharingService : public QObject
 
         virtual void authenticate(){}             // Authenticate the service
         virtual bool upload(){ return true; }     // Upload video
-        virtual void search( QString& search ){}  // Search for a video
+        virtual void search( QString& ){}         // Search for a video
         virtual bool abort(){ return true; }      // Abort on going service
 
         virtual const VideoData& getVideoData(){};
 
-        virtual void setCredentials( const QString& username, const QString& password ){}
-        virtual void setDeveloperKey( const QString& devKey ){}
-        virtual void setProxyCredentials( const QString& username, const QString& password ){}
-        virtual void setVideoParameters( const QString& fileName, const VideoData& data ){}
+        virtual void setCredentials( const QString&, const QString& ){}
+        virtual void setDeveloperKey( const QString& ){}
+        virtual void setProxyCredentials( const QString&, const QString& ){}
+        virtual void setVideoParameters( const QString&, const VideoData& ){}
 
     signals:
         void authOver();
