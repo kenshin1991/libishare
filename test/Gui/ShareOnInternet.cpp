@@ -31,6 +31,7 @@
 ShareOnInternet::ShareOnInternet( QWidget* parent )
     : QDialog( parent, Qt::Sheet | Qt::Dialog )
 {
+    m_service = NULL;
     m_ui.setupUi( this );
     m_ui.progressBar->setVisible( false );
     devKey = "AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ";
@@ -59,9 +60,11 @@ ShareOnInternet::accept()
     }
 
     /* Add here code to update service provider, default: YouTube */
+    QString temp = "/home/rohit/GSoC/VideoLan/libishare/videos/mp4.mp4";
+    publish( temp );
 
     /* Error checks here */
-    QDialog::accept();
+    //QDialog::accept();
 }
 
 void
@@ -72,6 +75,9 @@ ShareOnInternet::publish( QString& fileName )
     quint32 width        = getWidth();
     quint32 height       = getHeight();
     VideoData videoData  = getVideoData();
+
+    qDebug() << "[SHARE ON INTERNET]: Going to publish video!"
+            << username << password << videoData.title;
 
     if( !m_service )
     {

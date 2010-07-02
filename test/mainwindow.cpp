@@ -21,12 +21,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName( this,
-                                                 tr( "Choose Video File to upload" ), "",
-                                                 tr( "Video files (*.avi *.flv *.mov *.mp4 *.mpg)" ) );
+//    QString fileName = QFileDialog::getOpenFileName( this,
+//                                                 tr( "Choose Video File to upload" ), "",
+//                                                 tr( "Video files (*.avi *.flv *.mov *.mp4 *.mpg)" ) );
 
     /* Add code to transcode/export video */
-    ui->filePath->setText( fileName );
+//    ui->filePath->setText( fileName );
     shareOnInternet();
 }
 
@@ -38,12 +38,13 @@ void MainWindow::shareOnInternet()
 
     if ( exportToInternet->exec() == QDialog::Rejected )
     {
-        qDebug() << "Dialog cancelled, deleting y";
+        qDebug() << "Dialog cancelled...";
         delete exportToInternet;
         return ;
     }
+    qDebug() << "All right... stuck here";
 
-    delete exportToInternet;
+    //delete exportToInternet;
 }
 
 void MainWindow::on_abortButton_clicked()

@@ -64,7 +64,8 @@ YouTubeService::upload()
     if( m_auth->isAuthenticated() )
     {
         /* Tell world on successful uploading */
-        connect( m_uploader, SIGNAL(uploadOver()), this, SIGNAL(uploadOver()) );
+        connect( m_uploader, SIGNAL(uploadOver(QString)),
+                 this, SIGNAL(uploadOver(QString)) );
 
         /* Connect upload progress */
         connect( m_uploader, SIGNAL(uploadProgress(qint64,qint64)),

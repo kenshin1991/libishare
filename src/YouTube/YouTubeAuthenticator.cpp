@@ -80,7 +80,7 @@ YouTubeAuthenticator::authenticate()
     QNetworkRequest request = getNetworkRequest();
 
     QNetworkReply* reply = m_nam->post( request, getPOSTData() );
-    qDebug() << "Auth posted!";
+    qDebug() << "[YT AUTH]: Auth posted!";
     m_service->m_state = AUTH_START;
 
     connect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
@@ -94,7 +94,7 @@ YouTubeAuthenticator::authFinished()
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     QByteArray data = reply->readAll();
 
-    qDebug() << reply << "Auth data: " << data;
+    qDebug() << "[YT AUTH] Data Received:\n" << data;
 
     if( setAuthData( data ) )
         m_service->m_state = AUTH_FINISH;
