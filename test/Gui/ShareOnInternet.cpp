@@ -29,20 +29,11 @@
 #include <QDebug>
 
 ShareOnInternet::ShareOnInternet( QWidget* parent )
-    : QWidget( parent, Qt::Sheet | Qt::Dialog )
+    : QDialog( parent, Qt::Sheet | Qt::Dialog )
 {
     m_ui.setupUi( this );
-}
-
-void
-ShareOnInternet::setData( const VideoData &data )
-{
-    qDebug() << "Setting up backed up video data";
-    m_ui.title->setText( data.title );
-    m_ui.description->setPlainText( data.description );
-    m_ui.keywords->setText( data.keywords );
-    if( data.isPrivate )
-        m_ui.videoPrivacy->setChecked( true );
+    m_ui.progressBar->setVisible( false );
+    devKey = "AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ";
 }
 
 void
@@ -73,32 +64,111 @@ ShareOnInternet::accept()
     QDialog::accept();
 }
 
+void
+ShareOnInternet::publish( QString& fileName )
+{
+    QString username     = getUsername();
+    QString password     = getPassword();
+    quint32 width        = getWidth();
+    quint32 height       = getHeight();
+    VideoData videoData  = getVideoData();
+
+    if( !m_service )
+    {
+        qDebug() << "[SHARE ON INTERNET]: Created Service object";
+        m_service = new YouTubeService( devKey, username, password );
+    }
+    else
+        m_service->setCredentials( username, password );
+
+    m_service->authenticate();
+    m_service->setVideoParameters( fileName, videoData );
+
+
+    connect( m_service, SIGNAL(authOver()), this, SLOT(authFinished()) );
+    connect( m_service, SIGNAL(error(QString)), this, SLOT(serviceError(QString)) );
+}
+
+void
+ShareOnInternet::authFinished()
+{
+    qDebug() << "[AUTH FINISHED]";
+    m_ui.progressBar->setEnabled( true );
+    m_ui.progressBar->setVisible( true );
+
+    /*On Finish, extract out the auth token and upload a test video */
+    disconnect( m_service, SIGNAL(authOver()), this, SLOT(authFinished()) );
+
+    connect( m_service, SIGNAL(uploadOver(QString)), this, SLOT(uploadFinished(QString)));
+    connect( m_service, SIGNAL(uploadProgress(qint64,qint64)),
+             this, SLOT(uploadProgress(qint64,qint64)) );
+
+    if( !m_service->upload() )
+    {
+        qDebug() << "[AUTH FAILED]";
+        /* Add code here to work on fallback... */
+    }
+
+    qDebug() << "[UPLOAD STARTED]";
+
+    /* TODO: Add code to activate Abort button etc. */
+    /* YouTubeService will check if the auth token is expired
+       or it's not authenticated yet... Then if it's true, it will upload*/
+}
+
+void
+ShareOnInternet::uploadFinished( QString result )
+{
+    /* Add code here to abort stuff */
+    qDebug() << "[Upload Finished]: " << result;
+    m_ui.progressBar->setEnabled( false );
+    m_ui.progressBar->setVisible( false );
+}
+
+void
+ShareOnInternet::uploadProgress(qint64 received, qint64 total)
+{
+    if( total != 0 )
+    {
+        qint64 progress = received * 100 / total;
+        m_ui.progressBar->setValue( progress );
+        m_ui.statusLabel->setText( QString("Uploaded: %1").arg( received ) );
+    }
+}
+
+void
+ShareOnInternet::serviceError(QString e)
+{
+    qDebug() << "[SERVICE ERROR]: " << e;
+    emit error( e );
+}
+
 QString
-ShareOnInternet::username() const
+ShareOnInternet::getUsername() const
 {
     return m_ui.username->text();
 }
 
 QString
-ShareOnInternet::password() const
+ShareOnInternet::getPassword() const
 {
     return m_ui.password->text();
 }
 
 quint32
-ShareOnInternet::width() const
+ShareOnInternet::getWidth() const
 {
     return m_width;
 }
 
 quint32
-ShareOnInternet::height() const
+ShareOnInternet::getHeight() const
 {
     return m_height;
 }
 
 VideoData
-ShareOnInternet::videoData() const
+ShareOnInternet::getVideoData() const
 {
     VideoData data;
 
@@ -109,4 +179,15 @@ ShareOnInternet::videoData() const
     data.isPrivate   = m_ui.videoPrivacy->isChecked();
 
     return data;
+}
+
+void
+ShareOnInternet::setData( const VideoData &data )
+{
+    qDebug() << "Setting up backed up video data";
+    m_ui.title->setText( data.title );
+    m_ui.description->setPlainText( data.description );
+    m_ui.keywords->setText( data.keywords );
+    if( data.isPrivate )
+        m_ui.videoPrivacy->setChecked( true );
 }

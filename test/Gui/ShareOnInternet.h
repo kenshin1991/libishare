@@ -23,36 +23,48 @@
 #ifndef SHAREONINTERNET_H
 #define SHAREONINTERNET_H
 
-#include <QWidget>
+#include <QDialog>
 #include "ui_ShareOnInternet.h"
 
-class AbstractSharingService;
+class YouTubeService;
 class VideoData;
 
-class ShareOnInternet : public QWidget
+class ShareOnInternet : public QDialog
 {
     Q_OBJECT
 
     public:
         ShareOnInternet( QWidget* parent = 0 );
+
+        QString          getUsername() const;
+        QString          getPassword() const;
+        quint32          getWidth() const;
+        quint32          getHeight() const;
+        VideoData        getVideoData() const;
+
         void setData( const VideoData& data );
 
-        QString          username() const;
-        QString          password() const;
-        quint32          width() const;
-        quint32          height() const;
-        VideoData        videoData() const;
-
-    private slots:
-        virtual void    accept();
-
     private:
+        void publish( QString& filePath );
+
         Ui::ShareOnInternet      m_ui;
-        AbstractSharingService*  m_service;
+        YouTubeService*          m_service;
         QString                  devKey;
         quint32                  m_width;
         quint32                  m_height;
         quint32                  m_serviceProvider;
+
+    private slots:
+        virtual void    accept();
+
+        void authFinished();
+        void uploadFinished( QString );
+        void uploadProgress( qint64, qint64 );
+        void serviceError( QString );
+
+    signals:
+        void error( QString );
+        void finished();
 };
 
 #endif // SHAREONINTERNET_H
