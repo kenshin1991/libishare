@@ -19,3 +19,41 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
+
+#ifndef ABSTRACTSHARINGSERVICE_H
+#define ABSTRACTSHARINGSERVICE_H
+
+#include <QObject>
+
+class VideoData;
+
+class AbstractSharingService : public QObject
+{
+    Q_OBJECT
+
+    public:
+        AbstractSharingService( const QString& devKey = "", const QString& username = "",
+                        const QString& password = "" );
+        virtual ~AbstractSharingService();
+
+        /* Service Interfaces */
+        virtual void authenticate();            // Authenticate the service
+        virtual bool upload();                  // Upload video
+        virtual void search( QString& search ); // Search for a video
+        virtual bool abort();                   // Abort on going service
+
+        virtual const VideoData& getVideoData();
+
+        virtual void setCredentials( const QString& username, const QString& password );
+        virtual void setDeveloperKey( const QString& devKey );
+        virtual void setProxyCredentials( const QString& username, const QString& password );
+        virtual void setVideoParameters( const QString& fileName, const VideoData& data );
+
+    signals:
+        void authOver();
+        void uploadOver( QString );
+        void uploadProgress( qint64, qint64 );
+        void error( QString );
+};
+
+#endif // ABSTRACTSHARINGSERVICE_H
