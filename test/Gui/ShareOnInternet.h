@@ -26,8 +26,8 @@
 #include <QDialog>
 #include "ui_ShareOnInternet.h"
 
+class AbstractSharingService;
 class VideoData;
-class YouTubeService;
 
 class ShareOnInternet : public QDialog
 {
@@ -49,7 +49,7 @@ class ShareOnInternet : public QDialog
         void                     publish();
 
         Ui::ShareOnInternet      m_ui;
-        YouTubeService*          m_service;
+        AbstractSharingService*  m_service;
         quint32                  m_serviceProvider;
         QString                  m_devKey;
         QString                  m_fileName;
@@ -58,12 +58,11 @@ class ShareOnInternet : public QDialog
         quint32                  m_height;
 
     private slots:
-        virtual void    accept();
-
-        void authFinished();
-        void uploadFinished( QString );
-        void uploadProgress( qint64, qint64 );
-        void serviceError( QString );
+        void    accept();
+        void    authFinished();
+        void    uploadFinished( QString );
+        void    uploadProgress( qint64, qint64 );
+        void    serviceError( QString );
 
     signals:
         void error( QString );
