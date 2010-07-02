@@ -23,6 +23,7 @@
 #ifndef YOUTUBESERVICE_H
 #define YOUTUBESERVICE_H
 
+#include "AbstractSharingService.h"
 #include "YouTubeCommon.h"
 
 #include <QObject>
@@ -37,7 +38,7 @@ class QString;
 class YouTubeAuthenticator;
 class YouTubeUploader;
 
-class YouTubeService : public QObject
+class YouTubeService : public AbstractSharingService
 {
     Q_OBJECT
 
