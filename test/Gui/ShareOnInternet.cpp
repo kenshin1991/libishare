@@ -102,8 +102,6 @@ void
 ShareOnInternet::authFinished()
 {
     qDebug() << "[SHARE ON INTERNET]: AUTH FINISHED";
-    m_ui.progressBar->setEnabled( true );
-    m_ui.progressBar->setVisible( true );
 
     /*On Finish, extract out the auth token and upload a test video */
     disconnect( m_service, SIGNAL(authOver()), this, SLOT(authFinished()) );
@@ -130,6 +128,9 @@ ShareOnInternet::authFinished()
         /* Add code here to work on fallback... */
         return;
     }
+    m_ui.statusLabel->setText( tr("Authenticated!") );
+    m_ui.progressBar->setEnabled( true );
+    m_ui.progressBar->setVisible( true );
 
     qDebug() << "[SHARE ON INTERNET]: UPLOAD STARTED";
 
@@ -145,8 +146,10 @@ ShareOnInternet::uploadFinished( QString result )
     m_ui.progressBar->setEnabled( false );
     m_ui.progressBar->setVisible( false );
 
-    qDebug() << "[Upload Finished]: " << result;
+    qDebug() << result
+            << "[SHARE ON INTERNET]: Upload Finished";
 
+    /* Finish exec() */
     QDialog::accept();
 }
 
@@ -157,7 +160,7 @@ ShareOnInternet::uploadProgress(qint64 received, qint64 total)
     {
         qint64 progress = received * 100 / total;
         m_ui.progressBar->setValue( progress );
-        m_ui.statusLabel->setText( QString("Uploaded: %1").arg( received ) );
+        m_ui.statusLabel->setText( tr("%1 Bytes Uploaded").arg( received ) );
     }
 }
 
@@ -165,6 +168,7 @@ void
 ShareOnInternet::serviceError(QString e)
 {
     qDebug() << "[SERVICE ERROR]: " << e;
+    m_ui.statusLabel->setText( e );
     emit error( e );
 }
 
@@ -204,15 +208,4 @@ ShareOnInternet::getVideoData() const
     data.isPrivate   = m_ui.videoPrivacy->isChecked();
 
     return data;
-}
-
-void
-ShareOnInternet::setData( const VideoData &data )
-{
-    qDebug() << "Setting up backed up video data";
-    m_ui.title->setText( data.title );
-    m_ui.description->setPlainText( data.description );
-    m_ui.keywords->setText( data.keywords );
-    if( data.isPrivate )
-        m_ui.videoPrivacy->setChecked( true );
 }

@@ -26,8 +26,8 @@
 #include <QDialog>
 #include "ui_ShareOnInternet.h"
 
-class YouTubeService;
 class VideoData;
+class YouTubeService;
 
 class ShareOnInternet : public QDialog
 {
@@ -42,8 +42,6 @@ class ShareOnInternet : public QDialog
         quint32          getWidth() const;
         quint32          getHeight() const;
         VideoData        getVideoData() const;
-
-        void setData( const VideoData& data );
 
     private:
         Ui::ShareOnInternet      m_ui;

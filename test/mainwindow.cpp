@@ -42,9 +42,8 @@ void MainWindow::shareOnInternet()
         delete exportToInternet;
         return ;
     }
-    qDebug() << "All right... stuck here";
-
-    //delete exportToInternet;
+    qDebug() << "All right... lets delete export2internet object folks!";
+    delete exportToInternet;
 }
 
 void MainWindow::on_abortButton_clicked()
