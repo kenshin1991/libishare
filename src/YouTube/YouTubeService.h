@@ -90,12 +90,6 @@ class YouTubeService : public AbstractSharingService
         #ifndef QT_NO_OPENSSL
         void sslErrors( QNetworkReply*,const QList<QSslError> &errors );
         #endif
-
-    signals:
-        void authOver();
-        void uploadOver( QString );
-        void uploadProgress( qint64, qint64 );
-        void error( QString );
 };
 
 #endif // YOUTUBESERVICE_H
