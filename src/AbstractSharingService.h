@@ -23,7 +23,6 @@
 #ifndef ABSTRACTSHARINGSERVICE_H
 #define ABSTRACTSHARINGSERVICE_H
 
-/*
 #include <QObject>
 
 class VideoData;
@@ -33,21 +32,19 @@ class AbstractSharingService : public QObject
     Q_OBJECT
 
     public:
-        //AbstractSharingService( const QString& devKey = "", const QString& username = "",
-        //                const QString& password = "" );
-        //virtual ~AbstractSharingService();
+        AbstractSharingService( QObject* parent = 0 ) : QObject( parent ) {}
 
-        virtual void authenticate();            // Authenticate the service
-        virtual bool upload();                  // Upload video
-        virtual void search( QString& search ); // Search for a video
-        virtual bool abort();                   // Abort on going service
+        virtual void authenticate(){}             // Authenticate the service
+        virtual bool upload(){ return true; }     // Upload video
+        virtual void search( QString& search ){}  // Search for a video
+        virtual bool abort(){ return true; }      // Abort on going service
 
-        virtual const VideoData& getVideoData();
+        virtual const VideoData& getVideoData(){};
 
-        virtual void setCredentials( const QString& username, const QString& password );
-        virtual void setDeveloperKey( const QString& devKey );
-        virtual void setProxyCredentials( const QString& username, const QString& password );
-        virtual void setVideoParameters( const QString& fileName, const VideoData& data );
+        virtual void setCredentials( const QString& username, const QString& password ){}
+        virtual void setDeveloperKey( const QString& devKey ){}
+        virtual void setProxyCredentials( const QString& username, const QString& password ){}
+        virtual void setVideoParameters( const QString& fileName, const VideoData& data ){}
 
     signals:
         void authOver();
@@ -55,5 +52,5 @@ class AbstractSharingService : public QObject
         void uploadProgress( qint64, qint64 );
         void error( QString );
 };
-*/
+
 #endif // ABSTRACTSHARINGSERVICE_H
