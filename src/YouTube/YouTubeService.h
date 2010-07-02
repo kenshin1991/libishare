@@ -76,9 +76,9 @@ class YouTubeService : public QObject
         QString                m_proxyPassword;
 
     private slots:
-        void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
         void authError( QString );
         void networkError( QNetworkReply::NetworkError );
+        void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
         #ifndef QT_NO_OPENSSL
         void sslErrors( QNetworkReply*,const QList<QSslError> &errors );
         #endif
