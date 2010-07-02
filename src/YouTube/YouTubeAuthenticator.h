@@ -52,26 +52,26 @@ class YouTubeAuthenticator : public QObject
         const QString& getNick();
 
     private:
-        void                authInit();
-        void                error( QString& error );
+        void                   authInit();
+        void                   error( QString& error );
 
-        QNetworkRequest     getNetworkRequest();
-        const QByteArray&   getPOSTData();
+        QNetworkRequest        getNetworkRequest();
+        const QByteArray&      getPOSTData();
 
-        void                setPOSTData();
+        void                   setPOSTData();
 
         /* Youtube Credentials */
-        QString         m_username;
-        QString         m_password;
+        QString                m_username;
+        QString                m_password;
 
         /* HTTP/S POST HEADER */
-        QByteArray      m_postData;
+        QByteArray             m_postData;
 
         /* Youtube tokens */
-        QString         m_authString;
-        QString         m_nick; /* YouTube User Nickname */
-        bool            m_isAuthenticated;
-        QString         m_authError;
+        QString                m_authString;
+        QString                m_nick; /* YouTube User Nickname */
+        bool                   m_isAuthenticated;
+        QString                m_authError;
 
         YouTubeService*        m_service;
         QNetworkAccessManager* m_nam;
