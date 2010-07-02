@@ -32,6 +32,7 @@ ShareOnInternet::ShareOnInternet( QWidget* parent )
     : QDialog( parent, Qt::Sheet | Qt::Dialog )
 {
     m_service = NULL;
+    m_serviceProvider = -1;
     m_ui.setupUi( this );
     m_ui.progressBar->setVisible( false );
     /* Get DevKey from VLMC settings */
@@ -79,11 +80,34 @@ ShareOnInternet::publish()
     quint32 width        = getWidth();
     quint32 height       = getHeight();
 
+    /* Check for service provider, if changes delete old one */
+    if( m_serviceProvider != m_ui.serviceBox->currentIndex() )
+    {
+        if( m_service )
+        {
+            qDebug() << "[SHARE ON INTERNET]: Deleting old service";
+            delete m_service;
+        }
+        m_service = NULL;
+
+        m_serviceProvider = m_ui.serviceBox->currentIndex();
+        qDebug() << "[SHARE ON INTERNET]: Seleted provider no="
+                << m_serviceProvider;
+    }
+
     if( !m_service )
     {
-        qDebug() << "[SHARE ON INTERNET]: Created Service object";
-        /* Add here code to update service provider, default: YouTube */
-        m_service = new YouTubeService( m_devKey, username, password );
+        qDebug() << "[SHARE ON INTERNET]: creating new service provider";
+
+        switch( m_serviceProvider )
+        {
+            case YOUTUBE: m_service = new YouTubeService( m_devKey, username, password );
+                          qDebug() << "[SHARE ON INTERNET]: YOUTUBE";
+                          break;
+            case VIMEO:
+            case JUSTIN: qDebug() << "[SHARE ON INTERNET]: VIMEO/JTV";
+            default: m_service = new YouTubeService( m_devKey, username, password );
+        }
     }
     else
         m_service->setCredentials( username, password );
