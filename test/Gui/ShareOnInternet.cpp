@@ -37,6 +37,12 @@ ShareOnInternet::ShareOnInternet( QWidget* parent )
     devKey = "AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ";
 }
 
+ShareOnInternet::~ShareOnInternet()
+{
+    qDebug() << "[SHARE ON INTERNET]: Oh boy, gotta go";
+    delete m_service;
+}
+
 void
 ShareOnInternet::accept()
 {
@@ -61,15 +67,17 @@ ShareOnInternet::accept()
 
     /* Add here code to update service provider, default: YouTube */
     QString temp = "/home/rohit/GSoC/VideoLan/libishare/videos/mp4.mp4";
-    publish( temp );
+    publish();// temp );
 
     /* Error checks here */
     //QDialog::accept();
 }
 
 void
-ShareOnInternet::publish( QString& fileName )
+ShareOnInternet::publish()
 {
+    QString fileName = "/home/rohit/GSoC/VideoLan/libishare/videos/mp4.mp4";
+
     QString username     = getUsername();
     QString password     = getPassword();
     quint32 width        = getWidth();
@@ -112,6 +120,7 @@ ShareOnInternet::authFinished()
     if( !m_service->upload() )
     {
         qDebug() << "[AUTH FAILED]";
+
         /* Add code here to work on fallback... */
     }
 
@@ -126,9 +135,12 @@ void
 ShareOnInternet::uploadFinished( QString result )
 {
     /* Add code here to abort stuff */
-    qDebug() << "[Upload Finished]: " << result;
     m_ui.progressBar->setEnabled( false );
     m_ui.progressBar->setVisible( false );
+
+    qDebug() << "[Upload Finished]: " << result;
+
+    QDialog::accept();
 }
 
 void

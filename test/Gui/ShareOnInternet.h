@@ -35,6 +35,7 @@ class ShareOnInternet : public QDialog
 
     public:
         ShareOnInternet( QWidget* parent = 0 );
+        ~ShareOnInternet();
 
         QString          getUsername() const;
         QString          getPassword() const;
@@ -45,8 +46,6 @@ class ShareOnInternet : public QDialog
         void setData( const VideoData& data );
 
     private:
-        void publish( QString& filePath );
-
         Ui::ShareOnInternet      m_ui;
         YouTubeService*          m_service;
         QString                  devKey;
@@ -56,6 +55,7 @@ class ShareOnInternet : public QDialog
 
     private slots:
         virtual void    accept();
+        void publish();// QString& filePath );
 
         void authFinished();
         void uploadFinished( QString );
