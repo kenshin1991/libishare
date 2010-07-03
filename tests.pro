@@ -17,7 +17,7 @@ SOURCES +=  test/main.cpp \
             src/YouTube/YouTubeUploader.cpp \
             src/Vimeo/VimeoService.cpp \
             src/Vimeo/VimeoAuthenticator.cpp \
-            test/Gui/ShareOnInternet.cpp
+            src/Gui/ShareOnInternet.cpp
 
 HEADERS +=  test/mainwindow.h \
             src/UploaderIODevice.h \
@@ -28,10 +28,10 @@ HEADERS +=  test/mainwindow.h \
             src/YouTube/YouTubeCommon.h \
             src/Vimeo/VimeoService.h \
             src/Vimeo/VimeoAuthenticator.h \
-            test/Gui/ShareOnInternet.h
+            src/Gui/ShareOnInternet.h
 
 FORMS += test/mainwindow.ui \
-         test/Gui/ShareOnInternet.ui
+         src/Gui/ShareOnInternet.ui
 
 INCLUDEPATH += src \
                test
