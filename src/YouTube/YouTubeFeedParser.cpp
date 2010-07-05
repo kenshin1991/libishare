@@ -21,25 +21,30 @@
  *****************************************************************************/
 
 #include "YouTubeFeedParser.h"
+#include <QString>
+#include <QStringList>
+
 #include <QDebug>
 
 YouTubeFeedParser::YouTubeFeedParser( const QString& xml )
     : QXmlStreamReader( xml )
 {
+    videoId = "";
 }
 
 bool
 YouTubeFeedParser::read()
 {
-    qDebug() << "[XML] reading...";
+    qDebug() << "xml-read = " << name() << attributes().value("version").toString()
+            << attributes().value("encoding").toString();
+//    Q_ASSERT( isStartElement() && name() == "entry" );
+
     while( !atEnd() )
     {
         readNext();
         if( isStartElement() )
         {
-            if( name() == "entry" &&
-                attributes().value("encoding") == "UTF-8" &&
-                attributes().value("version") == "1.0" )
+            if( name() == "entry")
                 readFeed();
             else
                 raiseError( QObject::tr( "The XMLStream is not a valid YouTube Feed" ) );
@@ -69,8 +74,6 @@ YouTubeFeedParser::readUnknownElement()
 void
 YouTubeFeedParser::readFeed()
 {
-    qDebug() << "[XML] parsing feed...";
-
     Q_ASSERT( isStartElement() && name() == "entry" );
 
     while( !atEnd() )
@@ -82,8 +85,8 @@ YouTubeFeedParser::readFeed()
 
         if( isStartElement() )
         {
-            if (name() == "media:group")
-                readMediaGroup();
+            if( name() == "link" )
+                readLinks();
             else
                 readUnknownElement();
         }
@@ -91,44 +94,34 @@ YouTubeFeedParser::readFeed()
 }
 
 void
-YouTubeFeedParser::readMediaGroup()
+YouTubeFeedParser::readLinks()
 {
-        qDebug() << "[XML] media group...";
-
-    Q_ASSERT( isStartElement() && name() == "media:group" );
+    Q_ASSERT( isStartElement() && name() == "link" );
 
     while( !atEnd() )
     {
-        readNext();
-
         if( isEndElement() )
             break;
 
-        if( isStartElement() )
+        if( isStartElement() && name() == "link" )
         {
-            if( name() == "media:player" )
-                readVideoUrl();
-            else
-                readUnknownElement();
+            QXmlStreamAttributes attrs = attributes();
+            QStringRef rel = attrs.value("rel");
+            QStringRef type = attrs.value("type");
+            QStringRef href = attrs.value("href");
+
+            if( rel.toString() == "self" )
+            {
+                videoId = href.toString();
+                videoId = videoId.split("uploads/").at(1);
+            }
         }
-    }
-}
-
-void
-YouTubeFeedParser::readVideoUrl()
-{
-    Q_ASSERT( isStartElement() && name() == "media:player" );
-
-    if( name() == "media:player" )
-    {
-        videoUrl = attributes().value("url").toString();
-        qDebug() << "[XML] reading url..."
-                << videoUrl;
+        readNext();
     }
 }
 
 const QString&
-YouTubeFeedParser::getVideoUrl()
+YouTubeFeedParser::getVideoId()
 {
-    return videoUrl;
+    return videoId;
 }

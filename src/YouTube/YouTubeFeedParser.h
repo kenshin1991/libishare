@@ -31,15 +31,15 @@ class YouTubeFeedParser : public QXmlStreamReader
         YouTubeFeedParser( const QString &xml );
 
         bool           read();
-        const QString& getVideoUrl();
+        const QString& getVideoId();
 
     private:
         void readFeed();
-        void readMediaGroup();
-        void readVideoUrl();
+        void readLinks();
+        void readVideoId();
         void readUnknownElement();
 
-        QString videoUrl;
+        QString videoId;
 };
 
 #endif // YOUTUBEFEEDPARSER_H
