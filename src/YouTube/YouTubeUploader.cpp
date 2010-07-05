@@ -134,16 +134,13 @@ YouTubeUploader::uploadFinished()
     const QByteArray data = reply->readAll();
 
     m_service->m_state = UPLOAD_FINISH;
-    /* TODO: Handle XML response */
-    YouTubeFeedParser* parser = new YouTubeFeedParser( QString( data ) );
-    parser->read();
-    QString videoUrl = parser->getVideoUrl();
 
-    delete parser;
+    YouTubeFeedParser parser( data );
+    parser.read();
 
-    qDebug() << "[YT VIDEO URL]: " << videoUrl;
+    Q_ASSERT( parser.getVideoId() != "" );
+    QString videoUrl = VIDEO_URL + parser.getVideoId();
 
-    /* FIXME: check upload status of video, fix it as in AuthOK */
     emit uploadOver( QString( videoUrl ) );
 
     disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );

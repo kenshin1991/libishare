@@ -28,6 +28,7 @@
 #include <QObject>
 
 #define UPLOAD_URL "http://uploads.gdata.youtube.com/feeds/api/users/default/uploads"
+#define VIDEO_URL  "http://www.youtube.com/watch?v="
 
 class QIODevice;
 class QNetworkAccessManager;
