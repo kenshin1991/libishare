@@ -36,7 +36,6 @@ class YouTubeFeedParser : public QXmlStreamReader
     private:
         void readFeed();
         void readLinks();
-        void readVideoId();
         void readUnknownElement();
 
         QString videoId;

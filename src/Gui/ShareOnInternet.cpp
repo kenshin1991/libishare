@@ -168,8 +168,6 @@ ShareOnInternet::uploadFinished( QString result )
     m_ui.progressBar->setEnabled( false );
     m_ui.progressBar->setVisible( false );
 
-    qDebug() << "[SHARE ON INTERNET]: Upload Finished, url: " << result;
-
     if( QMessageBox::information( NULL, tr("Video Uploaded"),
             tr("Your video is being processed. Link to the uploaded video: %1.\nOpen in your default browser?").arg( result ),
             QMessageBox::Open | QMessageBox::Close ) == QMessageBox::Open )

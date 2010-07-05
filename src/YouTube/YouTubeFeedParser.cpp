@@ -35,10 +35,6 @@ YouTubeFeedParser::YouTubeFeedParser( const QString& xml )
 bool
 YouTubeFeedParser::read()
 {
-    qDebug() << "xml-read = " << name() << attributes().value("version").toString()
-            << attributes().value("encoding").toString();
-//    Q_ASSERT( isStartElement() && name() == "entry" );
-
     while( !atEnd() )
     {
         readNext();
