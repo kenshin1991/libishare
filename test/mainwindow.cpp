@@ -41,11 +41,11 @@ void MainWindow::shareOnInternet()
 
     if ( exportToInternet->exec() == QDialog::Rejected )
     {
-        qDebug() << "Dialog cancelled...";
+        qDebug() << "[Main Window] Dialog cancelled...";
         delete exportToInternet;
         return ;
     }
-    qDebug() << "All right... lets delete export2internet object folks!";
+    qDebug() << "[Main Window] Done!";
     delete exportToInternet;
 }
 
