@@ -15,6 +15,7 @@ SOURCES +=  test/main.cpp \
             src/YouTube/YouTubeService.cpp \
             src/YouTube/YouTubeAuthenticator.cpp \
             src/YouTube/YouTubeUploader.cpp \
+            src/YouTube/YouTubeFeedParser.cpp \
             src/Vimeo/VimeoService.cpp \
             src/Vimeo/VimeoAuthenticator.cpp \
             src/Gui/ShareOnInternet.cpp
@@ -25,6 +26,7 @@ HEADERS +=  test/mainwindow.h \
             src/YouTube/YouTubeService.h \
             src/YouTube/YouTubeAuthenticator.h \
             src/YouTube/YouTubeUploader.h \
+            src/YouTube/YouTubeFeedParser.h \
             src/YouTube/YouTubeCommon.h \
             src/Vimeo/VimeoService.h \
             src/Vimeo/VimeoAuthenticator.h \

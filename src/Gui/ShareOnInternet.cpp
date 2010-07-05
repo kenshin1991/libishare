@@ -104,7 +104,7 @@ ShareOnInternet::publish()
             case YOUTUBE: m_service = new YouTubeService( m_devKey, username, password );
                           qDebug() << "[SHARE ON INTERNET]: YOUTUBE";
                           break;
-            case VIMEO:
+            case VIMEO:  /* TODO: Add code for Vimeo etc. in future */
             case JUSTIN: qDebug() << "[SHARE ON INTERNET]: VIMEO/JTV";
             default: m_service = new YouTubeService( m_devKey, username, password );
         }
@@ -167,8 +167,7 @@ ShareOnInternet::uploadFinished( QString result )
     m_ui.progressBar->setEnabled( false );
     m_ui.progressBar->setVisible( false );
 
-    qDebug() << result
-            << "\n[SHARE ON INTERNET]: Upload Finished";
+    qDebug() << "[SHARE ON INTERNET]: Upload Finished";
 
     /* Finish exec() */
     QDialog::accept();

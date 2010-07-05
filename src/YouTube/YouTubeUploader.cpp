@@ -22,6 +22,7 @@
 
 #include "YouTubeService.h"
 #include "YouTubeUploader.h"
+#include "YouTubeFeedParser.h"
 #include "UploaderIODevice.h"
 
 #include <QByteArray>
@@ -130,12 +131,20 @@ void
 YouTubeUploader::uploadFinished()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
-    QByteArray data = reply->readAll();
+    const QByteArray data = reply->readAll();
 
     m_service->m_state = UPLOAD_FINISH;
     /* TODO: Handle XML response */
+    YouTubeFeedParser* parser = new YouTubeFeedParser( QString( data ) );
+    parser->read();
+    QString videoUrl = parser->getVideoUrl();
+
+    delete parser;
+
+    qDebug() << "[YT VIDEO URL]: " << videoUrl;
+
     /* FIXME: check upload status of video, fix it as in AuthOK */
-    emit uploadOver( QString( data ) );
+    emit uploadOver( QString( videoUrl ) );
 
     disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
     disconnect( reply, SIGNAL(uploadProgress(qint64,qint64)),
