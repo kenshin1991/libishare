@@ -42,7 +42,6 @@ ShareOnInternet::ShareOnInternet( QWidget* parent )
 
 ShareOnInternet::~ShareOnInternet()
 {
-    qDebug() << "[SHARE ON INTERNET]: dtor, deleting m_service";
     delete m_service;
 }
 
@@ -76,8 +75,6 @@ ShareOnInternet::publish()
 {
     m_ui.publishButton->setEnabled( false );
 
-    QString username     = getUsername();
-    QString password     = getPassword();
     quint32 width        = getWidth();
     quint32 height       = getHeight();
 
@@ -102,16 +99,16 @@ ShareOnInternet::publish()
 
         switch( m_serviceProvider )
         {
-            case YOUTUBE: m_service = new YouTubeService( m_devKey, username, password );
+            case YOUTUBE: m_service = new YouTubeService( m_devKey, getUsername(), getPassword() );
                           qDebug() << "[SHARE ON INTERNET]: YOUTUBE";
                           break;
             case VIMEO:  /* TODO: Add code for Vimeo etc. in future */
             case JUSTIN: qDebug() << "[SHARE ON INTERNET]: VIMEO/JTV";
-            default: m_service = new YouTubeService( m_devKey, username, password );
+            default: m_service = new YouTubeService( m_devKey, getUsername(), getPassword() );
         }
     }
     else
-        m_service->setCredentials( username, password );
+        m_service->setCredentials( getUsername(), getPassword() );
 
     m_ui.statusLabel->setText( tr("Authenticating...") );
     m_service->authenticate();
