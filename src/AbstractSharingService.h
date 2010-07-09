@@ -32,25 +32,23 @@ class AbstractSharingService : public QObject
     Q_OBJECT
 
     public:
-        AbstractSharingService( QObject* parent = 0 ) : QObject( parent ) {}
+        virtual void    authenticate() = 0;        // Authenticate the service
+        virtual bool    upload() = 0;              // Upload video
+        virtual void    search( QString& ) = 0;    // Search for a video
+        virtual bool    abort() = 0;               // Abort on going service
 
-        virtual void authenticate(){}             // Authenticate the service
-        virtual bool upload(){ return true; }     // Upload video
-        virtual void search( QString& ){}         // Search for a video
-        virtual bool abort(){ return true; }      // Abort on going service
+        virtual const   VideoData& getVideoData() = 0;
 
-        virtual const VideoData& getVideoData(){};
-
-        virtual void setCredentials( const QString&, const QString& ){}
-        virtual void setDeveloperKey( const QString& ){}
-        virtual void setProxyCredentials( const QString&, const QString& ){}
-        virtual void setVideoParameters( const QString&, const VideoData& ){}
+        virtual void    setCredentials( const QString&, const QString& ) = 0;
+        virtual void    setDeveloperKey( const QString& ) = 0;
+        virtual void    setProxyCredentials( const QString&, const QString& ) = 0;
+        virtual void    setVideoParameters( const QString&, const VideoData& ) = 0;
 
     signals:
-        void authOver();
-        void uploadOver( QString );
-        void uploadProgress( qint64, qint64 );
-        void error( QString );
+        void    authOver();
+        void    uploadOver( QString );
+        void    uploadProgress( qint64, qint64 );
+        void    error( QString );
 };
 
 #endif // ABSTRACTSHARINGSERVICE_H
