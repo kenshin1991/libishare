@@ -11,7 +11,6 @@ TEMPLATE = app
 SOURCES +=  test/main.cpp \
             test/mainwindow.cpp \
             src/UploaderIODevice.cpp \
-            #src/AbstractSharingService.cpp \
             src/YouTube/YouTubeService.cpp \
             src/YouTube/YouTubeAuthenticator.cpp \
             src/YouTube/YouTubeUploader.cpp \
