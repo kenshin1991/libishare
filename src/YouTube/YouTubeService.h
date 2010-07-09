@@ -61,7 +61,7 @@ class YouTubeService : public AbstractSharingService
         void setCredentials( const QString& username, const QString& password );
         void setDeveloperKey( const QString& devKey );
         void setProxyCredentials( const QString& username, const QString& password );
-        void setVideoParameters( const QString& fileName, const YouTubeVideoData& data );
+        void setVideoParameters( const QString& fileName, const VideoData& data );
 
     private:
 

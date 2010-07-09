@@ -58,10 +58,7 @@ void
 YouTubeService::authenticate()
 {
     if( !m_auth )
-    {
         m_auth = new YouTubeAuthenticator( this, m_username, m_password );
-        qDebug() << "[YT SERVICE]: Creating auth object";
-    }
     else
         m_auth->setCredentials( m_username, m_password );
 
@@ -80,10 +77,7 @@ YouTubeService::upload()
     if( m_auth->isAuthenticated() )
     {
         if( !m_uploader )
-        {
             m_uploader = new YouTubeUploader( this, m_fileName );
-            qDebug() << "[YT SERVICE]: Creating uploader object, uploading file: " << m_fileName;
-        }
         else
             m_uploader->setVideoFile( m_fileName );
 
@@ -99,7 +93,6 @@ YouTubeService::upload()
 
         return m_uploader->upload();
     }
-    qDebug() << "[YT SERVICE]: AUTH FAILED, so no upload";
     return false;
 }
 
@@ -154,7 +147,7 @@ YouTubeService::setProxyCredentials(const QString &username, const QString &pass
 }
 
 void
-YouTubeService::setVideoParameters( const QString& fileName, const YouTubeVideoData& data )
+YouTubeService::setVideoParameters( const QString& fileName, const VideoData& data )
 {
     m_fileName  = fileName;
     m_videoData = data;
@@ -183,6 +176,7 @@ YouTubeService::authError( QString e )
 void
 YouTubeService::networkError( QNetworkReply::NetworkError e )
 {
+    // Temporary error
     qDebug() << "[NETWORK ERROR]: " << e;
 
     switch( e )
@@ -204,7 +198,7 @@ YouTubeService::networkError( QNetworkReply::NetworkError e )
     //if( m_state == AUTH_START );
         //disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
 
-    if( m_state == UPLOAD_START )
+    if( m_state == UploadStart )
     {
         disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
         disconnect( reply, SIGNAL(uploadProgress(qint64,qint64)),
