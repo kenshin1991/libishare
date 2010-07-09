@@ -48,12 +48,12 @@ class YouTubeUploader : public QObject
 
         void setServiceProvider( YouTubeService* service );
         void setVideoFile( const QString& fileName );
-        void setVideoData( const YouTubeVideoData& data );
+        void setVideoData( const VideoData& data );
         
         QNetworkRequest         getNetworkRequest();
         QByteArray              getMimeHead();
         QByteArray              getMimeTail();
-        const YouTubeVideoData& getVideoData();
+        const VideoData&        getVideoData();
 
     private:
         void             uploadInit();
@@ -61,7 +61,7 @@ class YouTubeUploader : public QObject
         QString          API_XML_REQUEST;
         QString          m_boundary;
         QString          m_fileName;
-        YouTubeVideoData m_videoData;
+        VideoData        m_videoData;
 
         YouTubeService*        m_service;
         UploaderIODevice*      m_ioDevice;

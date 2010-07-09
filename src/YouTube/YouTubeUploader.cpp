@@ -56,7 +56,6 @@ YouTubeUploader::YouTubeUploader( YouTubeService* service, const QString& fileNa
 
 YouTubeUploader::~YouTubeUploader()
 {
-    m_service = NULL;
     delete m_nam;
     if( m_ioDevice )
         delete m_ioDevice;
@@ -97,12 +96,10 @@ YouTubeUploader::upload()
 {
     /* Upload Stuff here :) */
     if( !m_ioDevice )
-        m_ioDevice = new UploaderIODevice( static_cast<QObject*>( this ), m_fileName,
+        m_ioDevice = new UploaderIODevice( this, m_fileName,
                                            getMimeHead(), getMimeTail() );
     else
         m_ioDevice->setFile( m_fileName );
-
-    qDebug() << "[YT UPLOADER]: In Upload";
 
     QNetworkRequest request = getNetworkRequest();
     request.setHeader( QNetworkRequest::ContentLengthHeader, m_ioDevice->size() );
@@ -111,9 +108,7 @@ YouTubeUploader::upload()
     if( m_ioDevice->openFile() )
     {
         QNetworkReply* reply = m_nam->post( request, m_ioDevice );
-        m_service->m_state = UPLOAD_START;
-
-        qDebug() << "[YT UPLOADER]: File opened, ready to upload";
+        m_service->m_state = UploadStart;
 
         connect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
         connect( reply, SIGNAL(uploadProgress(qint64,qint64)),
@@ -133,7 +128,7 @@ YouTubeUploader::uploadFinished()
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     const QByteArray data = reply->readAll();
 
-    m_service->m_state = UPLOAD_FINISH;
+    m_service->m_state = UploadFinish;
 
     YouTubeFeedParser parser( data );
     parser.read();
@@ -209,7 +204,7 @@ YouTubeUploader::getMimeTail()
     return data;
 }
 
-const YouTubeVideoData&
+const VideoData&
 YouTubeUploader::getVideoData()
 {
     return m_videoData;
@@ -228,7 +223,7 @@ YouTubeUploader::setVideoFile( const QString& fileName )
 }
 
 void
-YouTubeUploader::setVideoData( const YouTubeVideoData& data )
+YouTubeUploader::setVideoData( const VideoData& data )
 {
     m_videoData = data;
     uploadInit();
