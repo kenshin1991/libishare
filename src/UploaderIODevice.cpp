@@ -26,9 +26,9 @@ UploaderIODevice::UploaderIODevice( QObject *parent, const QString& fileName,
                                    const QByteArray& head, const QByteArray& tail )
                                    : QIODevice( parent )
 {
-    m_file = new QFile( fileName, this );
-    m_head = new QByteArray( head );
-    m_tail = new QByteArray( tail );
+    m_file     = new QFile( fileName, this );
+    m_head     = new QByteArray( head );
+    m_tail     = new QByteArray( tail );
     m_position = 0;
 }
 
@@ -58,24 +58,26 @@ qint64 UploaderIODevice::readData( char *data, qint64 maxlen )
     char *pointer = data;
     qint64 atAll = 0;
 
-    if ( ( m_position < m_head->size() ) && (maxlen>0) )
+    if ( ( m_position < m_head->size() ) && ( maxlen > 0 ) )
     {
-        qint64 count = qMin(maxlen, (qint64)m_head->size());
-        memcpy(pointer, m_head->data(), count);
-        pointer += count;
-        m_position+=count;
-        atAll+=count;
-        maxlen -= count;
+        qint64 count = qMin( maxlen, ( qint64 ) m_head->size() );
+        memcpy( pointer, m_head->data(), count );
+
+        pointer    += count;
+        m_position +=count;
+        atAll      +=count;
+        maxlen     -= count;
     }
 
-    if ( maxlen>0 && ( m_position < sizefull() ) )
+    if ( ( maxlen > 0 ) && ( m_position < sizefull() ) )
     {
         qint64 count = qMin( maxlen, m_file->bytesAvailable() );
         int s = m_file->read( pointer, count );
-        pointer += s;
-        maxlen -= s;
+
+        pointer    += s;
+        maxlen     -= s;
         m_position += s;
-        atAll += s;
+        atAll      += s;
     }
 
     if ( m_position >= sizepart() && ( maxlen > 0 ) && ( m_position < sizefull() ) )
@@ -83,7 +85,7 @@ qint64 UploaderIODevice::readData( char *data, qint64 maxlen )
         qint64 count = qMin( maxlen, ( qint64 ) m_tail->size() );
         memcpy( pointer, m_tail->data(), count );
         m_position += count;
-        atAll += count;
+        atAll      += count;
     }
 
     return atAll;

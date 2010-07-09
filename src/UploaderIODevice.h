@@ -31,8 +31,8 @@ class UploaderIODevice : public QIODevice
     Q_OBJECT
 
 public:
-    UploaderIODevice( QObject *parent, const QString & fileName,
-                      const QByteArray &head, const QByteArray &tail );
+    UploaderIODevice( QObject *parent, const QString& fileName,
+                      const QByteArray& head, const QByteArray& tail );
     ~UploaderIODevice();
 
     void setFile( const QString& fileName );
@@ -43,12 +43,12 @@ public:
     qint64 size() const;
 
 private:
-    QFile*      m_file;
-    QByteArray* m_head;
-    QByteArray* m_tail;
-    qint64      m_position;
-    qint64      sizepart() const;
-    qint64      sizefull() const;
+    QFile*          m_file;
+    QByteArray*     m_head;
+    QByteArray*     m_tail;
+    qint64          m_position;
+    qint64          sizepart() const;
+    qint64          sizefull() const;
 };
 
 #endif // UPLOADERIODEVICE_H
