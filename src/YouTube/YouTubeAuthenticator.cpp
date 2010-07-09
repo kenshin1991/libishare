@@ -61,7 +61,6 @@ YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service, const QStri
 
 YouTubeAuthenticator::~YouTubeAuthenticator()
 {
-    m_service = NULL;
     delete m_nam;
 }
 
@@ -80,8 +79,7 @@ YouTubeAuthenticator::authenticate()
     QNetworkRequest request = getNetworkRequest();
 
     QNetworkReply* reply = m_nam->post( request, getPOSTData() );
-    qDebug() << "[YT AUTH]: Auth posted!";
-    m_service->m_state = AUTH_START;
+    m_service->m_state = AuthStart;
 
     connect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
     connect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
@@ -94,10 +92,8 @@ YouTubeAuthenticator::authFinished()
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     QByteArray data = reply->readAll();
 
-    qDebug() << "[YT AUTH] Data Received:" << data;
-
     if( setAuthData( data ) )
-        m_service->m_state = AUTH_FINISH;
+        m_service->m_state = AuthFinish;
 
     disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
     disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
