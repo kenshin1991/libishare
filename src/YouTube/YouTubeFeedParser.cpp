@@ -29,7 +29,7 @@
 YouTubeFeedParser::YouTubeFeedParser( const QString& xml )
     : QXmlStreamReader( xml )
 {
-    videoId = "";
+    m_videoId = "";
 }
 
 bool
@@ -108,8 +108,8 @@ YouTubeFeedParser::readLinks()
 
             if( rel.toString() == "self" )
             {
-                videoId = href.toString();
-                videoId = videoId.split("uploads/").at(1);
+                m_videoId = href.toString();
+                m_videoId = m_videoId.split("uploads/").at(1);
             }
         }
         readNext();
@@ -119,5 +119,5 @@ YouTubeFeedParser::readLinks()
 const QString&
 YouTubeFeedParser::getVideoId()
 {
-    return videoId;
+    return m_videoId;
 }
