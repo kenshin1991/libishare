@@ -25,17 +25,14 @@
 
 #include <QString>
 
-class VideoData
+struct VideoData
 {
-    public:
-        QString title;
-        QString category;
-        QString description;
-        QString keywords;
-        bool    isPrivate;
+    QString title;
+    QString category;
+    QString description;
+    QString keywords;
+    bool    isPrivate;
 };
-
-typedef VideoData YouTubeVideoData;
 
 /*
  * Error Code References:
@@ -46,12 +43,12 @@ typedef VideoData YouTubeVideoData;
 /* Status codes for YouTubeService. */
 enum YouTubeServiceState
 {
-    AUTH_START = 0,
-    AUTH_FINISH,
-    UPLOAD_START,
-    UPLOAD_FINISH,
-    SEARCH_START,
-    SEARCH_FINISH
+    AuthStart = 0,
+    AuthFinish,
+    UploadStart,
+    UploadFinish,
+    SearchStart,
+    SearchFinish
 };
 
 enum YouTubeError
