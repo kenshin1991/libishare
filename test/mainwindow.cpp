@@ -21,22 +21,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-//    QString fileName = QFileDialog::getOpenFileName( this,
-//                                                 tr( "Choose Video File to upload" ), "",
-//                                                 tr( "Video files (*.avi *.flv *.mov *.mp4 *.mpg)" ) );
+    fileName = QFileDialog::getOpenFileName( this,
+                                                tr( "Choose Video File to upload" ), "",
+                                                tr( "Video files (*.avi *.flv *.mov *.mp4 *.mpg *.*)" ) );
 
     /* Add code to transcode/export video */
-//    ui->filePath->setText( fileName );
     shareOnInternet();
 }
 
 void MainWindow::shareOnInternet()
 {
-    QString filePath = ui->filePath->text();
     ShareOnInternet *exportToInternet = new ShareOnInternet();
 
-
-    QString fileName = "./videos/mp4.mp4";
     exportToInternet->setVideoFile(fileName);
 
     if ( exportToInternet->exec() == QDialog::Rejected )

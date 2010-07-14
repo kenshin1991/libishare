@@ -18,7 +18,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-
+    QString fileName;
     void shareOnInternet();
 
 private slots:
