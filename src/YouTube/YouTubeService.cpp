@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeService.cpp:
+ * YouTubeService.cpp: YouTube Service APIs
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -35,7 +35,8 @@
 #include <QDebug>
 
 YouTubeService::YouTubeService( const QString& devKey,
-                                const QString& username, const QString& password )
+                                const QString& username, 
+                                const QString& password )
 {
     m_devKey   = devKey;
     m_username = username;
@@ -63,10 +64,12 @@ YouTubeService::authenticate()
         m_auth->setCredentials( m_username, m_password );
 
     /* Tell world on successful authentication */
-    connect( m_auth, SIGNAL(authOver()), this, SIGNAL(authOver()) );
+    connect( m_auth, SIGNAL( authOver() ),
+             this, SIGNAL( authOver() ) );
 
     /* On authentication error, m_auth will send the error token */
-    connect( m_auth, SIGNAL(authError(QString)), this, SLOT(authError(QString)) );
+    connect( m_auth, SIGNAL( authError( QString ) ),
+             this, SLOT( authError( QString ) ) );
 
     m_auth->authenticate();
 }
@@ -84,12 +87,12 @@ YouTubeService::upload()
         m_uploader->setVideoData( m_videoData );
 
         /* Tell world on successful uploading */
-        connect( m_uploader, SIGNAL(uploadOver(QString)),
-                 this, SIGNAL(uploadOver(QString)) );
+        connect( m_uploader, SIGNAL( uploadOver( QString ) ),
+                 this, SIGNAL( uploadOver( QString ) ) );
 
         /* Connect upload progress */
-        connect( m_uploader, SIGNAL(uploadProgress(qint64,qint64)),
-                 this, SIGNAL(uploadProgress(qint64,qint64)) );
+        connect( m_uploader, SIGNAL( uploadProgress( qint64, qint64 ) ),
+                 this, SIGNAL( uploadProgress( qint64, qint64 ) ) );
 
         return m_uploader->upload();
     }

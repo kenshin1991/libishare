@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeFeedParser.h:
+ * YouTubeFeedParser.h: YouTube XML feed parser
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -30,15 +30,15 @@ class YouTubeFeedParser : public QXmlStreamReader
     public:
         YouTubeFeedParser( const QString &xml );
 
-        bool           read();
-        const QString& getVideoId();
+        bool            read();
+        const QString&  getVideoId();
 
     private:
-        void readFeed();
-        void readLinks();
-        void readUnknownElement();
+        void            readFeed();
+        void            readLinks();
+        void            readUnknownElement();
 
-        QString m_videoId;
+        QString         m_videoId;
 };
 
 #endif // YOUTUBEFEEDPARSER_H

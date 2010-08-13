@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeService.h:
+ * YouTubeService.h: YouTube Service APIs
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -46,7 +46,8 @@ class YouTubeService : public AbstractSharingService
     friend class YouTubeUploader;
 
     public:
-        YouTubeService( const QString& devKey = "", const QString& username = "",
+        YouTubeService( const QString& devKey = "", 
+                        const QString& username = "",
                         const QString& password = "" );
         ~YouTubeService();
 
@@ -88,7 +89,7 @@ class YouTubeService : public AbstractSharingService
         void networkError( QNetworkReply::NetworkError );
         void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
         #ifndef QT_NO_OPENSSL
-        void sslErrors( QNetworkReply*,const QList<QSslError> &errors );
+        void sslErrors( QNetworkReply*, const QList<QSslError> &errors );
         #endif
 };
 
