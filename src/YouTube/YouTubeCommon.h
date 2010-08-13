@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeCommon.h: Generic Video Data Struct
+ * YouTubeCommon.h: Generic Video Data Structs etc. for YouTube
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -34,13 +34,7 @@ struct VideoData
     bool    isPrivate;
 };
 
-/*
- * Error Code References:
- *   Auth: http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html#Errors
- *
- */
-
-/* Status codes for YouTubeService. */
+/* Status codes for YouTubeService */
 enum YouTubeServiceState
 {
     AuthStart = 0,
@@ -51,6 +45,11 @@ enum YouTubeServiceState
     SearchFinish
 };
 
+/* Error Code References:
+ * Auth: http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html#Errors
+ */
+
+/* Error codes for YouTubeService */
 enum YouTubeError
 {
     Ok = 0,
