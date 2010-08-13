@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeAuthenticator.h: Auth Class for YT
+ * YouTubeAuthenticator.h: Auth Class for YouTube
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -37,25 +37,26 @@ class YouTubeAuthenticator : public QObject
     Q_OBJECT
 
     public:
-        YouTubeAuthenticator( YouTubeService* service = 0, const QString& username = "",
+        YouTubeAuthenticator( YouTubeService* service = 0, 
+                              const QString& username = "",
                               const QString& password = "" );
         ~YouTubeAuthenticator();
 
-        void authenticate();
-        bool isAuthenticated();
+        void  authenticate();
+        bool  isAuthenticated();
 
         const QString& getAuthString();
         const QString& getNick();
 
-        void setServiceProvider( YouTubeService* service );
-        void setCredentials( const QString& username, const QString& password );
-        bool setAuthData( QByteArray& data );
+        void  setServiceProvider( YouTubeService* service );
+        void  setCredentials( const QString& username, const QString& password );
+        bool  setAuthData( QByteArray& data );
 
     private:
         void                   authInit();
         void                   error( QString& error );
 
-        QNetworkRequest  getNetworkRequest();
+        QNetworkRequest        getNetworkRequest();
         const QByteArray&      getPOSTData();
 
         void                   setPOSTData();

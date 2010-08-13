@@ -1,5 +1,5 @@
 /*****************************************************************************
- * YouTubeAuthenticator.cpp:
+ * YouTubeAuthenticator.cpp: Auth Class for YouTube
  *****************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
@@ -33,7 +33,8 @@
 
 #include <QDebug>
 
-YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service, const QString& username,
+YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service, 
+                                            const QString& username,
                                             const QString& password )
 {
     m_service  = service;
@@ -45,13 +46,13 @@ YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service, const QStri
     if( service )
     {
         /* In case the proxy asks for credentials, handle it */
-        connect( m_nam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
-                m_service, SLOT(proxyAuthRequired(QNetworkReply*,QAuthenticator*)) );
+        connect( m_nam, SIGNAL( authenticationRequired( QNetworkReply*, QAuthenticator* ) ),
+                m_service, SLOT( proxyAuthRequired( QNetworkReply*, QAuthenticator* ) ) );
 
         /* If SSL is available, handle SSL errors for better security */
         #ifndef QT_NO_OPENSSL
-        connect( m_nam, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
-                m_service, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)) );
+        connect( m_nam, SIGNAL( sslErrors( QNetworkReply*, QList<QSslError> ) ),
+                m_service, SLOT( sslErrors( QNetworkReply*, QList<QSslError> ) ) );
         #endif
     }
 
@@ -81,9 +82,9 @@ YouTubeAuthenticator::authenticate()
     QNetworkReply* reply = m_nam->post( request, getPOSTData() );
     m_service->m_state = AuthStart;
 
-    connect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
-    connect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
-             m_service, SLOT(networkError(QNetworkReply::NetworkError)) );
+    connect( reply, SIGNAL( finished() ), this, SLOT( authFinished() ) );
+    connect( reply, SIGNAL( error(QNetworkReply::NetworkError ) ),
+             m_service, SLOT( networkError( QNetworkReply::NetworkError ) ) );
 }
 
 void
@@ -95,9 +96,9 @@ YouTubeAuthenticator::authFinished()
     if( setAuthData( data ) )
         m_service->m_state = AuthFinish;
 
-    disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
-    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                m_service, SLOT(networkError(QNetworkReply::NetworkError)) );
+    disconnect( reply, SIGNAL( finished() ), this, SLOT( authFinished() ) );
+    disconnect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ),
+                m_service, SLOT( networkError( QNetworkReply::NetworkError ) ) );
 
     reply->close();
     reply->deleteLater();
