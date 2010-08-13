@@ -56,16 +56,16 @@ class YouTubeUploader : public QObject
         const VideoData&        getVideoData();
 
     private:
-        void             uploadInit();
+        void                    uploadInit();
 
-        QString          API_XML_REQUEST;
-        QString          m_boundary;
-        QString          m_fileName;
-        VideoData        m_videoData;
+        QString                 API_XML_REQUEST;
+        QString                 m_boundary;
+        QString                 m_fileName;
+        VideoData               m_videoData;
 
-        YouTubeService*        m_service;
-        UploaderIODevice*      m_ioDevice;
-        QNetworkAccessManager* m_nam;
+        YouTubeService*         m_service;
+        UploaderIODevice*       m_ioDevice;
+        QNetworkAccessManager*  m_nam;
 
     private slots:
         void uploadFinished();

@@ -41,13 +41,13 @@ YouTubeUploader::YouTubeUploader( YouTubeService* service, const QString& fileNa
     m_nam = new QNetworkAccessManager( this );
 
     /* In case the proxy asks for credentials, handle it */
-    connect( m_nam, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)),
-            m_service, SLOT(proxyAuthRequired(QNetworkReply*,QAuthenticator*)) );
+    connect( m_nam, SIGNAL( authenticationRequired( QNetworkReply*, QAuthenticator* ) ),
+             m_service, SLOT( proxyAuthRequired( QNetworkReply*, QAuthenticator* ) ) );
 
     /* If SSL is available, handle SSL errors for better security */
     #ifndef QT_NO_OPENSSL
-    connect( m_nam, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)),
-            m_service, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)) );
+    connect( m_nam, SIGNAL( sslErrors( QNetworkReply*, QList<QSslError> ) ),
+             m_service, SLOT( sslErrors( QNetworkReply*, QList<QSslError> ) ) );
     #endif
 
     m_ioDevice = NULL;
@@ -110,11 +110,12 @@ YouTubeUploader::upload()
         QNetworkReply* reply = m_nam->post( request, m_ioDevice );
         m_service->m_state = UploadStart;
 
-        connect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
-        connect( reply, SIGNAL(uploadProgress(qint64,qint64)),
-                 this, SIGNAL(uploadProgress(qint64,qint64)) );
-        connect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                 m_service, SLOT(networkError(QNetworkReply::NetworkError)) );
+        connect( reply, SIGNAL( finished() ),
+                 this, SLOT( uploadFinished() ) );
+        connect( reply, SIGNAL( uploadProgress( qint64, qint64 ) ),
+                 this, SIGNAL( uploadProgress( qint64, qint64 ) ) );
+        connect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ),
+                 m_service, SLOT( networkError( QNetworkReply::NetworkError ) ) );
 
         return true;
     }
@@ -138,11 +139,12 @@ YouTubeUploader::uploadFinished()
 
     emit uploadOver( QString( videoUrl ) );
 
-    disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
-    disconnect( reply, SIGNAL(uploadProgress(qint64,qint64)),
-                this, SIGNAL(uploadProgress(qint64,qint64)) );
-    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                m_service, SLOT(networkError(QNetworkReply::NetworkError)) );
+    disconnect( reply, SIGNAL( finished() ),
+                this, SLOT( uploadFinished() ) );
+    disconnect( reply, SIGNAL( uploadProgress( qint64, qint64 ) ),
+                this, SIGNAL( uploadProgress( qint64, qint64 ) ) );
+    disconnect( reply, SIGNAL( error( QNetworkReply::NetworkError ) ),
+                m_service, SLOT( networkError( QNetworkReply::NetworkError ) ) );
 
     reply->close();
     reply->deleteLater();
@@ -165,19 +167,19 @@ YouTubeUploader::getNetworkRequest()
     request.setRawHeader( "Authorization", QByteArray( "GoogleLogin auth=" )
                           .append( m_service->getAuthString() ) );
 
-    /* We've implemented v2.0 protocol */
-    request.setRawHeader( "GData-Version", "2");
+    /* This implements v2.0 protocol */
+    request.setRawHeader( "GData-Version", "2" );
 
     /* Developer is used to track API usage */
-    request.setRawHeader( "X-GData-Key", QByteArray("key=")
+    request.setRawHeader( "X-GData-Key", QByteArray( "key=" )
                           .append( m_service->getDeveloperKey() ) );
 
     /* Name of the video, the user is uploading */
-    request.setRawHeader( "Slug", QByteArray("").append( m_fileName ) );
+    request.setRawHeader( "Slug", QByteArray( "" ).append( m_fileName ) );
 
     request.setRawHeader( "Content-Type",
-                       QByteArray( "multipart/related; boundary=" )
-                       .append( m_boundary ) );
+                          QByteArray( "multipart/related; boundary=" )
+                          .append( m_boundary ) );
 
     return request;
 }
@@ -190,7 +192,7 @@ YouTubeUploader::getMimeHead()
     data.append( "Content-Type: application/atom+xml; charset=UTF-8\r\n\r\n" );
     data.append( API_XML_REQUEST );
     data.append( "--" + m_boundary + "\r\n" );
-    data.append( "Content-Type: video/*\r\nContent-Transfer-Encoding: binary\r\n\r\n");
+    data.append( "Content-Type: video/*\r\nContent-Transfer-Encoding: binary\r\n\r\n" );
 
     return data;
 }
@@ -199,7 +201,7 @@ QByteArray
 YouTubeUploader::getMimeTail()
 {
     QByteArray data;
-    data.append( "\r\n--" + m_boundary + "--\r\n\r\n");
+    data.append( "\r\n--" + m_boundary + "--\r\n\r\n" );
 
     return data;
 }
