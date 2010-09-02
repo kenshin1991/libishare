@@ -1,6 +1,6 @@
-/*****************************************************************************
+/******************************************************************************
  * ShareOnInternet.cpp: Configure Video Export to Internet
- *****************************************************************************
+ ******************************************************************************
  * Copyright (C) 2008-2010 VideoLAN
  *
  * Authors: Rohit Yadav <rohityadav89@gmail.com>
@@ -20,24 +20,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include "ShareOnInternet.h"
 #include "AbstractSharingService.h"
-#include "Vimeo/VimeoService.h"
+#include "SettingsManager.h"
+#include "ShareOnInternet.h"
 #include "YouTube/YouTubeService.h"
 
 #include <QDesktopServices>
+#include <QClipboard>
 #include <QMessageBox>
+
 #include <QDebug>
 
 ShareOnInternet::ShareOnInternet( QWidget* parent )
     : QDialog( parent, Qt::Sheet | Qt::Dialog )
 {
     m_service = NULL;
-    m_serviceProvider = -1;
+    m_serviceProvider = 0;
     m_ui.setupUi( this );
     m_ui.progressBar->setVisible( false );
+
     /* Get DevKey from VLMC settings */
-    m_devKey = "AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ";
+    m_devKey = VLMC_GET_STRING( "youtube/DeveloperKey" );
+
+    switch( m_serviceProvider )
+    {
+        case YOUTUBE:
+            m_ui.username->setText( VLMC_GET_STRING( "youtube/Username" ) );
+            m_ui.password->setText( VLMC_GET_STRING( "youtube/Password" ) );
+            m_ui.title->setText( VLMC_PROJECT_GET_STRING( "general/ProjectName" ) );
+            break;
+    }
 }
 
 ShareOnInternet::~ShareOnInternet()
@@ -53,18 +65,9 @@ ShareOnInternet::accept()
         m_ui.password->text().isEmpty() )
     {
         QMessageBox::critical( this, tr("Error"),
-                               tr("'Username' or 'Password' or 'Title' cannot be empty."
+                               tr("'Username' or 'Password' or 'Title' cannot be empty. "
                                   "Please check these fields.") );
         return;
-    }
-
-    switch( m_ui.videoSize->currentIndex() )
-    {
-        case 0:  m_width = 480;  m_height = 272; break;
-        case 1:  m_width = 640;  m_height = 360; break;
-        case 2:  m_width = 960;  m_height = 540; break;
-        case 3:  m_width = 1280; m_height = 720; break;
-        default: m_width = 640;  m_height = 360;
     }
 
     publish();
@@ -75,36 +78,27 @@ ShareOnInternet::publish()
 {
     m_ui.publishButton->setEnabled( false );
 
-    quint32 width        = getWidth();
-    quint32 height       = getHeight();
-
     /* Check for service provider, if changes delete old one */
     if( m_serviceProvider != m_ui.serviceBox->currentIndex() )
     {
         if( m_service )
-        {
-            qDebug() << "[SHARE ON INTERNET]: Deleting old service";
             delete m_service;
-        }
+
         m_service = NULL;
 
         m_serviceProvider = m_ui.serviceBox->currentIndex();
-        qDebug() << "[SHARE ON INTERNET]: Seleted provider no="
-                << m_serviceProvider;
     }
 
     if( !m_service )
     {
-        qDebug() << "[SHARE ON INTERNET]: creating new service provider";
-
         switch( m_serviceProvider )
         {
-            case YOUTUBE: m_service = new YouTubeService( m_devKey, getUsername(), getPassword() );
-                          qDebug() << "[SHARE ON INTERNET]: YOUTUBE";
-                          break;
-            case VIMEO:  /* TODO: Add code for Vimeo etc. in future */
-            case JUSTIN: qDebug() << "[SHARE ON INTERNET]: VIMEO/JTV";
-            default: m_service = new YouTubeService( m_devKey, getUsername(), getPassword() );
+            case VIMEO:  /* TODO: Implement services for Vimeo */
+                qDebug() << "[SHARE ON INTERNET]: VIMEO"; break;
+            case YOUTUBE:
+            default:
+                m_service = new YouTubeService( m_devKey, getUsername(), getPassword() );
+                qDebug() << "[SHARE ON INTERNET]: YOUTUBE"; break;
         }
     }
     else
@@ -125,7 +119,7 @@ ShareOnInternet::authFinished()
     /*On Finish, extract out the auth token and upload a test video */
     disconnect( m_service, SIGNAL(authOver()), this, SLOT(authFinished()) );
 
-    VideoData videoData  = getVideoData();
+    VideoData videoData = getVideoData();
 
     m_service->setVideoParameters( m_fileName, videoData );
 
@@ -142,20 +136,16 @@ ShareOnInternet::authFinished()
                     this, SLOT(uploadProgress(qint64,qint64)) );
         disconnect( m_service, SIGNAL(error(QString)), this, SLOT(serviceError(QString)) );
 
-        qDebug() << "[SHARE ON INTERNET]: AUTH failed or Perhaps file not found";
+        qDebug() << "[SHARE ON INTERNET]: AUTH Failed";
 
-        /* Add code here to work on fallback... */
         return;
     }
     m_ui.statusLabel->setText( tr("Authenticated!") );
     m_ui.progressBar->setEnabled( true );
     m_ui.progressBar->setVisible( true );
+    m_ui.mainPanel->setEnabled( false );
 
     qDebug() << "[SHARE ON INTERNET]: UPLOAD STARTED";
-
-    /* TODO: Add code to activate Abort button etc. */
-    /* YouTubeService will check if the auth token is expired
-       or it's not authenticated yet... Then if it's true, it will upload*/
 }
 
 void
@@ -165,8 +155,12 @@ ShareOnInternet::uploadFinished( QString result )
     m_ui.progressBar->setEnabled( false );
     m_ui.progressBar->setVisible( false );
 
+    QApplication::clipboard()->setText( result );
+
     if( QMessageBox::information( NULL, tr("Video Uploaded"),
-            tr("Your video is being processed. Link to the uploaded video: %1.\nOpen in your default browser?").arg( result ),
+            tr("Your video has been uploaded."
+               "\nURL (copied to your clipboard):\n%1"
+               "\n\nOpen video in your default web browser?").arg( result ),
             QMessageBox::Open | QMessageBox::Close ) == QMessageBox::Open )
     {
         QDesktopServices::openUrl( result );
@@ -190,7 +184,7 @@ ShareOnInternet::uploadProgress(qint64 received, qint64 total)
 void
 ShareOnInternet::serviceError(QString e)
 {
-    qDebug() << "[SHARE ON INTERNET]: [SERVICE ERROR]: " << e;
+    qDebug() << "[SHARE ON INTERNET]: ERROR = " << e;
     m_ui.statusLabel->setText( e );
     emit error( e );
 }
@@ -205,18 +199,6 @@ QString
 ShareOnInternet::getPassword() const
 {
     return m_ui.password->text();
-}
-
-quint32
-ShareOnInternet::getWidth() const
-{
-    return m_width;
-}
-
-quint32
-ShareOnInternet::getHeight() const
-{
-    return m_height;
 }
 
 VideoData

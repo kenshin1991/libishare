@@ -1,6 +1,6 @@
-/*****************************************************************************
+/******************************************************************************
  * ShareOnInternet.h: Configure Video Export to Internet
- *****************************************************************************
+ ******************************************************************************
  * Copyright (C) 2008-2010 VideoLAN
  *
  * Authors: Rohit Yadav <rohityadav89@gmail.com>
@@ -36,21 +36,18 @@ class ShareOnInternet : public QDialog
     enum ServiceProviders
     {
         YOUTUBE = 0,
-        VIMEO,
-        JUSTIN,
+        VIMEO
     };
 
     public:
         ShareOnInternet( QWidget* parent = 0 );
         ~ShareOnInternet();
 
-        QString          getUsername() const;
-        QString          getPassword() const;
-        quint32          getWidth() const;
-        quint32          getHeight() const;
-        VideoData        getVideoData() const;
+        QString                  getUsername() const;
+        QString                  getPassword() const;
+        VideoData                getVideoData() const;
 
-        void             setVideoFile( QString& fileName );
+        void                     setVideoFile( QString& fileName );
 
     private:
         void                     publish();
@@ -61,19 +58,16 @@ class ShareOnInternet : public QDialog
         QString                  m_devKey;
         QString                  m_fileName;
 
-        quint32                  m_width;
-        quint32                  m_height;
-
     private slots:
-        void    accept();
-        void    authFinished();
-        void    uploadFinished( QString );
-        void    uploadProgress( qint64, qint64 );
-        void    serviceError( QString );
+        void                     accept();
+        void                     authFinished();
+        void                     uploadFinished( QString );
+        void                     uploadProgress( qint64, qint64 );
+        void                     serviceError( QString );
 
     signals:
-        void error( QString );
-        void finished();
+        void                     error( QString );
+        void                     finished();
 };
 
 #endif // SHAREONINTERNET_H
