@@ -21,7 +21,6 @@
  *****************************************************************************/
 
 #include "AbstractSharingService.h"
-#include "SettingsManager.h"
 #include "ShareOnInternet.h"
 #include "YouTube/YouTubeService.h"
 
@@ -40,14 +39,14 @@ ShareOnInternet::ShareOnInternet( QWidget* parent )
     m_ui.progressBar->setVisible( false );
 
     /* Get DevKey from VLMC settings */
-    m_devKey = VLMC_GET_STRING( "youtube/DeveloperKey" );
+    m_devKey = "AI39si7FOtp165Vq644xVkuka84TVQNbztQmQ1dC9stheBfh3-33RZaTu7eJkYJzvxp6XNbvlr4M6-ULjXDERFl62WIo6AQIEQ";
 
     switch( m_serviceProvider )
     {
         case YOUTUBE:
-            m_ui.username->setText( VLMC_GET_STRING( "youtube/Username" ) );
-            m_ui.password->setText( VLMC_GET_STRING( "youtube/Password" ) );
-            m_ui.title->setText( VLMC_PROJECT_GET_STRING( "general/ProjectName" ) );
+            m_ui.username->setText( "username" );
+            m_ui.password->setText( "password" );
+            m_ui.title->setText( "Untitled Movie" );
             break;
     }
 }
