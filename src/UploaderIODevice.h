@@ -35,12 +35,11 @@ public:
                       const QByteArray& head, const QByteArray& tail );
     ~UploaderIODevice();
 
-    void setFile( const QString& fileName );
-
-    bool openFile();
-    qint64 readData( char *data, qint64 maxlen );
-    qint64 writeData( const char *data, qint64 len );
-    qint64 size() const;
+    void            setFile( const QString& fileName );
+    bool            openFile();
+    qint64          readData( char *data, qint64 maxlen );
+    qint64          writeData( const char *data, qint64 len );
+    qint64          size() const;
 
 private:
     QFile*          m_file;

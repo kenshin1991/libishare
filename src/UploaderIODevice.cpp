@@ -23,8 +23,8 @@
 #include "UploaderIODevice.h"
 
 UploaderIODevice::UploaderIODevice( QObject *parent, const QString& fileName,
-                                   const QByteArray& head, const QByteArray& tail )
-                                   : QIODevice( parent )
+                                    const QByteArray& head, const QByteArray& tail )
+                                    : QIODevice( parent )
 {
     m_file     = new QFile( fileName, this );
     m_head     = new QByteArray( head );

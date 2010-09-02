@@ -1,6 +1,6 @@
-/*****************************************************************************
- * AbstractSharingService.h:
- *****************************************************************************
+/******************************************************************************
+ * AbstractSharingService.h: Abstract Video Sharing Service Class
+ ******************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
  * Authors: Rohit Yadav <rohityadav89 AT gmail.com>
@@ -34,21 +34,18 @@ class AbstractSharingService : public QObject
     public:
         virtual void    authenticate() = 0;        // Authenticate the service
         virtual bool    upload() = 0;              // Upload video
-        virtual void    search( QString& ) = 0;    // Search for a video
-        virtual bool    abort() = 0;               // Abort on going service
 
         virtual const   VideoData& getVideoData() = 0;
 
         virtual void    setCredentials( const QString&, const QString& ) = 0;
         virtual void    setDeveloperKey( const QString& ) = 0;
-        virtual void    setProxyCredentials( const QString&, const QString& ) = 0;
         virtual void    setVideoParameters( const QString&, const VideoData& ) = 0;
 
     signals:
-        void    authOver();
-        void    uploadOver( QString );
-        void    uploadProgress( qint64, qint64 );
-        void    error( QString );
+        void            authOver();
+        void            uploadOver( QString );
+        void            uploadProgress( qint64, qint64 );
+        void            error( QString );
 };
 
 #endif // ABSTRACTSHARINGSERVICE_H
