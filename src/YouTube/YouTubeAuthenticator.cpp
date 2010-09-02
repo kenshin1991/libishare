@@ -37,24 +37,18 @@ YouTubeAuthenticator::YouTubeAuthenticator( YouTubeService* service,
                                             const QString& username,
                                             const QString& password )
 {
+    /* Stores pointer to main service object and user credentials */
     m_service  = service;
     m_username = username;
     m_password = password;
 
     m_nam = new QNetworkAccessManager( this );
 
-    if( service )
-    {
-        /* In case the proxy asks for credentials, handle it */
-        connect( m_nam, SIGNAL( authenticationRequired( QNetworkReply*, QAuthenticator* ) ),
-                m_service, SLOT( proxyAuthRequired( QNetworkReply*, QAuthenticator* ) ) );
-
-        /* If SSL is available, handle SSL errors for better security */
-        #ifndef QT_NO_OPENSSL
-        connect( m_nam, SIGNAL( sslErrors( QNetworkReply*, QList<QSslError> ) ),
-                m_service, SLOT( sslErrors( QNetworkReply*, QList<QSslError> ) ) );
-        #endif
-    }
+    /* If SSL is available, handle SSL errors for better security */
+    #ifndef QT_NO_OPENSSL
+    connect( m_nam, SIGNAL( sslErrors( QNetworkReply*, QList<QSslError> ) ),
+             m_service, SLOT( sslErrors( QNetworkReply*, QList<QSslError> ) ) );
+    #endif
 
     authInit();
     setPOSTData();
@@ -77,8 +71,10 @@ YouTubeAuthenticator::authInit()
 void
 YouTubeAuthenticator::authenticate()
 {
+    /* Network request to be sent */
     QNetworkRequest request = getNetworkRequest();
 
+    /* Sends the auth details using HTTPS POST*/
     QNetworkReply* reply = m_nam->post( request, getPOSTData() );
     m_service->m_state = AuthStart;
 
@@ -107,7 +103,7 @@ YouTubeAuthenticator::authFinished()
 void
 YouTubeAuthenticator::error( QString& e )
 {
-    qDebug() << "[YT AUTH]: [ERROR]: " << e;
+    qDebug() << "[YouTube AUTH ERROR]: " << e;
     emit authError( e );
 }
 
@@ -175,6 +171,7 @@ YouTubeAuthenticator::setServiceProvider( YouTubeService *service )
 bool
 YouTubeAuthenticator::setAuthData( QByteArray& data )
 {
+    /* Parses data received after sending auth details */
     QStringList lines = QString( data ).split( "\n", QString::SkipEmptyParts );
 
     foreach( QString line, lines )

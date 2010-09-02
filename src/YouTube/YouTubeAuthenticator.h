@@ -78,10 +78,10 @@ class YouTubeAuthenticator : public QObject
         QNetworkAccessManager* m_nam;
 
     private slots:
-        void authFinished();
+        void                   authFinished();
 
     signals:
-        void authOver();
-        void authError( QString );
+        void                   authOver();
+        void                   authError( QString );
 };
 #endif // YOUTUBEAUTHENTICATOR_H

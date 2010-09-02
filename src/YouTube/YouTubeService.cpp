@@ -1,6 +1,6 @@
-/*****************************************************************************
+/******************************************************************************
  * YouTubeService.cpp: YouTube Service APIs
- *****************************************************************************
+ ******************************************************************************
  * Copyright (C) 2010 VideoLAN
  *
  * Authors: Rohit Yadav <rohityadav89 AT gmail.com>
@@ -38,16 +38,19 @@ YouTubeService::YouTubeService( const QString& devKey,
                                 const QString& username, 
                                 const QString& password )
 {
+    /* Stores Credentials */
     m_devKey   = devKey;
     m_username = username;
     m_password = password;
 
+    /* Pointers for Authenticator and Uploader Objects */
     m_auth     = NULL;
     m_uploader = NULL;
 }
 
 YouTubeService::~YouTubeService()
 {
+    /* Clean exit, checks and deletes objects */
     if( m_auth )
         delete m_auth;
 
@@ -58,6 +61,7 @@ YouTubeService::~YouTubeService()
 void
 YouTubeService::authenticate()
 {
+    /* Auth object: Checks, creates and sets credentials */
     if( !m_auth )
         m_auth = new YouTubeAuthenticator( this, m_username, m_password );
     else
@@ -67,7 +71,7 @@ YouTubeService::authenticate()
     connect( m_auth, SIGNAL( authOver() ),
              this, SIGNAL( authOver() ) );
 
-    /* On authentication error, m_auth will send the error token */
+    /* On authentication error, m_auth sends the error token */
     connect( m_auth, SIGNAL( authError( QString ) ),
              this, SLOT( authError( QString ) ) );
 
@@ -77,8 +81,10 @@ YouTubeService::authenticate()
 bool
 YouTubeService::upload()
 {
+    /* Checks authentication and then only uploads video file */
     if( m_auth->isAuthenticated() )
     {
+        /* Uploader object: Checks, creates and sets video file */
         if( !m_uploader )
             m_uploader = new YouTubeUploader( this, m_fileName );
         else
@@ -90,24 +96,12 @@ YouTubeService::upload()
         connect( m_uploader, SIGNAL( uploadOver( QString ) ),
                  this, SIGNAL( uploadOver( QString ) ) );
 
-        /* Connect upload progress */
+        /* Connects upload progress */
         connect( m_uploader, SIGNAL( uploadProgress( qint64, qint64 ) ),
                  this, SIGNAL( uploadProgress( qint64, qint64 ) ) );
 
         return m_uploader->upload();
     }
-    return false;
-}
-
-void
-YouTubeService::search( QString& search )
-{
-}
-
-bool
-YouTubeService::abort()
-{
-    /* Check States and abort corresponding service */
     return false;
 }
 
@@ -143,13 +137,6 @@ YouTubeService::setDeveloperKey( const QString& devKey )
 }
 
 void
-YouTubeService::setProxyCredentials(const QString &username, const QString &password)
-{
-    m_proxyUsername = username;
-    m_proxyPassword = password;
-}
-
-void
 YouTubeService::setVideoParameters( const QString& fileName, const VideoData& data )
 {
     m_fileName  = fileName;
@@ -159,7 +146,7 @@ YouTubeService::setVideoParameters( const QString& fileName, const VideoData& da
 void
 YouTubeService::authError( QString e )
 {
-    qDebug() << "[YT SERVICE]: [AUTH ERROR]: " << e;
+    qDebug() << "[YT SERVICE]: AUTH ERROR " << e;
 
     if( e == "BadAuthentication" )
         m_error = BadAuthentication;
@@ -173,59 +160,76 @@ YouTubeService::authError( QString e )
         m_error = UnknownError;
 
     emit error( e );
-
 }
 
 void
 YouTubeService::networkError( QNetworkReply::NetworkError e )
 {
-    // Temporary error
-    qDebug() << "[NETWORK ERROR]: " << e;
+    QString errString;
 
+    /* Checks error code and emits error string */
     switch( e )
     {
+        case QNetworkReply::ConnectionRefusedError:
+        case QNetworkReply::RemoteHostClosedError:
+        case QNetworkReply::HostNotFoundError: 
+        case QNetworkReply::TimeoutError:
+            errString = "Network Connection Error";
+            m_error = NetworkError; break;
+
+        case QNetworkReply::OperationCanceledError:
+            errString = "Operation Aborted";
+            m_error = NetworkError; break;
+
+        case QNetworkReply::SslHandshakeFailedError:
+            errString = "SSL Error";
+            m_error = SSLError; break;
+
+        case QNetworkReply::ProxyConnectionRefusedError:
+        case QNetworkReply::ProxyConnectionClosedError:
+        case QNetworkReply::ProxyNotFoundError:
+        case QNetworkReply::ProxyTimeoutError:
+            errString = "Proxy Connection Error";
+            m_error = ProxyError; break;
+
+        case QNetworkReply::ProxyAuthenticationRequiredError:
+            errString = "Proxy Authentication Error";
+            m_error = ProxyAuthError; break;
+
+        case QNetworkReply::ContentAccessDenied:
         case QNetworkReply::ContentOperationNotPermittedError:
-        default: return;
+        case QNetworkReply::ContentNotFoundError:
+            errString = "Remote Content Error";
+            m_error = ContentError; break;
+
+        case QNetworkReply::ProtocolUnknownError:
+        case QNetworkReply::UnknownNetworkError:
+        case QNetworkReply::UnknownProxyError:
+        case QNetworkReply::UnknownContentError:
+        default:
+            errString = "Unknown Error";
+            m_error = UnknownError;
     }
 
-    qDebug() << "[YT SERVICE]: DANGER!!!";
+    qDebug() << "[NETWORK ERROR]: " << e << ": " << errString;
+    emit error( errString );
+
+    /* Ignore Content errors */
+    if( m_error == ContentError )
+        return;
 
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
 
-    m_error = NetworkError;
-    emit error( QString().setNum( e ) );
-
-    disconnect( reply, SIGNAL(error(QNetworkReply::NetworkError)),
-             this, SLOT(networkError(QNetworkReply::NetworkError)) );
-
-    //if( m_state == AUTH_START );
-        //disconnect( reply, SIGNAL(finished()),this,SLOT(authFinished()) );
-
     if( m_state == UploadStart )
     {
-        disconnect( reply, SIGNAL(finished()), this, SLOT(uploadFinished()) );
-        disconnect( reply, SIGNAL(uploadProgress(qint64,qint64)),
-                 this, SIGNAL(uploadProgress(qint64,qint64)) );
+        disconnect( reply, SIGNAL( finished() ), 
+                    m_uploader, SLOT( uploadFinished() ) );
+        disconnect( reply, SIGNAL( uploadProgress( qint64, qint64 ) ),
+                    m_uploader, SIGNAL( uploadProgress( qint64, qint64 ) ) );
     }
 
     reply->close();
     reply->deleteLater();
-}
-
-void
-YouTubeService::proxyAuthRequired( QNetworkReply*, QAuthenticator *authenticator )
-{
-    m_error = ConnectionError;
-
-    /* TODO: Make a small QDialog to take in usr:passwd */
-    if( !m_proxyUsername.isEmpty() && !m_proxyPassword.isEmpty() )
-    {
-        authenticator->setUser( m_proxyUsername );
-        authenticator->setPassword( m_proxyPassword );
-        return;
-    }
-
-    /* TODO: Exec a dialog take in credentials */
 }
 
 #ifndef QT_NO_OPENSSL

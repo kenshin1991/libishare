@@ -54,14 +54,11 @@ class YouTubeService : public AbstractSharingService
         /* Service Interfaces */
         void authenticate();            // Authenticate the service
         bool upload();                  // Upload video
-        void search( QString& search ); // Search for a video
-        bool abort();                   // Abort on going service
 
         const VideoData& getVideoData();
 
         void setCredentials( const QString& username, const QString& password );
         void setDeveloperKey( const QString& devKey );
-        void setProxyCredentials( const QString& username, const QString& password );
         void setVideoParameters( const QString& fileName, const VideoData& data );
 
     private:
@@ -81,13 +78,10 @@ class YouTubeService : public AbstractSharingService
 
         YouTubeServiceState    m_state;
         YouTubeError           m_error;
-        QString                m_proxyUsername;
-        QString                m_proxyPassword;
 
     private slots:
         void authError( QString );
         void networkError( QNetworkReply::NetworkError );
-        void proxyAuthRequired( QNetworkReply*, QAuthenticator * );
         #ifndef QT_NO_OPENSSL
         void sslErrors( QNetworkReply*, const QList<QSslError> &errors );
         #endif

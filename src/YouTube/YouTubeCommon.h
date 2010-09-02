@@ -25,6 +25,7 @@
 
 #include <QString>
 
+/* VideoData structure used throught YouTube Service to pass video meta data */
 struct VideoData
 {
     QString title;
@@ -46,7 +47,8 @@ enum YouTubeServiceState
 };
 
 /* Error Code References:
- * Auth: http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html#Errors
+ * Auth: 
+ *   http://code.google.com/apis/accounts/docs/AuthForInstalledApps.html#Errors
  */
 
 /* Error codes for YouTubeService */
@@ -62,7 +64,10 @@ enum YouTubeError
 
     NetworkError,               // Some Network Error
     ConnectionError,            // Connection error
+    ContentError,               // Remote Content error on server
     SSLError,                   // SSL Error
+    ProxyError,                 // Proxy Error
+    ProxyAuthError,             // Proxy Authentication Error
 
     FileMissing,                // File not file
     XmlError                    // XML Parsing Error

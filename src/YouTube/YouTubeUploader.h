@@ -68,11 +68,11 @@ class YouTubeUploader : public QObject
         QNetworkAccessManager*  m_nam;
 
     private slots:
-        void uploadFinished();
+        void                    uploadFinished();
 
     signals:
-        void uploadOver( QString );
-        void uploadProgress( qint64, qint64 );
+        void                    uploadOver( QString );
+        void                    uploadProgress( qint64, qint64 );
 };
 
 #endif // YOUTUBEUPLOADER_H

@@ -33,29 +33,29 @@
 
 #include <QDebug>
 
-YouTubeUploader::YouTubeUploader( YouTubeService* service, const QString& fileName )
+YouTubeUploader::YouTubeUploader( YouTubeService* service, 
+                                  const QString& fileName )
 {
+    /* Stores pointer to main service object and video file path */
     m_service  = service;
     m_fileName = fileName;
 
     m_nam = new QNetworkAccessManager( this );
 
-    /* In case the proxy asks for credentials, handle it */
-    connect( m_nam, SIGNAL( authenticationRequired( QNetworkReply*, QAuthenticator* ) ),
-             m_service, SLOT( proxyAuthRequired( QNetworkReply*, QAuthenticator* ) ) );
-
-    /* If SSL is available, handle SSL errors for better security */
+    /* Handles SSL errors for better security */
     #ifndef QT_NO_OPENSSL
     connect( m_nam, SIGNAL( sslErrors( QNetworkReply*, QList<QSslError> ) ),
              m_service, SLOT( sslErrors( QNetworkReply*, QList<QSslError> ) ) );
     #endif
 
+    /* Pointer for custom IODevice needed to upload video */
     m_ioDevice = NULL;
     uploadInit();
 }
 
 YouTubeUploader::~YouTubeUploader()
 {
+    /* Checks and deletes objects */
     delete m_nam;
     if( m_ioDevice )
         delete m_ioDevice;
@@ -64,6 +64,7 @@ YouTubeUploader::~YouTubeUploader()
 void
 YouTubeUploader::uploadInit()
 {
+    /* Random 10 digit boundary string, as per protocol */
     m_boundary = QString( QString::number( qrand(), 10 ).toAscii() );
 
     QString privateToken = "";
@@ -86,6 +87,7 @@ YouTubeUploader::uploadInit()
         "  </media:group>\r\n"
         "</entry>\r\n";
 
+    /* API Request as per protocol */
     API_XML_REQUEST = API_XML_REQUEST.arg( m_videoData.title, m_videoData.description,
                                            m_videoData.category, m_videoData.keywords,
                                            privateToken );
@@ -94,17 +96,19 @@ YouTubeUploader::uploadInit()
 bool
 YouTubeUploader::upload()
 {
-    /* Upload Stuff here :) */
+    /* Creates IODevice with all details */
     if( !m_ioDevice )
         m_ioDevice = new UploaderIODevice( this, m_fileName,
                                            getMimeHead(), getMimeTail() );
     else
         m_ioDevice->setFile( m_fileName );
 
+    /* Creates HTTP header */
     QNetworkRequest request = getNetworkRequest();
     request.setHeader( QNetworkRequest::ContentLengthHeader, m_ioDevice->size() );
     request.setRawHeader( "Connection", "close" );
 
+    /* Tries to open file and send a HTTP POST */
     if( m_ioDevice->openFile() )
     {
         QNetworkReply* reply = m_nam->post( request, m_ioDevice );
@@ -126,14 +130,17 @@ YouTubeUploader::upload()
 void
 YouTubeUploader::uploadFinished()
 {
+    /* Captures data received after uploading the video */
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );
     const QByteArray data = reply->readAll();
 
     m_service->m_state = UploadFinish;
 
+    /* Feed parser called to parse the XML data received */
     YouTubeFeedParser parser( data );
     parser.read();
 
+    /* Checks VideoID parsed by the parser */
     Q_ASSERT( parser.getVideoId() != "" );
     QString videoUrl = VIDEO_URL + parser.getVideoId();
 
@@ -187,6 +194,7 @@ YouTubeUploader::getNetworkRequest()
 QByteArray
 YouTubeUploader::getMimeHead()
 {
+    /* Head ByteArray data, as per the protocol */
     QByteArray data;
     data.append( "\r\n\r\n--" + m_boundary + "\r\n" );
     data.append( "Content-Type: application/atom+xml; charset=UTF-8\r\n\r\n" );
@@ -200,6 +208,7 @@ YouTubeUploader::getMimeHead()
 QByteArray
 YouTubeUploader::getMimeTail()
 {
+    /* Tail ByteArray data, as per the protocol */
     QByteArray data;
     data.append( "\r\n--" + m_boundary + "--\r\n\r\n" );
 
