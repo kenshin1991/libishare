@@ -20,7 +20,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *****************************************************************************/
 
-#include "AbstractSharingService.h"
 #include "YouTubeAuthenticator.h"
 #include "YouTubeService.h"
 #include "YouTubeUploader.h"
@@ -33,6 +32,8 @@
 #include <QSslError>
 
 #include <QDebug>
+
+using namespace YouTube;
 
 YouTubeService::YouTubeService( const QString& devKey,
                                 const QString& username, 
@@ -179,7 +180,7 @@ YouTubeService::networkError( QNetworkReply::NetworkError e )
 
         case QNetworkReply::OperationCanceledError:
             errString = "Operation Aborted";
-            m_error = NetworkError; break;
+            m_error = Abort; break;
 
         case QNetworkReply::SslHandshakeFailedError:
             errString = "SSL Error";
@@ -214,8 +215,8 @@ YouTubeService::networkError( QNetworkReply::NetworkError e )
     qDebug() << "[NETWORK ERROR]: " << e << ": " << errString;
     emit error( errString );
 
-    /* Ignore Content errors */
-    if( m_error == ContentError )
+    /* Ignore Content and Abort errors */
+    if( m_error == ContentError || m_error == Abort )
         return;
 
     QNetworkReply *reply = static_cast<QNetworkReply *>( sender() );

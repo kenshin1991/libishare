@@ -22,8 +22,9 @@ private:
     void shareOnInternet();
 
 private slots:
-    void on_abortButton_clicked();
+    void on_proxy_clicked();
     void on_pushButton_clicked();
+    void updateProxy();
 };
 
 #endif // MAINWINDOW_H

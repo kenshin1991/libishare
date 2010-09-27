@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QNetworkProxy>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -45,7 +46,26 @@ void MainWindow::shareOnInternet()
     delete exportToInternet;
 }
 
-void MainWindow::on_abortButton_clicked()
+void MainWindow::updateProxy()
 {
-    ui->log->appendPlainText("[UPLOAD ABORTED]");
+    if( ui->proxy->isEnabled() )
+    {
+        /* Updates Global Proxy for VLMC */
+        qDebug() << "[Main Window] Setting up Global proxy";
+        QNetworkProxy proxy;
+        proxy.setType( QNetworkProxy::HttpProxy );
+        proxy.setHostName( ui->hostName->text() );
+        proxy.setPort( ui->port->text().toInt() );
+        proxy.setUser( ui->username->text() );
+        proxy.setPassword( ui->password->text() );
+        QNetworkProxy::setApplicationProxy( proxy );
+        return;
+    }
+
+    QNetworkProxy::setApplicationProxy( QNetworkProxy::NoProxy );
+}
+
+void MainWindow::on_proxy_clicked()
+{
+    updateProxy();
 }

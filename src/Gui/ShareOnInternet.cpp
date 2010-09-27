@@ -118,7 +118,7 @@ ShareOnInternet::authFinished()
     /*On Finish, extract out the auth token and upload a test video */
     disconnect( m_service, SIGNAL(authOver()), this, SLOT(authFinished()) );
 
-    VideoData videoData = getVideoData();
+    AbstractVideoData videoData = getVideoData();
 
     m_service->setVideoParameters( m_fileName, videoData );
 
@@ -150,6 +150,8 @@ ShareOnInternet::authFinished()
 void
 ShareOnInternet::uploadFinished( QString result )
 {
+    qDebug() << "[SHARE ON INTERNET]: UPLOAD FINISHED";
+
     /* Add code here to abort stuff */
     m_ui.progressBar->setEnabled( false );
     m_ui.progressBar->setVisible( false );
@@ -176,14 +178,13 @@ ShareOnInternet::uploadProgress(qint64 received, qint64 total)
     {
         qint64 progress = received * 100 / total;
         m_ui.progressBar->setValue( progress );
-        m_ui.statusLabel->setText( tr("%1 Bytes Uploaded").arg( received ) );
+        m_ui.statusLabel->setText( tr("%1 kB Uploaded").arg( received / 1024 ) );
     }
 }
 
 void
 ShareOnInternet::serviceError(QString e)
 {
-    qDebug() << "[SHARE ON INTERNET]: ERROR = " << e;
     m_ui.statusLabel->setText( e );
     emit error( e );
 }
@@ -200,10 +201,10 @@ ShareOnInternet::getPassword() const
     return m_ui.password->text();
 }
 
-VideoData
+AbstractVideoData
 ShareOnInternet::getVideoData() const
 {
-    VideoData data;
+    AbstractVideoData data;
 
     data.title       = m_ui.title->text();
     data.category    = m_ui.category->currentText().split(" & ").at( 0 );
