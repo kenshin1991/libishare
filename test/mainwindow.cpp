@@ -48,7 +48,7 @@ void MainWindow::shareOnInternet()
 
 void MainWindow::updateProxy()
 {
-    if( ui->proxy->isEnabled() )
+    if( ui->proxy->checkState() == Qt::Checked )
     {
         /* Updates Global Proxy for VLMC */
         qDebug() << "[Main Window] Setting up Global proxy";
