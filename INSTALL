@@ -1,2 +1,4 @@
 As of now, there are no plans to make *official* library distribution.
 If you want to use it follow README and the demo app included in this project.
+
+Use the given .pro file with Qt Creator and you know the rest.

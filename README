@@ -9,7 +9,8 @@ cross-platform Qt Network APIs. Report bugs to the author or at VLMC's Trac.
 
 USAGE: Directly add the src file(s) in your project and use them accordingly. If you
 change some part of code, simple add your <name> <email> in the authors list, the license
-must be retained. After that you may also want to send a patch to VLMC devel or to the developer.
+must be retained. After that you may also want to send a patch to VLMC devel or to
+the developer (Rohit Yadav).
 
 NOTE: This library, is a part of VLMC, but can be used in other *open source* projects.
 If you want to use it in a *commercial software*, contact the developer.
