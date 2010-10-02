@@ -4,6 +4,7 @@ README for libishare
 libishare was developed as a GSoC project for VLMC in 2010 by Rohit Yadav.
 There was no C++ library that would provide simple APIs to share video on popular
 Internet video sharing sites like YouTube and Vimeo. 
+
 This library simply implements the HTTP/S and REST protocols at the core using 
 cross-platform Qt Network APIs. Report bugs to the author or at VLMC's Trac.
 
